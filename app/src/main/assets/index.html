@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Daily Site Deficiency - v15 Status Photo Rules</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
+header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;margin:0}header small{opacity:.8}
+.container{max-width:1200px;margin:auto;padding:20px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 5px #0001}.stat{font-size:28px;font-weight:bold;margin-top:6px}
+.red{border-left:5px solid #dc3545}.yellow{border-left:5px solid #f0ad00}.green{border-left:5px solid #198754}.black{border-left:5px solid #343a40}
+button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;font-weight:bold}.primary{background:#17324d;color:#fff}.secondary{background:#e9eef3;color:#17324d}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{font-size:12px;font-weight:bold;color:#52606d}input,select,textarea{width:100%;padding:11px;border:1px solid #ccd5dd;border-radius:7px;margin-top:5px;font-size:14px}textarea{min-height:80px;resize:vertical}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar select,.toolbar input{width:auto;min-width:150px;margin:0}
+table{width:100%;border-collapse:collapse;background:#fff}.tablewrap{overflow:auto;border-radius:10px;box-shadow:0 1px 5px #0001}th,td{padding:11px;border-bottom:1px solid #edf0f2;text-align:left;font-size:13px;white-space:nowrap}th{background:#edf2f6}
+.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:11px;font-weight:bold}.b-red{background:#fde7e9;color:#b4232f}.b-yellow{background:#fff4cc;color:#8a6500}.b-green{background:#dff5e8;color:#146c43}.b-black{background:#e4e6e8;color:#343a40}
+.photo-view-modal{inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}.photo-view-box{background:#fff;max-width:900px;width:100%;border-radius:12px;padding:16px;max-height:92vh;overflow:auto;text-align:center}.photo-view-box img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px}.photo-view-name{font-size:12px;color:#52606d;margin:8px 0;word-break:break-all}.photo-preview{margin-top:8px;display:none;align-items:center;gap:10px}.photo-preview img{max-width:180px;max-height:130px;border-radius:8px;border:1px solid #ccd5dd;object-fit:cover}.photo-name{font-size:12px;color:#52606d;word-break:break-all}.photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.photo-note{font-size:11px;color:#66737f;margin-top:5px}.modal{inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px}.modalbox{background:#fff;max-width:650px;width:100%;border-radius:12px;padding:20px;max-height:90vh;overflow:auto}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}header{align-items:flex-start;gap:10px}.container{padding:12px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.stat{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div><h1>🛠️ Tech Daily Site Deficiency</h1><small>Beta • Gamma • CPT2</small></div><button class="primary" onclick="openAdd()">+ Add Deficiency</button></header>
+<div class="container">
+<div class="card connection-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <div><strong>🔗 Excel / Power Automate Connection</strong><div id="connectionStatus" style="font-size:12px;margin-top:5px;color:#52606d">Not connected — app is using local browser storage.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" type="button" onclick="syncFromExcel()">🔄 Refresh from Excel</button><button class="secondary" type="button" onclick="openSettings()">⚙️ Settings</button></div>
+  </div>
+</div>
+<div class="grid">
+<div class="card red">🔴 Open<div class="stat" id="open">0</div></div>
+<div class="card yellow">🟡 Ongoing<div class="stat" id="ongoing">0</div></div>
+<div class="card green">🟢 Completed<div class="stat" id="completed">0</div></div>
+<div class="card black">⚫ On Hold<div class="stat" id="hold">0</div></div>
+</div>
+<div class="card">
+<div class="toolbar">
+<select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
+<select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
+<input id="search" oninput="render()" placeholder="Search deficiency/location">
+<button class="secondary" onclick="clearFilters()">Clear</button>
+</div>
+<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+</div>
+
+<div class="modal" id="settingsModal"><div class="modalbox">
+<h2>Connection Settings</h2>
+<p style="font-size:13px;color:#52606d">Paste the <b>current</b> Power Automate HTTP URL from your HTTP trigger. The URL is stored only in this browser. Use <b>Test Connection</b> after saving the URL.</p>
+<label>POWER AUTOMATE HTTP URL</label>
+<input id="flowUrl" type="url" placeholder="https://...powerplatform...">
+<div style="margin-top:12px;font-size:12px;color:#7a4e00;background:#fff7df;padding:10px;border-radius:7px">🔐 Keep this URL private. Anyone who has it may be able to submit data to your flow.</div>
+<div class="actions" style="justify-content:space-between"><button type="button" class="secondary" onclick="testPowerAutomate()">🧪 Test Connection</button><div style="display:flex;gap:8px"><button type="button" class="secondary" onclick="closeSettings()">Cancel</button><button type="button" class="primary" onclick="saveSettings()">Save Connection</button></div></div>
+</div></div>
+
+<div class="photo-view-modal" id="photoViewModal"><div class="photo-view-box"><h2 style="margin-top:0">Photo Preview</h2><div id="photoViewStatus" class="photo-view-name">Loading photo...</div><img id="photoViewImg" alt="Deficiency photo" style="display:none"><div class="actions"><button type="button" class="secondary" onclick="closePhotoViewer()">Close</button></div></div></div>
+
+<div class="modal" id="modal"><div class="modalbox"><h2 id="modalTitle">Report / Add Deficiency</h2>
+<form id="form" class="form">
+<input type="hidden" id="editId">
+<div><label>DATE REPORTED</label><input type="date" id="date" required></div>
+<div><label>SITE</label><select id="site" required><option>Beta</option><option>Gamma</option><option>CPT2</option></select></div>
+<div class="full"><label>DEFICIENCY</label><textarea id="deficiency" required placeholder="Describe the site deficiency"></textarea></div>
+<div><label>LOCATION / AREA</label><input id="location" placeholder="e.g. 35F Production Area"></div>
+<div><label>REPORTED BY</label><input id="reportedBy" placeholder="Person who reported the deficiency"></div>
+<div><label>ATTENDED BY</label><input id="attendedBy" placeholder="Technician who attended the deficiency"></div>
+<div class="full"><label id="photoLabel">UPLOAD PHOTO</label>
+<input type="file" id="photo" accept="image/*" capture="environment">
+<div id="photoRuleNote" class="photo-note">Allowed for Open, Ongoing, and On Hold. Locked when status is Completed.</div>
+<div id="photoPreview" class="photo-preview"><img id="photoPreviewImg" alt="Photo preview"><div><div id="photoName" class="photo-name"></div><div class="photo-actions"><button type="button" class="secondary" onclick="removePhoto()">Remove Photo</button></div></div></div>
+</div>
+ <div class="full"><label id="fixPhotoLabel">FIX PHOTO</label>
+ <input type="file" id="fixPhoto" accept="image/*" capture="environment">
+ <div id="fixPhotoRuleNote" class="photo-note">Allowed only when status is Completed.</div>
+ <div id="fixPhotoPreview" class="photo-preview"><img id="fixPhotoPreviewImg" alt="Fix photo preview"><div><div id="fixPhotoName" class="photo-name"></div><div class="photo-actions"><button type="button" class="secondary" onclick="removeFixPhoto()">Remove Fix Photo</button></div></div></div>
+ </div>
+
+<div class="full"><label>REMARKS</label><textarea id="remarks" placeholder="Additional details"></textarea></div>
+<div><label>STATUS</label><select id="status" onchange="updatePhotoRules()"><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select></div>
+<div class="actions full"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Save</button></div>
+</form></div></div>
+
+<script>
+const KEY='techDeficienciesV1';
+let data=JSON.parse(localStorage.getItem(KEY)||'[]');
+const today=()=>new Date().toISOString().slice(0,10);
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function id(){return 'TD-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6)}
+function badge(s){return s==='Open'?'<span class="badge b-red">🔴 Open</span>':s==='Ongoing'?'<span class="badge b-yellow">🟡 Ongoing</span>':s==='Completed'?'<span class="badge b-green">🟢 Completed</span>':'<span class="badge b-black">⚫ On Hold</span>'}
+function photoCell(x){
+ const name=photoNameFromRecord(x);
+ return name ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','before')">🖼️ View Photo</button>` : '—';
+}
+function fixPhotoCell(x){
+ const name=fixPhotoNameFromRecord(x);
+ return name ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','fix')">🖼️ View Fix Photo</button>` : '—';
+}
+function photoNameFromRecord(x){
+ if(x.photoName) return x.photoName;
+ const raw=String(x.photoUrl||'');
+ if(!raw) return '';
+ const clean=raw.split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+function fixPhotoNameFromRecord(x){
+ if(x.fixPhotoName) return x.fixPhotoName;
+ const raw=String(x.fixPhotoUrl||'');
+ if(!raw) return '';
+ const clean=raw.split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+function closePhotoViewer(){
+ const m=document.getElementById('photoViewModal');
+ m.style.display='none';
+ const img=document.getElementById('photoViewImg');
+ img.removeAttribute('src');
+ img.style.display='none';
+ document.getElementById('photoViewStatus').textContent='';
+}
+async function viewPhoto(recordId,photoName,photoKind='before'){
+ const url=getFlowUrl();
+ if(!url){alert('Please configure the Power Automate URL first.');openSettings();return}
+ const modal=document.getElementById('photoViewModal');
+ const status=document.getElementById('photoViewStatus');
+ const img=document.getElementById('photoViewImg');
+ modal.style.display='flex';
+ img.style.display='none';
+ status.textContent='Loading photo...';
+ try{
+  const response=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'getPhoto',id:recordId,photoName:photoName||'',photoKind:photoKind||'before'}),cache:'no-store'});
+  if(!response.ok) throw new Error('HTTP '+response.status);
+  const result=await response.json();
+  if(!result || !result.data) throw new Error('The flow did not return photo data.');
+  img.src=result.data;
+  img.onload=()=>{status.textContent=recordId+(photoKind==='fix'?' — FIX PHOTO':'');img.style.display='block'};
+  img.onerror=()=>{status.textContent='The returned photo could not be displayed.'};
+ }catch(err){
+  console.error('Photo load failed:',err);
+  status.textContent='Could not load photo. '+(err&&err.message?err.message:'Please try again.');
+ }
+}
+function render(){
+ const site=document.getElementById('filterSite').value;
+ const status=document.getElementById('filterStatus').value;
+ const q=document.getElementById('search').value.toLowerCase();
+ const rowEl=document.getElementById('rows');
+ let filtered=data.filter(x=>(!site||x.site===site)&&(!status||x.status===status)&&(!q||(x.deficiency+' '+x.location+' '+x.id).toLowerCase().includes(q)));
+ rowEl.innerHTML=filtered.length?filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join(''):'<tr><td colspan="12" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
+ document.getElementById('open').textContent=data.filter(x=>x.status==='Open').length;
+ document.getElementById('ongoing').textContent=data.filter(x=>x.status==='Ongoing').length;
+ document.getElementById('completed').textContent=data.filter(x=>x.status==='Completed').length;
+ document.getElementById('hold').textContent=data.filter(x=>x.status==='On Hold').length;
+}
+function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+let selectedPhoto={name:'',type:'',data:''};
+let selectedFixPhoto={name:'',type:'',data:''};
+function clearPhotoState(){
+ selectedPhoto={name:'',type:'',data:''};
+ document.getElementById('photo').value='';
+ document.getElementById('photoPreview').style.display='none';
+ document.getElementById('photoPreviewImg').removeAttribute('src');
+ document.getElementById('photoName').textContent='';
+}
+function clearFixPhotoState(){
+ selectedFixPhoto={name:'',type:'',data:''};
+ document.getElementById('fixPhoto').value='';
+ document.getElementById('fixPhotoPreview').style.display='none';
+ document.getElementById('fixPhotoPreviewImg').removeAttribute('src');
+ document.getElementById('fixPhotoName').textContent='';
+}
+function clearAllPhotoState(){clearPhotoState();clearFixPhotoState();}
+function updatePhotoRules(){
+ const status=document.getElementById('status').value;
+ const photoInput=document.getElementById('photo');
+ const fixInput=document.getElementById('fixPhoto');
+ const photoLabel=document.getElementById('photoLabel');
+ const fixLabel=document.getElementById('fixPhotoLabel');
+ const photoNote=document.getElementById('photoRuleNote');
+ const fixNote=document.getElementById('fixPhotoRuleNote');
+ const completed=status==='Completed';
+ photoInput.disabled=completed;
+ fixInput.disabled=!completed;
+ photoLabel.textContent=completed?'UPLOAD PHOTO (LOCKED)':'UPLOAD PHOTO';
+ fixLabel.textContent=completed?'FIX PHOTO':'FIX PHOTO (LOCKED)';
+ photoNote.textContent=completed
+  ? 'Photo upload is locked because the status is Completed.'
+  : 'You can upload the deficiency photo while status is Open, Ongoing, or On Hold.';
+ fixNote.textContent=completed
+  ? 'You can upload the Fix Photo because the status is Completed.'
+  : 'Fix Photo upload is locked until the status is Completed.';
+ photoInput.title=completed?'Photo upload is locked for Completed status':'';
+ fixInput.title=completed?'':'Fix Photo upload is available only for Completed status';
+}
+function removePhoto(){clearPhotoState();}
+function removeFixPhoto(){clearFixPhotoState();}
+function showPhotoPreview(){
+ const box=document.getElementById('photoPreview');
+ if(!selectedPhoto.data){box.style.display='none';return}
+ document.getElementById('photoPreviewImg').src=selectedPhoto.data;
+ document.getElementById('photoName').textContent=selectedPhoto.name;
+ box.style.display='flex';
+}
+function showFixPhotoPreview(){
+ const box=document.getElementById('fixPhotoPreview');
+ if(!selectedFixPhoto.data){box.style.display='none';return}
+ document.getElementById('fixPhotoPreviewImg').src=selectedFixPhoto.data;
+ document.getElementById('fixPhotoName').textContent=selectedFixPhoto.name;
+ box.style.display='flex';
+}
+function compressImage(file,maxSize=1600,quality=.78){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error('Could not read the selected photo.'));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(new Error('The selected file is not a valid image.'));
+   img.onload=()=>{
+    const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(img.width*scale));
+    canvas.height=Math.max(1,Math.round(img.height*scale));
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    resolve(canvas.toDataURL('image/jpeg',quality));
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+document.getElementById('photo').addEventListener('change',async function(){
+ if(document.getElementById('status').value==='Completed'){
+  alert('Photo upload is locked when the status is Completed.');
+  clearPhotoState();
+  return;
+ }
+ const file=this.files&&this.files[0];
+ if(!file){clearPhotoState();return}
+ if(!file.type.startsWith('image/')){alert('Please select an image file.');clearPhotoState();return}
+ try{
+  const dataUrl=await compressImage(file);
+  selectedPhoto={name:file.name,type:'image/jpeg',data:dataUrl};
+  showPhotoPreview();
+ }catch(err){alert(err.message||'Could not process the photo.');clearPhotoState();}
+});
+document.getElementById('fixPhoto').addEventListener('change',async function(){
+ if(document.getElementById('status').value!=='Completed'){
+  alert('Fix Photo can only be uploaded when the status is Completed.');
+  clearFixPhotoState();
+  return;
+ }
+ const file=this.files&&this.files[0];
+ if(!file){clearFixPhotoState();return}
+ if(!file.type.startsWith('image/')){alert('Please select an image file.');clearFixPhotoState();return}
+ try{
+  const dataUrl=await compressImage(file);
+  selectedFixPhoto={name:file.name,type:'image/jpeg',data:dataUrl};
+  showFixPhotoPreview();
+ }catch(err){alert(err.message||'Could not process the fix photo.');clearFixPhotoState();}
+});
+
+function openAdd(){
+ document.getElementById('form').reset();
+ clearAllPhotoState();
+ document.getElementById('editId').value='';
+ document.getElementById('date').value=today();
+ document.getElementById('status').value='Open';
+ document.getElementById('modalTitle').textContent='Report / Add Deficiency';
+ updatePhotoRules();
+ document.getElementById('modal').style.display='flex';
+}
+function edit(i){
+ let x=data.find(a=>a.id===i); if(!x)return;
+ document.getElementById('editId').value=x.id;
+ document.getElementById('date').value=x.date;
+ document.getElementById('site').value=x.site;
+ document.getElementById('deficiency').value=x.deficiency;
+ document.getElementById('location').value=x.location;
+ document.getElementById('reportedBy').value=x.reportedBy;
+ document.getElementById('attendedBy').value=x.attendedBy;
+ document.getElementById('remarks').value=x.remarks;
+ document.getElementById('status').value=x.status;
+ clearAllPhotoState();
+ if(x.photoUrl || x.photoName){
+  document.getElementById('photoPreviewImg').src=x.photoUrl||'';
+  document.getElementById('photoName').textContent=x.photoName||'Existing photo';
+  document.getElementById('photoPreview').style.display='flex';
+ }
+ if(x.fixPhotoUrl || x.fixPhotoName){
+  document.getElementById('fixPhotoPreviewImg').src=x.fixPhotoUrl||'';
+  document.getElementById('fixPhotoName').textContent=x.fixPhotoName||'Existing fix photo';
+  document.getElementById('fixPhotoPreview').style.display='flex';
+ }
+ updatePhotoRules();
+ document.getElementById('modalTitle').textContent='Update Deficiency';
+ document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+document.getElementById('form').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const currentStatus=document.getElementById('status').value;
+ if(currentStatus==='Completed' && selectedPhoto.data){
+  alert('Photo upload is not allowed when the status is Completed.');
+  return;
+ }
+ if(currentStatus!=='Completed' && selectedFixPhoto.data){
+  alert('Fix Photo can only be uploaded when the status is Completed.');
+  return;
+ }
+ const existingId=document.getElementById('editId').value;
+ const existingIndex=existingId ? data.findIndex(x=>x.id===existingId) : -1;
+const recordId=existingId||id();
+
+let obj={
+  id:recordId,
+  date:document.getElementById('date').value,
+  site:document.getElementById('site').value,
+  deficiency:document.getElementById('deficiency').value.trim(),
+  location:document.getElementById('location').value.trim(),
+  reportedBy:document.getElementById('reportedBy').value.trim(),
+  attendedBy:document.getElementById('attendedBy').value.trim(),
+  remarks:document.getElementById('remarks').value.trim(),
+  status:document.getElementById('status').value,
+  photoName:selectedPhoto.data ? `${recordId}.jpg` : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoName||'' : ''),
+  photoType:selectedPhoto.data ? selectedPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoType||'' : ''),
+  photoData:selectedPhoto.data,
+  photoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoUrl||'' : ''),
+   fixPhotoName:selectedFixPhoto.data ? `${recordId}-FIX.jpg` : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoName||'' : ''),
+   fixPhotoType:selectedFixPhoto.data ? selectedFixPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoType||'' : ''),
+   fixPhotoData:selectedFixPhoto.data,
+   fixPhotoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoUrl||'' : '')
+ };
+ let i=existingIndex;
+ const isNew=i<0;
+ if(i>=0)data[i]=obj;else data.unshift(obj);
+ save();
+ closeModal();
+
+ // Send BOTH new records and updates to Power Automate.
+ // The Power Automate flow uses ID to decide whether to add or update the Excel row.
+ const result=await sendToPowerAutomate(obj,isNew);
+ if(result.ok){
+  alert(isNew
+   ? 'Saved locally and sent to Excel. Check Power Automate Run history if needed.'
+   : 'Updated locally and sent to Excel. Check Power Automate Run history if needed.');
+ }else if(result.reason==='not-configured'){
+  alert((isNew?'Saved':'Updated')+' on this device. Power Automate is not configured yet.');
+ }else{
+  alert((isNew?'Saved':'Updated')+' on this device, but the Power Automate request could not be sent.');
+ }
+});
+
+const FLOW_KEY='techDeficiencyPowerAutomateUrlV1';
+function getFlowUrl(){return localStorage.getItem(FLOW_KEY)||''}
+async function syncFromExcel(){
+ const url=getFlowUrl();
+ if(!url){
+  alert('Please configure the Power Automate URL first.');
+  openSettings();
+  return;
+ }
+ const btn=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Refresh from Excel'));
+ if(btn){btn.disabled=true;btn.textContent='⏳ Refreshing...'}
+ try{
+  const response=await fetch(url,{
+   method:'POST',
+   mode:'cors',
+   headers:{'Content-Type':'text/plain;charset=UTF-8'},
+   body:JSON.stringify({action:'sync'}),
+   cache:'no-store'
+  });
+  if(!response.ok) throw new Error('HTTP '+response.status);
+  const rows=await response.json();
+  if(!Array.isArray(rows)) throw new Error('The Power Automate response was not a list of Excel rows.');
+
+  data=rows.map(r=>({
+   id:String(r.ID??''),
+   date:normalizeExcelDate(r['DATE REPORTED']),
+   site:String(r.SITE??''),
+   deficiency:String(r.DEFICIENCY??''),
+   location:String(r['LOCATION/AREA']??''),
+   reportedBy:String(r['REPORTED BY']??''),
+   attendedBy:String(r['ATTENDED BY']??''),
+   status:String(r.STATUS??'Open'),
+   remarks:String(r.REMARKS??''),
+   photoUrl:String(r.PHOTO??''),
+   photoName:extractPhotoName(String(r.PHOTO??'')),
+   fixPhotoUrl:String(r['FIX PHOTO']??''),
+   fixPhotoName:extractPhotoName(String(r['FIX PHOTO']??''))
+  })).filter(x=>x.id);
+
+  localStorage.setItem(KEY,JSON.stringify(data));
+  render();
+  updateConnectionStatus('Excel is synced — '+data.length+' record'+(data.length===1?'':'s')+' loaded.');
+  alert('Excel data refreshed successfully. '+data.length+' record'+(data.length===1?'':'s')+' loaded.');
+ }catch(err){
+  console.error('Excel sync failed:',err);
+  alert('Excel refresh failed.\n\n'+(err&&err.message?err.message:'The browser could not read the Power Automate response.')+'\n\nIf the flow itself succeeds, we may need to enable CORS on the Power Automate Response.');
+ }finally{
+  if(btn){btn.disabled=false;btn.textContent='🔄 Refresh from Excel'}
+ }
+}
+function extractPhotoName(v){
+ const clean=String(v||'').split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+
+function normalizeExcelDate(v){
+ if(v===null||v===undefined||v==='') return '';
+
+ // Excel may return DATE REPORTED as an Excel serial number (e.g. 46287).
+ // Excel's date system uses 1899-12-30 as the base date.
+ if(typeof v==='number' || /^\s*\d+(?:\.\d+)?\s*$/.test(String(v))){
+  const serial=Number(v);
+  if(Number.isFinite(serial) && serial>0 && serial<100000){
+   const d=new Date(Date.UTC(1899,11,30)+serial*86400000);
+   return d.toISOString().slice(0,10);
+  }
+ }
+
+ const s=String(v).trim();
+ if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+
+ // Handle common Excel text dates such as 9/22/2026.
+ const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+ if(m){
+  return `${m[3]}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;
+ }
+
+ const d=new Date(s);
+ return isNaN(d.getTime())?s:d.toISOString().slice(0,10);
+}
+
+function updateConnectionStatus(message){
+ const el=document.getElementById('connectionStatus');
+ if(message){el.textContent=message;el.style.color='#146c43';return}
+ const url=getFlowUrl();
+ if(url){el.textContent='Connected to Power Automate — new and updated deficiencies will sync to Excel.';el.style.color='#146c43'}
+ else{el.textContent='Not connected — app is using local browser storage.';el.style.color='#52606d'}
+}
+function openSettings(){
+ document.getElementById('flowUrl').value=getFlowUrl();
+ document.getElementById('settingsModal').style.display='flex';
+}
+function closeSettings(){document.getElementById('settingsModal').style.display='none'}
+function saveSettings(){
+ const url=document.getElementById('flowUrl').value.trim();
+ if(url && !/^https:\/\//i.test(url)){alert('Please paste the full HTTPS Power Automate URL.');return}
+ if(url)localStorage.setItem(FLOW_KEY,url);else localStorage.removeItem(FLOW_KEY);
+ updateConnectionStatus();closeSettings();
+}
+async function sendToPowerAutomate(obj,isNew=false){
+ const url=getFlowUrl();
+ if(!url){return {ok:false,reason:'not-configured'}}
+ const payload={
+  id:obj.id,
+  action:isNew?'add':'update',
+  dateReported:obj.date,
+  site:obj.site,
+  deficiency:obj.deficiency,
+  locationArea:obj.location,
+  reportedBy:obj.reportedBy,
+  attendedBy:obj.attendedBy,
+  status:obj.status,
+  remarks:obj.remarks,
+  photoName:obj.photoName||'',
+  photoType:obj.photoType||'',
+  photoData:obj.photoData||'',
+  photoUrl:obj.photoUrl||'',
+   fixPhotoName:obj.fixPhotoName||'',
+   fixPhotoType:obj.fixPhotoType||'',
+   fixPhotoData:obj.fixPhotoData||'',
+   fixPhotoUrl:obj.fixPhotoUrl||''
+ };
+ try{
+  // Browser-safe request: text/plain avoids the CORS preflight.
+  // The Power Automate trigger must accept the raw JSON text and parse it afterward.
+  await fetch(url,{
+   method:'POST',
+   mode:'no-cors',
+   headers:{'Content-Type':'text/plain;charset=UTF-8'},
+   body:JSON.stringify(payload),
+   cache:'no-store'
+  });
+  return {ok:true};
+ }catch(err){
+  console.error('Power Automate request failed:',err);
+  return {ok:false,reason:err&&err.message?err.message:'Network error'};
+ }
+}
+
+async function testPowerAutomate(){
+ const url=document.getElementById('flowUrl').value.trim();
+ if(!url){alert('Please paste the current Power Automate HTTP URL first.');return}
+ if(!/^https:\/\//i.test(url)){alert('Please paste the full HTTPS Power Automate URL.');return}
+ localStorage.setItem(FLOW_KEY,url);
+ const testPayload={
+  id:'TD-TEST-'+Date.now(),
+  dateReported:today(),
+  site:'Beta',
+  deficiency:'POWER AUTOMATE CONNECTION TEST',
+  locationArea:'Test Area',
+  reportedBy:'Connection Test',
+  attendedBy:'Connection Test',
+  status:'Open',
+  remarks:'Test record from Tech Daily Site Deficiency web app.',
+  photoName:'',photoType:'',photoData:'',photoUrl:'',fixPhotoName:'',fixPhotoType:'',fixPhotoData:'',fixPhotoUrl:''
+ };
+ const result=await sendToPowerAutomate(testPayload,true);
+ if(result.ok){
+  alert('Test request sent. Check Power Automate Run history and Excel for a new test row.');
+ }else{
+  alert('The browser could not send the test request.\n\n'+result.reason);
+ }
+ updateConnectionStatus();
+}
+updateConnectionStatus();
+
+function clearFilters(){filterSite.value='';filterStatus.value='';search.value='';render()}
+render();
+</script>
+</body>
+</html>
