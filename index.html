@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- V18.8: Single responsive web app for desktop and mobile -->
+<title>Tech Daily Site Deficiency - V18 Latest</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
+header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;margin:0}header small{opacity:.8}
+.container{max-width:1200px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.card{background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 5px #0001}.stat{font-size:21px;font-weight:bold;margin-top:3px}
+.red{border-left:4px solid #dc3545}.yellow{border-left:4px solid #f0ad00}.green{border-left:4px solid #198754}.black{border-left:4px solid #343a40}
+button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;font-weight:bold}.primary{background:#17324d;color:#fff}.secondary{background:#e9eef3;color:#17324d}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.full{grid-column:1/-1}label{font-size:12px;font-weight:bold;color:#52606d}input,select,textarea{width:100%;padding:9px;border:1px solid #ccd5dd;border-radius:7px;margin-top:4px;font-size:14px}textarea{min-height:65px;resize:vertical}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar select,.toolbar input{width:auto;min-width:150px;margin:0}
+table{width:100%;border-collapse:collapse;background:#fff;table-layout:fixed}.tablewrap{overflow-x:auto;overflow-y:auto;border-radius:10px;box-shadow:0 1px 5px #0001}th,td{padding:8px 7px;border-bottom:1px solid #edf0f2;text-align:left;font-size:12px;white-space:normal;overflow-wrap:anywhere;vertical-align:top}th{background:#edf2f6}
+.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:11px;font-weight:bold}.b-red{background:#fde7e9;color:#b4232f}.b-yellow{background:#fff4cc;color:#8a6500}.b-green{background:#dff5e8;color:#146c43}.b-black{background:#e4e6e8;color:#343a40}
+.photo-view-modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:6000}
+.photo-view-box{background:#fff;max-width:850px;width:min(850px,94vw);border-radius:12px;padding:14px;max-height:90vh;overflow:auto;text-align:center;box-shadow:0 18px 50px #0005}
+.photo-view-box img{display:block;margin:0 auto;max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;border-radius:8px}
+.photo-view-box .actions{position:sticky;bottom:0;background:#fff;padding-top:10px}.photo-view-name{font-size:12px;color:#52606d;margin:8px 0;word-break:break-all}.photo-preview{margin-top:8px;display:none;align-items:center;gap:10px}.photo-preview img{max-width:180px;max-height:130px;border-radius:8px;border:1px solid #ccd5dd;object-fit:cover}.photo-name{font-size:12px;color:#52606d;word-break:break-all}.photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.photo-note{font-size:11px;color:#66737f;margin-top:5px}.modal{inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px}.modalbox{background:#fff;max-width:650px;width:100%;border-radius:12px;padding:20px;max-height:90vh;overflow:auto}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:15px}
+.app-message{position:fixed;right:20px;bottom:20px;z-index:3000;display:none;min-width:300px;max-width:420px;background:#fff;border:1px solid #dbe3ea;border-radius:12px;box-shadow:0 10px 30px #0002;padding:14px 16px;align-items:flex-start;gap:12px}.app-message.show{display:flex;animation:messageIn .2s ease-out}.app-message-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;flex:none}.app-message.success .app-message-icon{background:#dff5e8;color:#146c43}.app-message.error .app-message-icon{background:#fde7e9;color:#b4232f}.app-message.warning .app-message-icon{background:#fff4cc;color:#8a6500}.app-message-title{font-weight:bold;color:#17212b;font-size:14px}.app-message-text{font-size:12px;color:#52606d;margin-top:3px;line-height:1.4}.app-message-close{margin-left:auto;background:transparent;color:#52606d;padding:0 4px;font-size:18px;line-height:1}.app-message-close:hover{background:#f1f4f6}@keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){
+  .photo-view-modal{padding:8px}
+  .photo-view-box{width:98vw;max-height:92vh;padding:10px}
+  .photo-view-box img{max-height:76vh}
+}
+@media(max-width:480px){.app-message{left:12px;right:12px;bottom:12px;min-width:0;max-width:none}}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}header{align-items:flex-start;gap:10px}.container{padding:12px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.stat{font-size:22px}}
+
+/* V18.3 compact/floating UI */
+#modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:10px;z-index:4500}
+#modal .modalbox{max-width:720px;width:min(720px,96vw);max-height:88vh;overflow-y:auto;overflow-x:hidden;padding:16px}
+#modal .form{gap:8px}
+#modal .actions{position:sticky;bottom:0;background:#fff;padding-top:10px}
+#modalTitle{font-size:20px;margin:0 0 10px}
+table th:nth-child(1),table td:nth-child(1){width:8%}
+table th:nth-child(2),table td:nth-child(2){width:7%}
+table th:nth-child(3),table td:nth-child(3){width:6%}
+table th:nth-child(4),table td:nth-child(4){width:11%}
+table th:nth-child(5),table td:nth-child(5){width:10%}
+table th:nth-child(6),table td:nth-child(6){width:8%}
+table th:nth-child(7),table td:nth-child(7){width:8%}
+table th:nth-child(8),table td:nth-child(8){width:8%}
+table th:nth-child(9),table td:nth-child(9){width:12%}
+table th:nth-child(10),table td:nth-child(10){width:7%}
+table th:nth-child(11),table td:nth-child(11){width:8%}
+table th:nth-child(12),table td:nth-child(12){width:7%}
+@media(max-width:800px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .form{grid-template-columns:1fr}
+  header{align-items:flex-start;gap:10px}
+  .container{padding:10px}
+  #modal .modalbox{width:min(720px,96vw);max-height:90vh;padding:14px}
+  th,td{font-size:11px;padding:7px 6px}
+}
+@media(max-width:480px){
+  .grid{grid-template-columns:1fr 1fr;gap:6px}
+  .card{padding:8px}
+  .stat{font-size:19px}
+  #modal{padding:6px}
+  #modal .modalbox{width:98vw;max-height:92vh;padding:12px}
+}
+
+
+/* V18.6 mobile-friendly record cards */
+.mobile-records{display:none}
+.mobile-record-card{background:#fff;border:1px solid #e5eaf0;border-radius:14px;padding:13px;margin-bottom:10px;box-shadow:0 3px 12px #0000000d}
+.mobile-record-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.mobile-record-id{font-size:12px;font-weight:800;color:#17324d;word-break:break-all}
+.mobile-record-status{flex:none}
+.mobile-record-main{font-size:16px;font-weight:800;color:#17212b;line-height:1.3;margin-bottom:9px}
+.mobile-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-bottom:10px}
+.mobile-record-field{min-width:0}
+.mobile-record-label{font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:#7a8794;font-weight:700;margin-bottom:2px}
+.mobile-record-value{font-size:12px;color:#344054;line-height:1.35;overflow-wrap:anywhere}
+.mobile-record-remarks{padding:8px 9px;background:#f7f9fb;border-radius:9px;margin-bottom:10px}
+.mobile-record-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mobile-record-actions button{width:100%;padding:8px 5px;font-size:11px}
+.mobile-empty{padding:28px 10px;text-align:center;color:#667085;font-size:13px}
+@media(max-width:700px){
+  .tablewrap{display:none}
+  .mobile-records{display:block}
+  .grid{gap:6px;margin-bottom:10px}
+  .card{padding:8px}
+  .stat{font-size:18px}
+  .grid .card{font-size:13px}
+  .toolbar{gap:7px}
+  .toolbar select{min-width:0;flex:1;font-size:14px}
+  .toolbar input{width:auto;min-width:0;flex:1}
+  .toolbar button{min-width:62px;padding:9px 10px}
+}
+@media(max-width:420px){
+  .mobile-record-actions button{font-size:10px;padding:8px 3px}
+  .mobile-record-grid{gap:6px 8px}
+}
+
+
+/* V18.7 desktop table polish only */
+@media(min-width:701px){
+  .tablewrap table{table-layout:fixed}
+  .tablewrap th,.tablewrap td{
+    text-align:center;
+    vertical-align:middle;
+  }
+  .tablewrap th{
+    white-space:nowrap;
+    padding:9px 6px;
+  }
+  .tablewrap td{
+    padding:10px 6px;
+    line-height:1.25;
+  }
+  .tablewrap td:nth-child(1){width:9%}
+  .tablewrap td:nth-child(2){width:7%}
+  .tablewrap td:nth-child(3){width:6%}
+  .tablewrap td:nth-child(4){width:12%}
+  .tablewrap td:nth-child(5){width:11%}
+  .tablewrap td:nth-child(6){width:8%}
+  .tablewrap td:nth-child(7){width:8%}
+  .tablewrap td:nth-child(8){width:8%}
+  .tablewrap td:nth-child(9){width:12%}
+  .tablewrap td:nth-child(10),
+  .tablewrap td:nth-child(11){width:8%}
+  .tablewrap td:nth-child(12){width:7%}
+
+  .tablewrap td:nth-child(1),
+  .tablewrap td:nth-child(2),
+  .tablewrap td:nth-child(3),
+  .tablewrap td:nth-child(6),
+  .tablewrap td:nth-child(7){
+    white-space:nowrap;
+  }
+
+  .tablewrap td:nth-child(10),
+  .tablewrap td:nth-child(11),
+  .tablewrap td:nth-child(12){
+    white-space:nowrap;
+  }
+
+  .tablewrap td:nth-child(10) button,
+  .tablewrap td:nth-child(11) button,
+  .tablewrap td:nth-child(12) button{
+    width:100%;
+    min-width:92px;
+    white-space:nowrap;
+    word-break:normal;
+    overflow-wrap:normal;
+    padding:9px 7px;
+    text-align:center;
+  }
+
+  .tablewrap td:nth-child(8) .badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    white-space:nowrap;
+    min-width:78px;
+  }
+}
+
+
+/* V18.8 - One responsive web app: desktop + mobile automatically */
+:root{--app-breakpoint:700px}
+@media(max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  .container{width:100%;box-sizing:border-box}
+  header{width:100%;box-sizing:border-box}
+}
+@media(min-width:701px){
+  .mobile-records{display:none!important}
+  .tablewrap{display:block}
+}
+@media(max-width:700px){
+  .tablewrap{display:none!important}
+  .mobile-records{display:block}
+}
+
+
+/* V18.9 desktop table: prevent overlap and give action columns enough room */
+@media(min-width:701px){
+  .tablewrap{overflow-x:auto}
+  .tablewrap table{
+    table-layout:auto;
+    width:100%;
+    min-width:1180px;
+  }
+  .tablewrap th,
+  .tablewrap td{
+    text-align:center;
+    vertical-align:middle;
+    padding:9px 8px;
+    line-height:1.25;
+    word-break:normal;
+    overflow-wrap:break-word;
+  }
+  .tablewrap th{white-space:nowrap}
+
+  /* Keep identifiers and short fields compact */
+  .tablewrap th:nth-child(1),.tablewrap td:nth-child(1){width:105px;min-width:105px}
+  .tablewrap th:nth-child(2),.tablewrap td:nth-child(2){width:90px;min-width:90px}
+  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3){width:65px;min-width:65px}
+  .tablewrap th:nth-child(4),.tablewrap td:nth-child(4){min-width:125px}
+  .tablewrap th:nth-child(5),.tablewrap td:nth-child(5){min-width:115px}
+  .tablewrap th:nth-child(6),.tablewrap td:nth-child(6){min-width:105px}
+  .tablewrap th:nth-child(7),.tablewrap td:nth-child(7){min-width:105px}
+  .tablewrap th:nth-child(8),.tablewrap td:nth-child(8){width:105px;min-width:105px}
+  .tablewrap th:nth-child(9),.tablewrap td:nth-child(9){min-width:145px}
+
+  /* Action columns are deliberately wider and separated */
+  .tablewrap th:nth-child(10),.tablewrap td:nth-child(10),
+  .tablewrap th:nth-child(11),.tablewrap td:nth-child(11){width:112px;min-width:112px}
+  .tablewrap th:nth-child(12),.tablewrap td:nth-child(12){width:95px;min-width:95px}
+
+  .tablewrap td:nth-child(10) button,
+  .tablewrap td:nth-child(11) button,
+  .tablewrap td:nth-child(12) button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    min-height:46px;
+    padding:8px 7px;
+    white-space:normal;
+    word-break:normal;
+    overflow-wrap:normal;
+    line-height:1.15;
+    text-align:center;
+  }
+
+  .tablewrap td:nth-child(8) .badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:82px;
+    white-space:nowrap;
+  }
+}
+
+
+/* V18.10 desktop: full-width layout + frozen table header */
+@media(min-width:701px){
+  .container{
+    max-width:none;
+    width:calc(100% - 32px);
+    margin:0 auto;
+    padding:16px 0;
+    box-sizing:border-box;
+  }
+
+  .tablewrap{
+    overflow-x:hidden;
+    overflow-y:visible;
+    width:100%;
+  }
+
+  .tablewrap table{
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
+  }
+
+  .tablewrap thead th{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:#dff5e7;
+    color:#17324d;
+    box-shadow:0 2px 3px #0002;
+    white-space:normal;
+    text-align:center;
+    vertical-align:middle;
+  }
+
+  .tablewrap th,
+  .tablewrap td{
+    box-sizing:border-box;
+    text-align:center;
+    vertical-align:middle;
+    padding:9px 6px;
+    line-height:1.2;
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+
+  /* Balanced widths so all columns fit inside the desktop viewport */
+  .tablewrap th:nth-child(1),.tablewrap td:nth-child(1){width:8%}
+  .tablewrap th:nth-child(2),.tablewrap td:nth-child(2){width:6%}
+  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3){width:5%}
+  .tablewrap th:nth-child(4),.tablewrap td:nth-child(4){width:10%}
+  .tablewrap th:nth-child(5),.tablewrap td:nth-child(5){width:9%}
+  .tablewrap th:nth-child(6),.tablewrap td:nth-child(6){width:8%}
+  .tablewrap th:nth-child(7),.tablewrap td:nth-child(7){width:8%}
+  .tablewrap th:nth-child(8),.tablewrap td:nth-child(8){width:8%}
+  .tablewrap th:nth-child(9),.tablewrap td:nth-child(9){width:11%}
+  .tablewrap th:nth-child(10),.tablewrap td:nth-child(10){width:9%}
+  .tablewrap th:nth-child(11),.tablewrap td:nth-child(11){width:9%}
+  .tablewrap th:nth-child(12),.tablewrap td:nth-child(12){width:9%}
+
+  .tablewrap td:nth-child(1),
+  .tablewrap td:nth-child(2),
+  .tablewrap td:nth-child(3),
+  .tablewrap td:nth-child(8){
+    white-space:nowrap;
+    overflow-wrap:normal;
+  }
+
+  .tablewrap td:nth-child(10) button,
+  .tablewrap td:nth-child(11) button,
+  .tablewrap td:nth-child(12) button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:94%;
+    min-width:0;
+    min-height:44px;
+    padding:7px 5px;
+    white-space:normal;
+    word-break:normal;
+    overflow-wrap:normal;
+    line-height:1.15;
+    text-align:center;
+    box-sizing:border-box;
+  }
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* V17 authentication layer */
+#v17LoginScreen{
+  position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#f5f7fa,#e8eef5);padding:20px;
+}
+#v17LoginCard{
+  width:min(420px,100%);background:#fff;border-radius:18px;padding:28px;
+  box-shadow:0 18px 50px rgba(0,0,0,.12);
+}
+#v17LoginCard h2{margin:0 0 6px;font-size:24px;color:#17202a}
+#v17LoginCard p{margin:0 0 22px;color:#667085;font-size:13px}
+.v17-field{margin-bottom:14px}
+.v17-field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#344054}
+.v17-field input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #d0d5dd;border-radius:9px;font-size:14px}
+.v17-login-btn{width:100%;padding:12px;border:0;border-radius:9px;background:#1769aa;color:#fff;font-weight:700;cursor:pointer}
+.v17-login-btn:disabled{opacity:.65;cursor:wait}
+#v17LoginMessage{margin-top:12px;font-size:13px;min-height:18px}
+#v17UserBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#v17UserInfo{font-size:12px;color:#52606d}
+#v17LogoutBtn{border:1px solid #cbd5e1;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer}
+#v17AdminBtn{border:1px solid #17324d;background:#edf4fa;color:#17324d;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700}
+#v17UsersBtn{border:1px solid #17324d;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700}
+#v17UsersModal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:5001}
+#v17UsersBox{background:#fff;max-width:1100px;width:100%;border-radius:14px;padding:20px;max-height:90vh;overflow:auto}
+#v17UsersTable{width:100%;border-collapse:collapse;margin-top:12px}
+#v17UsersTable th,#v17UsersTable td{padding:9px;border-bottom:1px solid #edf0f2;text-align:left;font-size:12px;white-space:nowrap}
+#v17UsersTable th{background:#edf2f6}
+.v17-user-actions{display:flex;gap:6px;flex-wrap:wrap}
+.v17-user-actions button{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:5px 8px;cursor:pointer}
+.v17-user-actions button:hover{background:#f5f7fa}
+.v17-user-muted{font-size:12px;color:#667085}
+
+#v17AdminModal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:5000}
+#v17AdminBox{background:#fff;max-width:1100px;width:100%;border-radius:14px;padding:20px;max-height:90vh;overflow:auto}
+#v17AdminTable{width:100%;border-collapse:collapse;margin-top:12px}
+#v17AdminTable th,#v17AdminTable td{padding:9px;border-bottom:1px solid #edf0f2;text-align:left;font-size:12px;white-space:nowrap}
+#v17AdminTable th{background:#edf2f6}
+.v17-admin-muted{font-size:12px;color:#667085}
+@media(max-width:700px){#v17AdminBox{padding:14px}.v17-admin-actions{display:flex;gap:8px;flex-wrap:wrap}}
+
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#198754">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tech Daily">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+</head>
+<body>
+<div id="v17LoginScreen">
+  <div id="v17LoginCard">
+    <h2>🔐 Tech Daily Site Deficiency</h2>
+    <p>V18 Secure Login</p>
+    <form id="v17LoginForm">
+      <div class="v17-field">
+        <label for="v17Username">Username or Email</label>
+         <input id="v17Username" type="text" autocomplete="username" placeholder="e.g. TECH001 or admin email" required>
+      </div>
+      <div class="v17-field">
+        <label for="v17Password">Password</label>
+        <input id="v17Password" type="password" autocomplete="current-password" required>
+      </div>
+      <button id="v17LoginBtn" class="v17-login-btn" type="submit">Sign In</button>
+      <div id="v17LoginMessage"></div>
+    </form>
+  </div>
+</div>
+
+<div id="appMessage" class="app-message" role="status" aria-live="polite">
+  <div id="appMessageIcon" class="app-message-icon">✓</div>
+  <div style="flex:1;min-width:0">
+    <div id="appMessageTitle" class="app-message-title">Success</div>
+    <div id="appMessageText" class="app-message-text"></div>
+  </div>
+  <button type="button" class="app-message-close" onclick="hideAppMessage()" aria-label="Close">×</button>
+</div>
+<header><div><h1>🛠️ Tech Daily Site Deficiency</h1><small>Beta • Gamma • CPT2 • V18</small>
+<div id="v17UserBar" style="margin-top:6px">
+  <span id="v17UserInfo">Not signed in</span>
+  <button id="v17AdminBtn" type="button" onclick="openAdminMonitor()" style="display:none">📊 Admin Monitor</button>
+  <button id="v17UsersBtn" type="button" onclick="openUserManagement()" style="display:none">👥 User Management</button>
+  <button id="v17LogoutBtn" type="button" onclick="v17Logout()">Logout</button>
+</div>
+</div><button class="primary" onclick="openAdd()">+ Add Deficiency</button></header>
+<div class="container">
+<div class="card connection-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <div><strong>🔗 Excel / Power Automate Connection</strong><div id="connectionStatus" style="font-size:12px;margin-top:5px;color:#52606d">Not connected — app is using local browser storage.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" type="button" onclick="syncFromExcel()">🔄 Refresh from Excel</button><button class="secondary" type="button" onclick="openSettings()">⚙️ Settings</button></div>
+  </div>
+</div>
+<div class="grid">
+<div class="card red">🔴 Open<div class="stat" id="open">0</div></div>
+<div class="card yellow">🟡 Ongoing<div class="stat" id="ongoing">0</div></div>
+<div class="card green">🟢 Completed<div class="stat" id="completed">0</div></div>
+<div class="card black">⚫ On Hold<div class="stat" id="hold">0</div></div>
+</div>
+<div class="card">
+<div class="toolbar">
+<select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
+<select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
+<input id="search" oninput="render()" placeholder="Search deficiency/location">
+<button class="secondary" onclick="clearFilters()">Clear</button>
+</div>
+<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div id="mobileRows" class="mobile-records"></div>
+</div>
+</div>
+
+<div id="v17UsersModal">
+<div id="v17UsersBox">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">👥 User Management</h2>
+      <div class="v17-user-muted" style="margin-top:4px">Manage application profiles and access status. Admins use email; technicians can use a username.</div>
+    </div>
+    <div class="v17-user-actions">
+      <button type="button" onclick="loadV17Users()">🔄 Refresh</button>
+      <button type="button" onclick="closeUserManagement()">Close</button>
+    </div>
+  </div>
+
+  <div id="v17UserStatus" class="v17-user-muted" style="margin-top:12px">Ready.</div>
+  <div class="v17-user-muted" style="margin-top:8px">V18 RPC security is used for profile listing and status changes to avoid RLS recursion.</div>
+  <div style="margin-top:10px;font-size:12px;color:#7a4e00;background:#fff7df;padding:10px;border-radius:7px">
+    🔐 <b>Account creation note:</b> Create the Auth account in Supabase using the internal identifier <b>username@techdaily.local</b>. The technician logs into this app with the username only. Do not store passwords in Excel.
+  </div>
+
+  <div class="tablewrap" style="margin-top:10px">
+    <table id="v17UsersTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Auth UID</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="v17UsersRows">
+        <tr><td colspan="6" style="text-align:center;padding:24px">No users loaded.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<div id="v17AdminModal">
+<div id="v17AdminBox">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">📊 Admin Monitoring</h2>
+      <div class="v17-admin-muted" style="margin-top:4px">Recent user activity — protected by Supabase Row Level Security.</div>
+    </div>
+    <div class="v17-admin-actions">
+      <button type="button" class="secondary" onclick="loadAdminActivity()">🔄 Refresh</button>
+      <button type="button" class="secondary" onclick="closeAdminMonitor()">Close</button>
+    </div>
+  </div>
+  <div id="v17AdminStatus" class="v17-admin-muted" style="margin-top:12px">Ready.</div>
+  <div class="tablewrap" style="margin-top:10px">
+    <table id="v17AdminTable">
+      <thead>
+        <tr>
+          <th>Date/Time</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Record ID</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="v17AdminRows">
+        <tr><td colspan="5" style="text-align:center;padding:24px">No activity loaded.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<div class="modal" id="settingsModal"><div class="modalbox">
+<h2>Connection Settings</h2>
+<p style="font-size:13px;color:#52606d">Paste the <b>current</b> Power Automate HTTP URL from your HTTP trigger. The URL is stored only in this browser. Use <b>Test Connection</b> after saving the URL.</p>
+<label>POWER AUTOMATE HTTP URL</label>
+<input id="flowUrl" type="url" placeholder="https://...powerplatform...">
+<div style="margin-top:12px;font-size:12px;color:#7a4e00;background:#fff7df;padding:10px;border-radius:7px">🔐 Keep this URL private. Anyone who has it may be able to submit data to your flow.</div>
+<div class="actions" style="justify-content:space-between"><button type="button" class="secondary" onclick="testPowerAutomate()">🧪 Test Connection</button><div style="display:flex;gap:8px"><button type="button" class="secondary" onclick="closeSettings()">Cancel</button><button type="button" class="primary" onclick="saveSettings()">Save Connection</button></div></div>
+</div></div>
+
+<div class="photo-view-modal" id="photoViewModal"><div class="photo-view-box"><h2 style="margin-top:0">Photo Preview</h2><div id="photoViewStatus" class="photo-view-name">Loading photo...</div><img id="photoViewImg" alt="Deficiency photo" style="display:none"><div class="actions"><button type="button" class="secondary" onclick="closePhotoViewer()">Close</button></div></div></div>
+
+<div class="modal" id="modal"><div class="modalbox"><h2 id="modalTitle">Report / Add Deficiency</h2>
+<form id="form" class="form">
+<input type="hidden" id="editId">
+<div><label>DATE REPORTED</label><input type="date" id="date" required></div>
+<div><label>SITE</label><select id="site" required><option>Beta</option><option>Gamma</option><option>CPT2</option></select></div>
+<div class="full"><label>DEFICIENCY</label><textarea id="deficiency" required placeholder="Describe the site deficiency"></textarea></div>
+<div><label>LOCATION / AREA</label><input id="location" placeholder="e.g. 35F Production Area"></div>
+<div><label>REPORTED BY</label><input id="reportedBy" placeholder="Person who reported the deficiency"></div>
+<div><label>ATTENDED BY</label><input id="attendedBy" placeholder="Technician who attended the deficiency"></div>
+<div class="full"><label id="photoLabel">UPLOAD PHOTO</label>
+<input type="file" id="photo" accept="image/*" capture="environment">
+<div id="photoRuleNote" class="photo-note">Allowed for Open, Ongoing, and On Hold. Locked when status is Completed.</div>
+<div id="photoPreview" class="photo-preview"><img id="photoPreviewImg" alt="Photo preview"><div><div id="photoName" class="photo-name"></div><div class="photo-actions"><button type="button" class="secondary" onclick="removePhoto()">Remove Photo</button></div></div></div>
+</div>
+ <div class="full"><label id="fixPhotoLabel">FIX PHOTO</label>
+ <input type="file" id="fixPhoto" accept="image/*" capture="environment">
+ <div id="fixPhotoRuleNote" class="photo-note">Allowed only when status is Completed.</div>
+ <div id="fixPhotoPreview" class="photo-preview"><img id="fixPhotoPreviewImg" alt="Fix photo preview"><div><div id="fixPhotoName" class="photo-name"></div><div class="photo-actions"><button type="button" class="secondary" onclick="removeFixPhoto()">Remove Fix Photo</button></div></div></div>
+ </div>
+
+<div class="full"><label>REMARKS</label><textarea id="remarks" placeholder="Additional details"></textarea></div>
+<div><label>STATUS</label><select id="status" onchange="updatePhotoRules()"><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select></div>
+<div class="actions full"><button type="button" class="secondary" onclick="closeModal()">Cancel</button><button class="primary">Save</button></div>
+</form></div></div>
+
+
+<script>
+/* =========================
+   V18 SUPABASE AUTH + RPC PROFILE LAYER
+   ========================= */
+const V17_SUPABASE_URL = 'https://qipkkyezpjwikamudlaa.supabase.co';
+const V17_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_spQmy3JFG909KC2-GvAV2A_g_p2ToPr';
+const { createClient } = window.supabase;
+const v17Supabase = createClient(V17_SUPABASE_URL, V17_SUPABASE_PUBLISHABLE_KEY);
+
+function v17SetMessage(message, type='error'){
+  const el=document.getElementById('v17LoginMessage');
+  el.textContent=message||'';
+  el.style.color=type==='success'?'#146c43':'#b42318';
+}
+
+function v17SetBusy(busy){
+  const btn=document.getElementById('v17LoginBtn');
+  btn.disabled=busy;
+  btn.textContent=busy?'Signing in...':'Sign In';
+}
+
+
+async function v17LogActivity(action, recordId='—', details=''){
+  try{
+    const profile=window.v17CurrentUserProfile;
+    if(!profile) return;
+    const { error } = await v17Supabase
+      .from('activity_log')
+      .insert([{
+        user_id: window.v17CurrentAuthUser?.id,
+        name: profile.name || profile.email,
+        action: action,
+        record_id: recordId || '—',
+        details: details || ''
+      }]);
+    if(error) throw error;
+  }catch(err){
+    console.error('V17 activity log failed:',err);
+  }
+}
+
+
+
+function closeUserManagement(){
+  const modal=document.getElementById('v17UsersModal');
+  if(modal) modal.style.display='none';
+}
+
+async function loadV17Users(){
+  const status=document.getElementById('v17UserStatus');
+  const rows=document.getElementById('v17UserRows');
+  const legacyRows=document.getElementById('v17UsersRows');
+  const rowTarget=legacyRows||rows;
+
+  if(String(window.v17CurrentUserProfile?.role||'').toLowerCase()!=='admin'){
+    if(status) status.textContent='Access denied.';
+    return;
+  }
+
+  if(status) status.textContent='Loading users...';
+  if(rowTarget) rowTarget.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px">Loading...</td></tr>';
+
+  try{
+    const {data,error}=await v17Supabase.rpc('v18_admin_list_users');
+    if(error) throw error;
+
+    if(!data || !data.length){
+      rowTarget.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px">No users found.</td></tr>';
+      status.textContent='No users found.';
+      return;
+    }
+
+    const safe=v=>String(v??'—').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    rowTarget.innerHTML=data.map(x=>{
+      const self=(String(x.auth_uid||'')===String(window.v17CurrentAuthUser?.id||''));
+      return `<tr>
+        <td>${safe(x.name)}</td>
+        <td>${safe(x.email)}</td>
+        <td>${safe(x.role)}</td>
+        <td>${safe(x.status)}</td>
+        <td style="font-size:11px">${safe(x.auth_uid)}</td>
+        <td>${self ? '<span class="v17-user-muted">Current user</span>' :
+          `<div class="v17-user-actions">
+            <button type="button" onclick="toggleV17UserStatus('${safe(x.id)}','${safe(x.name)}','${safe(x.status)}')">${String(x.status).toLowerCase()==='active'?'Deactivate':'Activate'}</button>
+          </div>`}
+        </td>
+      </tr>`;
+    }).join('');
+
+    status.textContent=`Showing ${data.length} user profile${data.length===1?'':'s'}.`;
+  }catch(err){
+    console.error('User management load failed:',err);
+    rowTarget.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:#b42318">Users could not be loaded.</td></tr>';
+    status.textContent=err.message||'User profiles unavailable.';
+  }
+}
+
+async function toggleV17UserStatus(id,name,currentStatus){
+  if(String(window.v17CurrentUserProfile?.role||'').toLowerCase()!=='admin'){
+    alert('Admin access is required.');
+    return;
+  }
+
+  const next=String(currentStatus).toLowerCase()==='active'?'Inactive':'Active';
+  if(!confirm(`Set ${name} to ${next}?`)) return;
+
+  try{
+    const {error}=await v17Supabase.rpc('v18_admin_set_user_status',{
+      target_profile_id:id,
+      new_status:next
+    });
+
+    if(error) throw error;
+
+    await v17LogActivity('USER STATUS CHANGE',id,`${name} set to ${next}`);
+    await loadV17Users();
+  }catch(err){
+    console.error('User status update failed:',err);
+    alert('User status could not be changed: '+(err.message||'Unknown error'));
+  }
+}
+
+async function openUserManagement(){
+  if(String(window.v17CurrentUserProfile?.role||'').toLowerCase()!=='admin'){
+    alert('Admin access is required.');
+    return;
+  }
+  document.getElementById('v17UsersModal').style.display='flex';
+  await loadV17Users();
+}
+
+function closeAdminMonitor(){
+  const modal=document.getElementById('v17AdminModal');
+  if(modal) modal.style.display='none';
+}
+
+async function loadAdminActivity(){
+  const status=document.getElementById('v17AdminStatus');
+  const rows=document.getElementById('v17AdminRows');
+
+  if(String(window.v17CurrentUserProfile?.role||'').toLowerCase()!=='admin'){
+    if(status) status.textContent='Access denied.';
+    return;
+  }
+
+  if(status) status.textContent='Loading recent activity...';
+  if(rows) rows.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px">Loading...</td></tr>';
+
+  try{
+    const {data,error}=await v17Supabase
+      .from('activity_log')
+      .select('created_at,name,action,record_id,details')
+      .order('created_at',{ascending:false})
+      .limit(100);
+
+    if(error) throw error;
+
+    if(!data || !data.length){
+      rows.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px">No activity records found.</td></tr>';
+      status.textContent='No activity records found.';
+      return;
+    }
+
+    rows.innerHTML=data.map(x=>{
+      const dt=x.created_at ? new Date(x.created_at).toLocaleString() : '—';
+      const safe=v=>String(v??'—').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      return `<tr>
+        <td>${safe(dt)}</td>
+        <td>${safe(x.name)}</td>
+        <td><strong>${safe(x.action)}</strong></td>
+        <td>${safe(x.record_id)}</td>
+        <td>${safe(x.details)}</td>
+      </tr>`;
+    }).join('');
+
+    status.textContent=`Showing ${data.length} recent activity record${data.length===1?'':'s'}.`;
+  }catch(err){
+    console.error('Admin activity load failed:',err);
+    rows.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:#b42318">Activity log could not be loaded.</td></tr>';
+    status.textContent=err.message||'Access denied or activity log unavailable.';
+  }
+}
+
+async function openAdminMonitor(){
+  if(String(window.v17CurrentUserProfile?.role||'').toLowerCase()!=='admin'){
+    alert('Admin access is required.');
+    return;
+  }
+  document.getElementById('v17AdminModal').style.display='flex';
+  await loadAdminActivity();
+}
+
+function v17ShowApp(profile){
+  const screen=document.getElementById('v17LoginScreen');
+  if(screen) screen.style.display='none';
+  const info=document.getElementById('v17UserInfo');
+  if(info) info.textContent=`${profile.name||profile.email} • ${profile.role||'User'}`;
+  const isAdmin=String(profile.role||'').toLowerCase()==='admin';
+  const adminBtn=document.getElementById('v17AdminBtn');
+  const usersBtn=document.getElementById('v17UsersBtn');
+  if(adminBtn) adminBtn.style.display=isAdmin?'inline-block':'none';
+  if(usersBtn) usersBtn.style.display=isAdmin?'inline-block':'none';
+  window.v17CurrentUserProfile=profile;
+  window.v17CurrentAuthUser=v17CurrentAuthUser || null;
+}
+
+function v17ShowLogin(message=''){
+  const screen=document.getElementById('v17LoginScreen');
+  if(screen) screen.style.display='flex';
+  if(message) v17SetMessage(message);
+}
+
+async function v17LoadProfile(authUser){
+  const { data, error } = await v17Supabase
+    .rpc('v18_get_my_profile');
+
+  if(error) throw error;
+  const profile=Array.isArray(data) ? data[0] : data;
+  if(!profile) throw new Error('No user profile is assigned to this account.');
+  if(String(profile.status||'').toLowerCase() !== 'active') throw new Error('This account is inactive.');
+  return profile;
+}
+
+async function v18CheckActiveAccount(){
+  const {data:{session}}=await v17Supabase.auth.getSession();
+  if(!session?.user) return false;
+  try{
+    const profile=await v17LoadProfile(session.user);
+    window.v17CurrentUserProfile=profile;
+    return true;
+  }catch(err){
+    const msg=String(err?.message||'').toLowerCase();
+    // Only force logout for an explicitly inactive/missing profile.
+    // Temporary network/API errors should not log the user out.
+    if(msg.includes('inactive') || msg.includes('no user profile')){
+      console.warn('V18 account access revoked:',err);
+      await v17Supabase.auth.signOut();
+      window.v17CurrentAuthUser=null;
+      window.v17CurrentUserProfile=null;
+      v17ShowLogin('Your account is no longer active. Please contact an administrator.');
+      return false;
+    }
+    console.warn('V18 account status check could not be completed:',err);
+    return true;
+  }
+}
+
+async function v17HandleSession(session, logLogin=false){
+  if(!session?.user){
+    v17ShowLogin();
+    return;
+  }
+  try{
+    const profile=await v17LoadProfile(session.user);
+    window.v17CurrentAuthUser=session.user;
+    v17ShowApp(profile);
+    if(logLogin){
+      await v17LogActivity('LOGIN','—','Successful login');
+    }
+  }catch(err){
+    console.error('V17 profile check failed:',err);
+    await v17Supabase.auth.signOut();
+    v17ShowLogin(err.message||'Account access could not be verified.');
+  }
+}
+
+document.getElementById('v17LoginForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const username=document.getElementById('v17Username').value.trim();
+  const password=document.getElementById('v17Password').value;
+  if(!username){
+    v17SetMessage('Please enter your username or email.');
+    return;
+  }
+
+  // Support both account types:
+  // 1) Existing Admin account: real email address
+  // 2) Technician accounts: username mapped to username@techdaily.local
+  let authEmail;
+  if(username.includes('@')){
+    authEmail=username.toLowerCase();
+  }else{
+    const normalizedUsername=username.toUpperCase().replace(/[^A-Z0-9._-]/g,'');
+    if(!normalizedUsername){
+      v17SetMessage('Please enter a valid username.');
+      return;
+    }
+    authEmail=normalizedUsername.toLowerCase()+'@techdaily.local';
+  }
+
+  v17SetBusy(true);
+  v17SetMessage('');
+  try{
+    const { data, error } = await v17Supabase.auth.signInWithPassword({email:authEmail,password});
+    if(error) throw error;
+
+    const profile=await v17LoadProfile(data.session?.user);
+    window.v17CurrentAuthUser=data.session?.user || null;
+    v17ShowApp(profile);
+    await v17LogActivity('LOGIN','—','Successful login');
+    v17SetMessage('Signed in successfully.','success');
+  }catch(err){
+    console.error('V17 login failed:',err);
+    try{ await v17Supabase.auth.signOut(); }catch(_e){}
+    v17ShowLogin(err.message||'Sign-in failed.');
+  }finally{
+    v17SetBusy(false);
+  }
+});
+
+async function v17Logout(){
+  try{
+    await v17Supabase.auth.signOut();
+  }finally{
+    window.v17CurrentAuthUser=null;
+    window.v17CurrentUserProfile=null;
+    const adminBtn=document.getElementById('v17AdminBtn');
+    const usersBtn=document.getElementById('v17UsersBtn');
+    if(adminBtn) adminBtn.style.display='none';
+    if(usersBtn) usersBtn.style.display='none';
+    closeAdminMonitor();
+    closeUserManagement();
+    document.getElementById('v17Username').value='';
+    document.getElementById('v17Password').value='';
+    v17ShowLogin('You have been signed out.','success');
+  }
+}
+
+(async function v17InitAuth(){
+  const { data } = await v17Supabase.auth.getSession();
+  // Restore an existing session without creating a duplicate LOGIN activity record.
+  await v17HandleSession(data.session, false);
+  v17Supabase.auth.onAuthStateChange((event, session)=>{
+    // Log only a real sign-in event, not the initial session restoration.
+    v17HandleSession(session, event === 'SIGNED_IN');
+  });
+
+  // V18.11 security hardening:
+  // Re-check the account status periodically so an Admin deactivation
+  // also removes an already-open app session.
+  setInterval(async()=>{
+    if(document.getElementById('v17App')?.style.display !== 'none'){
+      await v18CheckActiveAccount();
+    }
+  },30000);
+
+  // Re-check immediately when the user returns to the app/tab.
+  document.addEventListener('visibilitychange',async()=>{
+    if(document.visibilityState==='visible'){
+      await v18CheckActiveAccount();
+    }
+  });
+})();
+</script>
+
+<script>
+const KEY='techDeficienciesV1';
+let data=JSON.parse(localStorage.getItem(KEY)||'[]');
+const today=()=>new Date().toISOString().slice(0,10);
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function id(){return 'TD-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6)}
+function badge(s){return s==='Open'?'<span class="badge b-red">🔴 Open</span>':s==='Ongoing'?'<span class="badge b-yellow">🟡 Ongoing</span>':s==='Completed'?'<span class="badge b-green">🟢 Completed</span>':'<span class="badge b-black">⚫ On Hold</span>'}
+function photoCell(x){
+ const name=photoNameFromRecord(x);
+ return name ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','before')">🖼️ View Photo</button>` : '—';
+}
+function fixPhotoCell(x){
+ const name=fixPhotoNameFromRecord(x);
+ return name ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','fix')">🖼️ View Fix Photo</button>` : '—';
+}
+function photoNameFromRecord(x){
+ if(x.photoName) return x.photoName;
+ const raw=String(x.photoUrl||'');
+ if(!raw) return '';
+ const clean=raw.split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+function fixPhotoNameFromRecord(x){
+ if(x.fixPhotoName) return x.fixPhotoName;
+ const raw=String(x.fixPhotoUrl||'');
+ if(!raw) return '';
+ const clean=raw.split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+function closePhotoViewer(){
+ const m=document.getElementById('photoViewModal');
+ m.style.display='none';
+ const img=document.getElementById('photoViewImg');
+ img.removeAttribute('src');
+ img.style.display='none';
+ document.getElementById('photoViewStatus').textContent='';
+}
+async function viewPhoto(recordId,photoName,photoKind='before'){
+ const url=getFlowUrl();
+ if(!url){alert('Please configure the Power Automate URL first.');openSettings();return}
+ const modal=document.getElementById('photoViewModal');
+ const status=document.getElementById('photoViewStatus');
+ const img=document.getElementById('photoViewImg');
+ modal.style.display='flex';
+ img.style.display='none';
+ status.textContent='Loading photo...';
+ try{
+  const response=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'getPhoto',id:recordId,photoName:photoName||'',photoKind:photoKind||'before'}),cache:'no-store'});
+  if(!response.ok) throw new Error('HTTP '+response.status);
+  const result=await response.json();
+  if(!result || !result.data) throw new Error('The flow did not return photo data.');
+  img.src=result.data;
+  img.onload=()=>{status.textContent=recordId+(photoKind==='fix'?' — FIX PHOTO':'');img.style.display='block'};
+  img.onerror=()=>{status.textContent='The returned photo could not be displayed.'};
+ }catch(err){
+  console.error('Photo load failed:',err);
+  status.textContent='Could not load photo. '+(err&&err.message?err.message:'Please try again.');
+ }
+}
+function render(){
+  const site=document.getElementById('filterSite').value;
+  const status=document.getElementById('filterStatus').value;
+  const q=document.getElementById('search').value.toLowerCase();
+  const rowEl=document.getElementById('rows');
+  const mobileEl=document.getElementById('mobileRows');
+  let filtered=data.filter(x=>(!site||x.site===site)&&(!status||x.status===status)&&(!q||(x.deficiency+' '+x.location+' '+x.id).toLowerCase().includes(q)));
+
+  rowEl.innerHTML=filtered.length
+    ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
+    : '<tr><td colspan="12" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
+
+  if(mobileEl){
+    mobileEl.innerHTML=filtered.length
+      ? filtered.map(x=>{
+          const before=photoNameFromRecord(x);
+          const fix=fixPhotoNameFromRecord(x);
+          return `<div class="mobile-record-card">
+            <div class="mobile-record-head">
+              <div class="mobile-record-id">${esc(x.id)}</div>
+              <div class="mobile-record-status">${badge(x.status)}</div>
+            </div>
+            <div class="mobile-record-main">${esc(x.deficiency)}</div>
+            <div class="mobile-record-grid">
+              <div class="mobile-record-field"><div class="mobile-record-label">Date</div><div class="mobile-record-value">${esc(x.date)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Site</div><div class="mobile-record-value">${esc(x.site)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Location / Area</div><div class="mobile-record-value">${esc(x.location)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Reported By</div><div class="mobile-record-value">${esc(x.reportedBy)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Attended By</div><div class="mobile-record-value">${esc(x.attendedBy)}</div></div>
+            </div>
+            <div class="mobile-record-remarks">
+              <div class="mobile-record-label">Remarks</div>
+              <div class="mobile-record-value">${esc(x.remarks)||'—'}</div>
+            </div>
+            <div class="mobile-record-actions">
+              ${before?`<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(before)}','before')">📷 Photo</button>`:'<button type="button" class="secondary" disabled>📷 Photo</button>'}
+              ${fix?`<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(fix)}','fix')">🛠️ Fix Photo</button>`:'<button type="button" class="secondary" disabled>🛠️ Fix Photo</button>'}
+              <button type="button" class="secondary" onclick="edit('${esc(x.id)}')">✏️ Update</button>
+            </div>
+          </div>`;
+        }).join('')
+      : '<div class="mobile-empty">No deficiencies found.</div>';
+  }
+
+  document.getElementById('open').textContent=data.filter(x=>x.status==='Open').length;
+  document.getElementById('ongoing').textContent=data.filter(x=>x.status==='Ongoing').length;
+  document.getElementById('completed').textContent=data.filter(x=>x.status==='Completed').length;
+  document.getElementById('hold').textContent=data.filter(x=>x.status==='On Hold').length;
+}
+function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+let selectedPhoto={name:'',type:'',data:''};
+let selectedFixPhoto={name:'',type:'',data:''};
+function clearPhotoState(){
+ selectedPhoto={name:'',type:'',data:''};
+ document.getElementById('photo').value='';
+ document.getElementById('photoPreview').style.display='none';
+ document.getElementById('photoPreviewImg').removeAttribute('src');
+ document.getElementById('photoName').textContent='';
+}
+function clearFixPhotoState(){
+ selectedFixPhoto={name:'',type:'',data:''};
+ document.getElementById('fixPhoto').value='';
+ document.getElementById('fixPhotoPreview').style.display='none';
+ document.getElementById('fixPhotoPreviewImg').removeAttribute('src');
+ document.getElementById('fixPhotoName').textContent='';
+}
+function clearAllPhotoState(){clearPhotoState();clearFixPhotoState();}
+function updatePhotoRules(){
+ const status=document.getElementById('status').value;
+ const photoInput=document.getElementById('photo');
+ const fixInput=document.getElementById('fixPhoto');
+ const photoLabel=document.getElementById('photoLabel');
+ const fixLabel=document.getElementById('fixPhotoLabel');
+ const photoNote=document.getElementById('photoRuleNote');
+ const fixNote=document.getElementById('fixPhotoRuleNote');
+ const completed=status==='Completed';
+ photoInput.disabled=completed;
+ fixInput.disabled=!completed;
+ photoLabel.textContent=completed?'UPLOAD PHOTO (LOCKED)':'UPLOAD PHOTO';
+ fixLabel.textContent=completed?'FIX PHOTO':'FIX PHOTO (LOCKED)';
+ photoNote.textContent=completed
+  ? 'Photo upload is locked because the status is Completed.'
+  : 'You can upload the deficiency photo while status is Open, Ongoing, or On Hold.';
+ fixNote.textContent=completed
+  ? 'You can upload the Fix Photo because the status is Completed.'
+  : 'Fix Photo upload is locked until the status is Completed.';
+ photoInput.title=completed?'Photo upload is locked for Completed status':'';
+ fixInput.title=completed?'':'Fix Photo upload is available only for Completed status';
+}
+function removePhoto(){clearPhotoState();}
+function removeFixPhoto(){clearFixPhotoState();}
+function showPhotoPreview(){
+ const box=document.getElementById('photoPreview');
+ if(!selectedPhoto.data){box.style.display='none';return}
+ document.getElementById('photoPreviewImg').src=selectedPhoto.data;
+ document.getElementById('photoName').textContent=selectedPhoto.name;
+ box.style.display='flex';
+}
+function showFixPhotoPreview(){
+ const box=document.getElementById('fixPhotoPreview');
+ if(!selectedFixPhoto.data){box.style.display='none';return}
+ document.getElementById('fixPhotoPreviewImg').src=selectedFixPhoto.data;
+ document.getElementById('fixPhotoName').textContent=selectedFixPhoto.name;
+ box.style.display='flex';
+}
+function compressImage(file,maxSize=1600,quality=.78){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error('Could not read the selected photo.'));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(new Error('The selected file is not a valid image.'));
+   img.onload=()=>{
+    const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(img.width*scale));
+    canvas.height=Math.max(1,Math.round(img.height*scale));
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    resolve(canvas.toDataURL('image/jpeg',quality));
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+document.getElementById('photo').addEventListener('change',async function(){
+ if(document.getElementById('status').value==='Completed'){
+  alert('Photo upload is locked when the status is Completed.');
+  clearPhotoState();
+  return;
+ }
+ const file=this.files&&this.files[0];
+ if(!file){clearPhotoState();return}
+ if(!file.type.startsWith('image/')){alert('Please select an image file.');clearPhotoState();return}
+ try{
+  const dataUrl=await compressImage(file);
+  selectedPhoto={name:file.name,type:'image/jpeg',data:dataUrl};
+  showPhotoPreview();
+ }catch(err){alert(err.message||'Could not process the photo.');clearPhotoState();}
+});
+document.getElementById('fixPhoto').addEventListener('change',async function(){
+ if(document.getElementById('status').value!=='Completed'){
+  alert('Fix Photo can only be uploaded when the status is Completed.');
+  clearFixPhotoState();
+  return;
+ }
+ const file=this.files&&this.files[0];
+ if(!file){clearFixPhotoState();return}
+ if(!file.type.startsWith('image/')){alert('Please select an image file.');clearFixPhotoState();return}
+ try{
+  const dataUrl=await compressImage(file);
+  selectedFixPhoto={name:file.name,type:'image/jpeg',data:dataUrl};
+  showFixPhotoPreview();
+ }catch(err){alert(err.message||'Could not process the fix photo.');clearFixPhotoState();}
+});
+
+function openAdd(){
+ document.getElementById('form').reset();
+ clearAllPhotoState();
+ document.getElementById('editId').value='';
+ document.getElementById('date').value=today();
+ document.getElementById('status').value='Open';
+ document.getElementById('modalTitle').textContent='Report / Add Deficiency';
+ updatePhotoRules();
+ document.getElementById('modal').style.display='flex';
+}
+async function loadExistingEditPhoto(recordId,photoName,photoKind='before'){
+  if(!photoName)return;
+  const previewId=photoKind==='fix'?'fixPhotoPreview':'photoPreview';
+  const imgId=photoKind==='fix'?'fixPhotoPreviewImg':'photoPreviewImg';
+  const nameId=photoKind==='fix'?'fixPhotoName':'photoName';
+  const box=document.getElementById(previewId);
+  const img=document.getElementById(imgId);
+  const nameEl=document.getElementById(nameId);
+  nameEl.textContent='Loading photo...';
+  box.style.display='flex';
+  img.removeAttribute('src');
+  const url=getFlowUrl();
+  if(!url){
+    nameEl.textContent=photoName;
+    return;
+  }
+  try{
+    const response=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({action:'getPhoto',id:recordId,photoName:photoName,photoKind:photoKind}),
+      cache:'no-store'
+    });
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const result=await response.json();
+    if(!result || !result.data)throw new Error('No photo data returned.');
+    img.src=result.data;
+    img.onload=()=>{nameEl.textContent=photoName;};
+    img.onerror=()=>{nameEl.textContent='Photo could not be displayed.';};
+  }catch(err){
+    console.error('Existing photo load failed:',err);
+    nameEl.textContent=photoName+' (preview unavailable)';
+  }
+}
+
+async function edit(i){
+  let x=data.find(a=>a.id===i); if(!x)return;
+  document.getElementById('editId').value=x.id;
+  document.getElementById('date').value=x.date;
+  document.getElementById('site').value=x.site;
+  document.getElementById('deficiency').value=x.deficiency;
+  document.getElementById('location').value=x.location;
+  document.getElementById('reportedBy').value=x.reportedBy;
+  document.getElementById('attendedBy').value=x.attendedBy;
+  document.getElementById('remarks').value=x.remarks;
+  document.getElementById('status').value=x.status;
+  clearAllPhotoState();
+  updatePhotoRules();
+  document.getElementById('modalTitle').textContent='Update Deficiency';
+  document.getElementById('modal').style.display='flex';
+
+  if(x.photoUrl || x.photoName){
+    loadExistingEditPhoto(x.id,x.photoName||'', 'before');
+  }
+  if(x.fixPhotoUrl || x.fixPhotoName){
+    loadExistingEditPhoto(x.id,x.fixPhotoName||'', 'fix');
+  }
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+document.getElementById('form').addEventListener('submit',async function(e){
+ e.preventDefault();
+ const currentStatus=document.getElementById('status').value;
+ if(currentStatus==='Completed' && selectedPhoto.data){
+  alert('Photo upload is not allowed when the status is Completed.');
+  return;
+ }
+ if(currentStatus!=='Completed' && selectedFixPhoto.data){
+  alert('Fix Photo can only be uploaded when the status is Completed.');
+  return;
+ }
+ const existingId=document.getElementById('editId').value;
+ const existingIndex=existingId ? data.findIndex(x=>x.id===existingId) : -1;
+ let obj={
+  id:existingId||id(),
+  date:document.getElementById('date').value,
+  site:document.getElementById('site').value,
+  deficiency:document.getElementById('deficiency').value.trim(),
+  location:document.getElementById('location').value.trim(),
+  reportedBy:document.getElementById('reportedBy').value.trim(),
+  attendedBy:document.getElementById('attendedBy').value.trim(),
+  remarks:document.getElementById('remarks').value.trim(),
+  status:document.getElementById('status').value,
+  photoName:selectedPhoto.data ? selectedPhoto.name : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoName||'' : ''),
+  photoType:selectedPhoto.data ? selectedPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoType||'' : ''),
+  photoData:selectedPhoto.data,
+  photoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoUrl||'' : ''),
+   fixPhotoName:selectedFixPhoto.data ? selectedFixPhoto.name : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoName||'' : ''),
+   fixPhotoType:selectedFixPhoto.data ? selectedFixPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoType||'' : ''),
+   fixPhotoData:selectedFixPhoto.data,
+   fixPhotoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoUrl||'' : '')
+ };
+ let i=existingIndex;
+ const isNew=i<0;
+ if(i>=0)data[i]=obj;else data.unshift(obj);
+ save();
+ closeModal();
+
+ // Send BOTH new records and updates to Power Automate.
+ // The Power Automate flow uses ID to decide whether to add or update the Excel row.
+ const result=await sendToPowerAutomate(obj,isNew);
+ if(result.ok){
+  if(isNew){
+   await v17LogActivity('ADD DEFICIENCY',obj.id,'New deficiency submitted successfully');
+   showAppMessage('success','Successfully Saved!','Saved locally and sent to Excel.');
+  }else{
+   await v17LogActivity('UPDATE DEFICIENCY',obj.id,'Deficiency updated successfully');
+   showAppMessage('success','Successfully Updated!','Updated locally and sent to Excel.');
+  }
+ }else if(result.reason==='not-configured'){
+  showAppMessage('warning',isNew?'Saved':'Updated',
+   (isNew?'Saved':'Updated')+' on this device. Power Automate is not configured yet.');
+ }else{
+  showAppMessage('error',isNew?'Save Failed':'Update Failed',
+   (isNew?'Saved':'Updated')+' on this device, but the Power Automate request could not be sent.',
+   6500);
+ }
+});
+
+const FLOW_KEY='techDeficiencyPowerAutomateUrlV1';
+function getFlowUrl(){return localStorage.getItem(FLOW_KEY)||''}
+let appMessageTimer=null;
+function showAppMessage(type,title,text,duration=4500){
+ const box=document.getElementById('appMessage');
+ const icon=document.getElementById('appMessageIcon');
+ const titleEl=document.getElementById('appMessageTitle');
+ const textEl=document.getElementById('appMessageText');
+ if(!box)return;
+ clearTimeout(appMessageTimer);
+ box.className='app-message '+(type||'success')+' show';
+ icon.textContent=type==='error'?'!':type==='warning'?'⚠':'✓';
+ titleEl.textContent=title||'';
+ textEl.textContent=text||'';
+ appMessageTimer=setTimeout(hideAppMessage,duration);
+}
+function hideAppMessage(){
+ const box=document.getElementById('appMessage');
+ if(box)box.className='app-message';
+ clearTimeout(appMessageTimer);
+}
+async function syncFromExcel(){
+ const url=getFlowUrl();
+ if(!url){
+  showAppMessage('warning','Connection Required','Please configure the Power Automate URL first.');
+  openSettings();
+  return;
+ }
+ const btn=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Refresh from Excel'));
+ if(btn){btn.disabled=true;btn.textContent='⏳ Refreshing...'}
+ try{
+  const response=await fetch(url,{
+   method:'POST',
+   mode:'cors',
+   headers:{'Content-Type':'text/plain;charset=UTF-8'},
+   body:JSON.stringify({action:'sync'}),
+   cache:'no-store'
+  });
+  if(!response.ok) throw new Error('HTTP '+response.status);
+  const rows=await response.json();
+  if(!Array.isArray(rows)) throw new Error('The Power Automate response was not a list of Excel rows.');
+
+  data=rows.map(r=>({
+   id:String(r.ID??''),
+   date:normalizeExcelDate(r['DATE REPORTED']),
+   site:String(r.SITE??''),
+   deficiency:String(r.DEFICIENCY??''),
+   location:String(r['LOCATION/AREA']??''),
+   reportedBy:String(r['REPORTED BY']??''),
+   attendedBy:String(r['ATTENDED BY']??''),
+   status:String(r.STATUS??'Open'),
+   remarks:String(r.REMARKS??''),
+   photoUrl:String(r.PHOTO??''),
+   photoName:extractPhotoName(String(r.PHOTO??'')),
+   fixPhotoUrl:String(r['FIX PHOTO']??''),
+   fixPhotoName:extractPhotoName(String(r['FIX PHOTO']??''))
+  })).filter(x=>x.id);
+
+  localStorage.setItem(KEY,JSON.stringify(data));
+  render();
+  updateConnectionStatus('Excel is synced — '+data.length+' record'+(data.length===1?'':'s')+' loaded.');
+  showAppMessage('success','Excel Refreshed',data.length+' record'+(data.length===1?'':'s')+' loaded successfully.');
+ }catch(err){
+  console.error('Excel sync failed:',err);
+  const detail=(err&&err.message?err.message:'The browser could not read the Power Automate response.');
+  showAppMessage('error','Excel Refresh Failed',detail,6500);
+ }finally{
+  if(btn){btn.disabled=false;btn.textContent='🔄 Refresh from Excel'}
+ }
+}
+function extractPhotoName(v){
+ const clean=String(v||'').split('?')[0];
+ const parts=clean.split('/');
+ return parts[parts.length-1]||'';
+}
+
+function normalizeExcelDate(v){
+ if(v===null||v===undefined||v==='') return '';
+
+ // Excel may return DATE REPORTED as an Excel serial number (e.g. 46287).
+ // Excel's date system uses 1899-12-30 as the base date.
+ if(typeof v==='number' || /^\s*\d+(?:\.\d+)?\s*$/.test(String(v))){
+  const serial=Number(v);
+  if(Number.isFinite(serial) && serial>0 && serial<100000){
+   const d=new Date(Date.UTC(1899,11,30)+serial*86400000);
+   return d.toISOString().slice(0,10);
+  }
+ }
+
+ const s=String(v).trim();
+ if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+
+ // Handle common Excel text dates such as 9/22/2026.
+ const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+ if(m){
+  return `${m[3]}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`;
+ }
+
+ const d=new Date(s);
+ return isNaN(d.getTime())?s:d.toISOString().slice(0,10);
+}
+
+function updateConnectionStatus(message){
+ const el=document.getElementById('connectionStatus');
+ if(message){el.textContent=message;el.style.color='#146c43';return}
+ const url=getFlowUrl();
+ if(url){el.textContent='Connected to Power Automate — new and updated deficiencies will sync to Excel.';el.style.color='#146c43'}
+ else{el.textContent='Not connected — app is using local browser storage.';el.style.color='#52606d'}
+}
+function openSettings(){
+ document.getElementById('flowUrl').value=getFlowUrl();
+ document.getElementById('settingsModal').style.display='flex';
+}
+function closeSettings(){document.getElementById('settingsModal').style.display='none'}
+function saveSettings(){
+ const url=document.getElementById('flowUrl').value.trim();
+ if(url && !/^https:\/\//i.test(url)){alert('Please paste the full HTTPS Power Automate URL.');return}
+ if(url)localStorage.setItem(FLOW_KEY,url);else localStorage.removeItem(FLOW_KEY);
+ updateConnectionStatus();closeSettings();
+}
+async function sendToPowerAutomate(obj,isNew=false){
+ const url=getFlowUrl();
+ if(!url){return {ok:false,reason:'not-configured'}}
+ const payload={
+  id:obj.id,
+  action:isNew?'add':'update',
+  dateReported:obj.date,
+  site:obj.site,
+  deficiency:obj.deficiency,
+  locationArea:obj.location,
+  reportedBy:obj.reportedBy,
+  attendedBy:obj.attendedBy,
+  status:obj.status,
+  remarks:obj.remarks,
+  photoName:obj.photoName||'',
+  photoType:obj.photoType||'',
+  photoData:obj.photoData||'',
+  photoUrl:obj.photoUrl||'',
+   fixPhotoName:obj.fixPhotoName||'',
+   fixPhotoType:obj.fixPhotoType||'',
+   fixPhotoData:obj.fixPhotoData||'',
+   fixPhotoUrl:obj.fixPhotoUrl||''
+ };
+ try{
+  // Browser-safe request: text/plain avoids the CORS preflight.
+  // The Power Automate trigger must accept the raw JSON text and parse it afterward.
+  await fetch(url,{
+   method:'POST',
+   mode:'no-cors',
+   headers:{'Content-Type':'text/plain;charset=UTF-8'},
+   body:JSON.stringify(payload),
+   cache:'no-store'
+  });
+  return {ok:true};
+ }catch(err){
+  console.error('Power Automate request failed:',err);
+  return {ok:false,reason:err&&err.message?err.message:'Network error'};
+ }
+}
+
+async function testPowerAutomate(){
+ const url=document.getElementById('flowUrl').value.trim();
+ if(!url){alert('Please paste the current Power Automate HTTP URL first.');return}
+ if(!/^https:\/\//i.test(url)){alert('Please paste the full HTTPS Power Automate URL.');return}
+ localStorage.setItem(FLOW_KEY,url);
+ const testPayload={
+  id:'TD-TEST-'+Date.now(),
+  dateReported:today(),
+  site:'Beta',
+  deficiency:'POWER AUTOMATE CONNECTION TEST',
+  locationArea:'Test Area',
+  reportedBy:'Connection Test',
+  attendedBy:'Connection Test',
+  status:'Open',
+  remarks:'Test record from Tech Daily Site Deficiency web app.',
+  photoName:'',photoType:'',photoData:'',photoUrl:'',fixPhotoName:'',fixPhotoType:'',fixPhotoData:'',fixPhotoUrl:''
+ };
+ const result=await sendToPowerAutomate(testPayload,true);
+ if(result.ok){
+  alert('Test request sent. Check Power Automate Run history and Excel for a new test row.');
+ }else{
+  alert('The browser could not send the test request.\n\n'+result.reason);
+ }
+ updateConnectionStatus();
+}
+updateConnectionStatus();
+
+function clearFilters(){filterSite.value='';filterStatus.value='';search.value='';render()}
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>
