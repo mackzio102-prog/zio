@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- V18.8: Single responsive web app for desktop and mobile -->
-<title>Tech Daily Site Deficiency - V18 Latest</title>
+<!-- V18.8: Single responsive web app for desktop and mobile
+   V18.14: One active Web session + one active Mobile session per user -->
+<title>Tech Daily Site Deficiency - V18.14</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -373,15 +374,6 @@ table th:nth-child(12),table td:nth-child(12){width:7%}
 @media(max-width:700px){#v17AdminBox{padding:14px}.v17-admin-actions{display:flex;gap:8px;flex-wrap:wrap}}
 
 </style>
-
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#198754">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Tech Daily">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
 </head>
 <body>
 <div id="v17LoginScreen">
@@ -775,12 +767,96 @@ async function v17LoadProfile(authUser){
   return profile;
 }
 
+/* =========================
+   V18.16 ONE WEB + ONE MOBILE SESSION CONTROL
+   ========================= */
+const V18_SESSION_STORAGE_KEY='techDailyLoginSessionId';
+let v18LoginSessionId=sessionStorage.getItem(V18_SESSION_STORAGE_KEY)||'';
+let v18LoginPlatform='web';
+
+function v18GetPlatform(){
+  const ua=String(navigator.userAgent||'');
+  const mobile=/Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  const standalone=(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true;
+  return (mobile || standalone) ? 'mobile' : 'web';
+}
+
+function v18EnsureSessionId(){
+  if(!v18LoginSessionId){
+    v18LoginSessionId=(window.crypto && typeof window.crypto.randomUUID==='function')
+      ? window.crypto.randomUUID()
+      : ('sess-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+    sessionStorage.setItem(V18_SESSION_STORAGE_KEY,v18LoginSessionId);
+  }
+  return v18LoginSessionId;
+}
+
+async function v18StartLoginSession(){
+  v18LoginPlatform=v18GetPlatform();
+  // A login gets a fresh application-session ID. This prevents a stale ID
+  // from a previous failed/replaced login from being inserted twice.
+  v18LoginSessionId=(window.crypto && typeof window.crypto.randomUUID==='function')
+    ? window.crypto.randomUUID()
+    : ('sess-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+  sessionStorage.setItem(V18_SESSION_STORAGE_KEY,v18LoginSessionId);
+  const sessionId=v18LoginSessionId;
+  const {data,error}=await v17Supabase.rpc('v18_start_login_session',{
+    p_session_id:sessionId,
+    p_platform:v18LoginPlatform
+  });
+  if(error) throw error;
+  return data===true || data===null;
+}
+
+async function v18CheckLoginSession(){
+  const {data:{session}}=await v17Supabase.auth.getSession();
+  if(!session?.user) return false;
+  if(!v18LoginSessionId) return true;
+  try{
+    const {data,error}=await v17Supabase.rpc('v18_check_login_session',{
+      p_session_id:v18LoginSessionId
+    });
+    if(error) throw error;
+    if(data===false){
+      console.warn('V18 session replaced by another login on the same platform.');
+      await v18HandleSessionReplaced();
+      return false;
+    }
+    return true;
+  }catch(err){
+    console.warn('V18 session check could not be completed:',err);
+    return true;
+  }
+}
+
+async function v18EndLoginSession(){
+  if(!v18LoginSessionId) return;
+  try{
+    await v17Supabase.rpc('v18_end_login_session',{p_session_id:v18LoginSessionId});
+  }catch(err){
+    console.warn('V18 session end failed:',err);
+  }
+}
+
+async function v18HandleSessionReplaced(){
+  await v18EndLoginSession();
+  sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+  v18LoginSessionId='';
+  window.v17CurrentAuthUser=null;
+  window.v17CurrentUserProfile=null;
+  try{ await v17Supabase.auth.signOut({scope:'local'}); }catch(_e){}
+  v17ShowLogin('This session was replaced by a newer login on this device type.');
+}
+
 async function v18CheckActiveAccount(){
   const {data:{session}}=await v17Supabase.auth.getSession();
   if(!session?.user) return false;
   try{
     const profile=await v17LoadProfile(session.user);
     window.v17CurrentUserProfile=profile;
+
+    // Also verify that this specific Web/Mobile session is still the active one.
+    await v18CheckLoginSession();
     return true;
   }catch(err){
     const msg=String(err?.message||'').toLowerCase();
@@ -788,7 +864,10 @@ async function v18CheckActiveAccount(){
     // Temporary network/API errors should not log the user out.
     if(msg.includes('inactive') || msg.includes('no user profile')){
       console.warn('V18 account access revoked:',err);
-      await v17Supabase.auth.signOut();
+      await v18EndLoginSession();
+      try{ await v17Supabase.auth.signOut({scope:'local'}); }catch(_e){}
+      sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+      v18LoginSessionId='';
       window.v17CurrentAuthUser=null;
       window.v17CurrentUserProfile=null;
       v17ShowLogin('Your account is no longer active. Please contact an administrator.');
@@ -799,22 +878,30 @@ async function v18CheckActiveAccount(){
   }
 }
 
-async function v17HandleSession(session, logLogin=false){
+async function v17HandleSession(session, logLogin=false, startSession=true){
   if(!session?.user){
     v17ShowLogin();
-    return;
+    return false;
   }
   try{
     const profile=await v17LoadProfile(session.user);
     window.v17CurrentAuthUser=session.user;
+    if(startSession){
+      await v18StartLoginSession();
+    }
     v17ShowApp(profile);
     if(logLogin){
-      await v17LogActivity('LOGIN','—','Successful login');
+      await v17LogActivity('LOGIN','—',`Successful login (${v18LoginPlatform})`);
     }
+    return true;
   }catch(err){
-    console.error('V17 profile check failed:',err);
-    await v17Supabase.auth.signOut();
+    console.error('V17 profile/session check failed:',err);
+    try{ await v18EndLoginSession(); }catch(_e){}
+    try{ await v17Supabase.auth.signOut({scope:'local'}); }catch(_e){}
+    sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+    v18LoginSessionId='';
     v17ShowLogin(err.message||'Account access could not be verified.');
+    return false;
   }
 }
 
@@ -850,12 +937,17 @@ document.getElementById('v17LoginForm').addEventListener('submit',async function
 
     const profile=await v17LoadProfile(data.session?.user);
     window.v17CurrentAuthUser=data.session?.user || null;
+    // Register exactly once here. The Supabase SIGNED_IN callback below
+    // intentionally does not start another application session.
+    await v18StartLoginSession();
     v17ShowApp(profile);
-    await v17LogActivity('LOGIN','—','Successful login');
+    await v17LogActivity('LOGIN','—',`Successful login (${v18LoginPlatform})`);
     v17SetMessage('Signed in successfully.','success');
   }catch(err){
     console.error('V17 login failed:',err);
     try{ await v17Supabase.auth.signOut(); }catch(_e){}
+    sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+    v18LoginSessionId='';
     v17ShowLogin(err.message||'Sign-in failed.');
   }finally{
     v17SetBusy(false);
@@ -864,8 +956,11 @@ document.getElementById('v17LoginForm').addEventListener('submit',async function
 
 async function v17Logout(){
   try{
-    await v17Supabase.auth.signOut();
+    await v18EndLoginSession();
+    await v17Supabase.auth.signOut({scope:'local'});
   }finally{
+    sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+    v18LoginSessionId='';
     window.v17CurrentAuthUser=null;
     window.v17CurrentUserProfile=null;
     const adminBtn=document.getElementById('v17AdminBtn');
@@ -882,11 +977,17 @@ async function v17Logout(){
 
 (async function v17InitAuth(){
   const { data } = await v17Supabase.auth.getSession();
-  // Restore an existing session without creating a duplicate LOGIN activity record.
-  await v17HandleSession(data.session, false);
+  // Restore an existing Supabase session and register exactly one
+  // application session for this browser/app instance.
+  await v17HandleSession(data.session, false, true);
   v17Supabase.auth.onAuthStateChange((event, session)=>{
-    // Log only a real sign-in event, not the initial session restoration.
-    v17HandleSession(session, event === 'SIGNED_IN');
+    // The login form handles SIGNED_IN explicitly. Handling SIGNED_IN here
+    // would race with the form and attempt a second application-session insert.
+    if(event === 'SIGNED_OUT'){
+      sessionStorage.removeItem(V18_SESSION_STORAGE_KEY);
+      v18LoginSessionId='';
+      v17ShowLogin();
+    }
   });
 
   // V18.11 security hardening:
@@ -920,7 +1021,9 @@ function photoCell(x){
 }
 function fixPhotoCell(x){
  const name=fixPhotoNameFromRecord(x);
- return name ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','fix')">🖼️ View Fix Photo</button>` : '—';
+ return name
+   ? `<button type="button" class="secondary" onclick="viewPhoto('${esc(x.id)}','${esc(name)}','fix')">🖼️ View Fix Photo</button>`
+   : `<span style="display:inline-block;padding:8px 10px;border-radius:7px;background:#f1f3f5;color:#66737f;font-size:12px;font-weight:bold;">No Fix Photo</span>`;
 }
 function photoNameFromRecord(x){
  if(x.photoName) return x.photoName;
@@ -931,12 +1034,14 @@ function photoNameFromRecord(x){
  return parts[parts.length-1]||'';
 }
 function fixPhotoNameFromRecord(x){
- if(x.fixPhotoName) return x.fixPhotoName;
- const raw=String(x.fixPhotoUrl||'');
+ const direct=String(x.fixPhotoName||'').trim();
+ if(direct && /-FIX\.jpg$/i.test(direct)) return direct;
+ const raw=String(x.fixPhotoUrl||'').trim();
  if(!raw) return '';
  const clean=raw.split('?')[0];
  const parts=clean.split('/');
- return parts[parts.length-1]||'';
+ const name=parts[parts.length-1]||'';
+ return /-FIX\.jpg$/i.test(name) ? name : '';
 }
 function closePhotoViewer(){
  const m=document.getElementById('photoViewModal');
@@ -959,12 +1064,22 @@ async function viewPhoto(recordId,photoName,photoKind='before'){
   const response=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'getPhoto',id:recordId,photoName:photoName||'',photoKind:photoKind||'before'}),cache:'no-store'});
   if(!response.ok) throw new Error('HTTP '+response.status);
   const result=await response.json();
-  if(!result || !result.data) throw new Error('The flow did not return photo data.');
+  if(!result || !result.data){
+   if(photoKind==='fix'){
+    status.textContent='No Fix Photo Available';
+    return;
+   }
+   throw new Error('The flow did not return photo data.');
+  }
   img.src=result.data;
   img.onload=()=>{status.textContent=recordId+(photoKind==='fix'?' — FIX PHOTO':'');img.style.display='block'};
   img.onerror=()=>{status.textContent='The returned photo could not be displayed.'};
  }catch(err){
   console.error('Photo load failed:',err);
+  if(photoKind==='fix' && String(err?.message||'').includes('502')){
+   status.textContent='No Fix Photo Available';
+   return;
+  }
   status.textContent='Could not load photo. '+(err&&err.message?err.message:'Please try again.');
  }
 }
@@ -1189,8 +1304,9 @@ async function edit(i){
   if(x.photoUrl || x.photoName){
     loadExistingEditPhoto(x.id,x.photoName||'', 'before');
   }
-  if(x.fixPhotoUrl || x.fixPhotoName){
-    loadExistingEditPhoto(x.id,x.fixPhotoName||'', 'fix');
+  const existingFixName=fixPhotoNameFromRecord(x);
+  if(existingFixName){
+    loadExistingEditPhoto(x.id,existingFixName,'fix');
   }
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
@@ -1443,14 +1559,5 @@ updateConnectionStatus();
 function clearFilters(){filterSite.value='';filterStatus.value='';search.value='';render()}
 render();
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker registration failed:', err));
-  });
-}
-</script>
-
 </body>
 </html>
