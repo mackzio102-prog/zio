@@ -4,11 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- V18.8: Single responsive web app for desktop and mobile
-   V18.16: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency - V18.16</title>
+   V18.14: One active Web session + one active Mobile session per user -->
+<title>Tech Daily Site Deficiency - V18.14</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+/* Freeze the complete top area while the table body scrolls. */
+#stickyArea{
+  position:sticky;
+  top:0;
+  z-index:4000;
+  background:#f4f6f8;
+  box-shadow:0 3px 10px #0002;
+}
+#stickyArea header{position:relative;z-index:4010}
+#stickyArea .container{padding-bottom:8px}
+#stickyArea .connection-card{position:relative;z-index:4005}
+#stickyArea .grid{position:relative;z-index:4004;margin-bottom:8px}
+#stickyArea .filter-card{position:relative;z-index:4003}
+#stickyArea .toolbar{margin-bottom:0}
+.tablewrap thead th{
+  position:sticky;
+  top:var(--sticky-area-height,0px);
+  z-index:3500;
+  background:#edf2f6;
+}
+.filter-date{display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #ccd5dd;border-radius:7px;padding:0 7px;height:38px}
+.filter-date span{font-size:11px;font-weight:700;color:#52606d;white-space:nowrap}
+.filter-date input{border:0;padding:0;margin:0;width:120px;background:transparent;outline:none}
+.filter-date input:focus{outline:none;box-shadow:none}
+@media(max-width:700px){.filter-date{flex:1;min-width:0}.filter-date input{width:100%;min-width:0}}
 header h1{font-size:20px;margin:0}header small{opacity:.8}
 .container{max-width:1200px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .card{background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 5px #0001}.stat{font-size:21px;font-weight:bold;margin-top:3px}
@@ -331,6 +356,74 @@ table th:nth-child(12),table td:nth-child(12){width:7%}
 }
 
 </style>
+
+<style>
+/* V18.16 V4 header layout: controls stay left, Add Deficiency centered */
+header{position:relative;min-height:102px;align-items:flex-start}
+header > div{min-width:0}
+header > button.primary{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:4020;
+  font-size:16px;
+  padding:12px 24px;
+  min-width:165px;
+  box-shadow:0 3px 10px #0003;
+}
+#v17UserBar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  flex-wrap:wrap;
+}
+@media(max-width:700px){
+  header{min-height:0;display:flex;flex-direction:column;align-items:flex-start}
+  header > div{width:100%}
+  header > button.primary{
+    position:static;
+    transform:none;
+    align-self:center;
+    margin:10px auto 0;
+    font-size:15px;
+    padding:11px 20px;
+    min-width:150px;
+  }
+}
+</style>
+
+<style>
+/* V18.16 V5: explicitly keep admin controls on the left side. */
+#v17UserBar{
+  justify-content:flex-start !important;
+  align-items:center;
+  gap:8px;
+}
+#v17AdminBtn,#v17UsersBtn,#v17LogoutBtn{
+  flex:0 0 auto;
+}
+</style>
+
+<style>
+/* V18.16 V5: keep the table column header frozen beneath the complete frozen top area.
+   Desktop uses page scrolling; the table itself must not become a vertical scroll container. */
+@media (min-width:701px){
+  .tablewrap{
+    overflow:visible !important;
+  }
+  .tablewrap thead th{
+    position:sticky !important;
+    top:var(--sticky-area-height,0px) !important;
+    z-index:4500 !important;
+    background:#dff5e7 !important;
+    color:#17324d !important;
+    box-shadow:0 2px 4px #0002 !important;
+  }
+}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* V17 authentication layer */
@@ -374,6 +467,136 @@ table th:nth-child(12),table td:nth-child(12){width:7%}
 @media(max-width:700px){#v17AdminBox{padding:14px}.v17-admin-actions{display:flex;gap:8px;flex-wrap:wrap}}
 
 </style>
+
+<style>
+/* V18.16 V6: clean compact header matching the requested layout */
+header{
+  min-height:88px !important;
+  padding:14px 22px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:20px;
+  background:#17324d;
+}
+header .brand-block{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  min-width:0;
+}
+header .brand-block h1{
+  margin:0;
+  font-size:21px;
+  letter-spacing:.1px;
+}
+header .brand-block small{
+  margin-top:2px;
+  font-size:12px;
+}
+#v17UserInfo{
+  margin-top:6px;
+  font-size:11px;
+  color:rgba(255,255,255,.52);
+}
+header #v17UserBar{
+  display:flex !important;
+  align-items:center;
+  justify-content:flex-end !important;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:0 !important;
+  margin-left:auto;
+}
+header #v17UserBar button{
+  min-height:36px;
+  padding:9px 13px;
+  border-radius:8px;
+  box-shadow:0 1px 2px #0002;
+}
+header #v17AdminBtn{background:#eef4fb;color:#17324d}
+header #v17UsersBtn{background:#fff;color:#17324d}
+header #v17LogoutBtn{background:#fff;color:#17324d}
+.connection-card{
+  padding:10px 12px !important;
+}
+.connection-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.connection-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.connection-copy{
+  min-width:0;
+}
+.connection-copy strong{
+  font-size:15px;
+}
+.add-deficiency-btn{
+  font-size:15px !important;
+  padding:11px 18px !important;
+  min-height:40px;
+  white-space:nowrap;
+  border-radius:8px;
+  box-shadow:0 3px 9px #0002;
+}
+.connection-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.connection-actions button{
+  min-height:40px;
+}
+/* Remove the old centered header-button behavior from V4/V5 overrides. */
+header > button.primary{
+  position:static !important;
+  transform:none !important;
+  margin:0 !important;
+  min-width:0 !important;
+  box-shadow:none !important;
+  display:none !important;
+}
+@media(max-width:700px){
+  header{
+    min-height:0 !important;
+    padding:12px 14px !important;
+    align-items:flex-start !important;
+  }
+  header #v17UserBar{
+    width:100%;
+    justify-content:flex-start !important;
+  }
+  .connection-topbar{
+    align-items:flex-start;
+  }
+  .connection-left{
+    width:100%;
+    align-items:flex-start;
+    flex-direction:column;
+    gap:8px;
+  }
+  .connection-actions{
+    width:100%;
+  }
+  .connection-actions button{
+    flex:1;
+  }
+  .add-deficiency-btn{
+    width:100%;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen">
@@ -403,19 +626,27 @@ table th:nth-child(12),table td:nth-child(12){width:7%}
   </div>
   <button type="button" class="app-message-close" onclick="hideAppMessage()" aria-label="Close">×</button>
 </div>
-<header><div><h1>🛠️ Tech Daily Site Deficiency</h1><small>Beta • Gamma • CPT2 • V18</small>
-<div id="v17UserBar" style="margin-top:6px">
-  <span id="v17UserInfo">Not signed in</span>
-  <button id="v17AdminBtn" type="button" onclick="openAdminMonitor()" style="display:none">📊 Admin Monitor</button>
-  <button id="v17UsersBtn" type="button" onclick="openUserManagement()" style="display:none">👥 User Management</button>
-  <button id="v17LogoutBtn" type="button" onclick="v17Logout()">Logout</button>
-</div>
-</div><button class="primary" onclick="openAdd()">+ Add Deficiency</button></header>
+<div id="stickyArea">
+<header>
+  <div class="brand-block">
+    <h1>🛠️ Tech Daily Site Deficiency</h1>
+    <small>Beta • Gamma • CPT2 • V18</small>
+    <div id="v17UserInfo">Not signed in</div>
+  </div>
+  <div id="v17UserBar">
+    <button id="v17AdminBtn" type="button" onclick="openAdminMonitor()" style="display:none">📊 Admin Monitor</button>
+    <button id="v17UsersBtn" type="button" onclick="openUserManagement()" style="display:none">👥 User Management</button>
+    <button id="v17LogoutBtn" type="button" onclick="v17Logout()">Logout</button>
+  </div>
+</header>
 <div class="container">
 <div class="card connection-card">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-    <div><strong>🔗 Excel / Power Automate Connection</strong><div id="connectionStatus" style="font-size:12px;margin-top:5px;color:#52606d">Not connected — app is using local browser storage.</div></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" type="button" onclick="syncFromExcel()">🔄 Refresh from Excel</button><button class="secondary" type="button" onclick="openSettings()">⚙️ Settings</button></div>
+  <div class="connection-topbar">
+    <div class="connection-left">
+      <button id="addDeficiencyBtn" class="primary add-deficiency-btn" type="button" onclick="openAdd()">＋ Add Deficiency</button>
+      <div class="connection-copy"><strong>🔗 Excel / Power Automate Connection</strong><div id="connectionStatus" style="font-size:12px;margin-top:5px;color:#52606d">Not connected — app is using local browser storage.</div></div>
+    </div>
+    <div class="connection-actions"><button class="secondary" type="button" onclick="syncFromExcel()">🔄 Refresh from Excel</button><button class="secondary" type="button" onclick="openSettings()">⚙️ Settings</button></div>
   </div>
 </div>
 <div class="grid">
@@ -424,13 +655,26 @@ table th:nth-child(12),table td:nth-child(12){width:7%}
 <div class="card green">🟢 Completed<div class="stat" id="completed">0</div></div>
 <div class="card black">⚫ On Hold<div class="stat" id="hold">0</div></div>
 </div>
-<div class="card">
+<div class="card filter-card">
 <div class="toolbar">
 <select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
 <select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
+<label class="filter-date" title="Filter from date">
+  <span>From</span>
+  <input id="filterDateFrom" type="date" onchange="render()" aria-label="From date">
+</label>
+<label class="filter-date" title="Filter to date">
+  <span>To</span>
+  <input id="filterDateTo" type="date" onchange="render()" aria-label="To date">
+</label>
 <input id="search" oninput="render()" placeholder="Search deficiency/location">
 <button class="secondary" onclick="clearFilters()">Clear</button>
 </div>
+</div>
+</div>
+</div>
+<div class="container">
+<div class="card">
 <div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
 <div id="mobileRows" class="mobile-records"></div>
 </div>
@@ -1086,10 +1330,20 @@ async function viewPhoto(recordId,photoName,photoKind='before'){
 function render(){
   const site=document.getElementById('filterSite').value;
   const status=document.getElementById('filterStatus').value;
+  const dateFrom=document.getElementById('filterDateFrom').value;
+  const dateTo=document.getElementById('filterDateTo').value;
   const q=document.getElementById('search').value.toLowerCase();
   const rowEl=document.getElementById('rows');
   const mobileEl=document.getElementById('mobileRows');
-  let filtered=data.filter(x=>(!site||x.site===site)&&(!status||x.status===status)&&(!q||(x.deficiency+' '+x.location+' '+x.id).toLowerCase().includes(q)));
+  let filtered=data.filter(x=>{
+    const recordDate=String(x.date||'');
+    const matchesDateFrom=!dateFrom||recordDate>=dateFrom;
+    const matchesDateTo=!dateTo||recordDate<=dateTo;
+    return (!site||x.site===site) &&
+           (!status||x.status===status) &&
+           matchesDateFrom && matchesDateTo &&
+           (!q||(x.deficiency+' '+x.location+' '+x.id).toLowerCase().includes(q));
+  });
 
   rowEl.innerHTML=filtered.length
     ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
@@ -1556,7 +1810,23 @@ async function testPowerAutomate(){
 }
 updateConnectionStatus();
 
-function clearFilters(){filterSite.value='';filterStatus.value='';search.value='';render()}
+function clearFilters(){filterSite.value='';filterStatus.value='';filterDateFrom.value='';filterDateTo.value='';search.value='';render()}
+
+function updateStickyOffsets(){
+  const root=document.documentElement;
+  const stickyArea=document.getElementById('stickyArea');
+  const h=stickyArea?stickyArea.getBoundingClientRect().height:0;
+  root.style.setProperty('--sticky-area-height',h+'px');
+}
+window.addEventListener('load',updateStickyOffsets);
+window.addEventListener('resize',updateStickyOffsets);
+if(typeof ResizeObserver!=='undefined'){
+  const stickyObserver=new ResizeObserver(updateStickyOffsets);
+  const stickyArea=document.getElementById('stickyArea');
+  if(stickyArea)stickyObserver.observe(stickyArea);
+}
+updateStickyOffsets();
+
 render();
 </script>
 </body>
