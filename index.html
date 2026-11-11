@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency - V18.14</title>
+<meta name="theme-color" content="#17324d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tech Daily Deficiency">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>Tech Daily Site Deficiency - V18.16</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -467,9 +475,10 @@ header > button.primary{
 @media(max-width:700px){#v17AdminBox{padding:14px}.v17-admin-actions{display:flex;gap:8px;flex-wrap:wrap}}
 
 </style>
-
+<!-- V18.16 original dashboard layout restored + separate Floor dropdown and dashboard Floor filter. -->
 <style>
-/* V18.16 V6: clean compact header matching the requested layout */
+/* V18.16 original dashboard arrangement: brand/admin actions in header,
+   Add Deficiency and connection details in the utility bar below. */
 header{
   min-height:88px !important;
   padding:14px 22px !important;
@@ -486,20 +495,9 @@ header .brand-block{
   justify-content:center;
   min-width:0;
 }
-header .brand-block h1{
-  margin:0;
-  font-size:21px;
-  letter-spacing:.1px;
-}
-header .brand-block small{
-  margin-top:2px;
-  font-size:12px;
-}
-#v17UserInfo{
-  margin-top:6px;
-  font-size:11px;
-  color:rgba(255,255,255,.52);
-}
+header .brand-block h1{margin:0;font-size:21px;letter-spacing:.1px}
+header .brand-block small{margin-top:2px;font-size:12px}
+header #v17UserInfo{margin-top:6px;font-size:11px;color:rgba(255,255,255,.72)}
 header #v17UserBar{
   display:flex !important;
   align-items:center;
@@ -516,11 +514,8 @@ header #v17UserBar button{
   box-shadow:0 1px 2px #0002;
 }
 header #v17AdminBtn{background:#eef4fb;color:#17324d}
-header #v17UsersBtn{background:#fff;color:#17324d}
-header #v17LogoutBtn{background:#fff;color:#17324d}
-.connection-card{
-  padding:10px 12px !important;
-}
+header #v17UsersBtn,header #v17LogoutBtn{background:#fff;color:#17324d}
+.connection-card{padding:10px 12px !important}
 .connection-topbar{
   display:flex;
   align-items:center;
@@ -528,18 +523,9 @@ header #v17LogoutBtn{background:#fff;color:#17324d}
   gap:14px;
   flex-wrap:wrap;
 }
-.connection-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  min-width:0;
-}
-.connection-copy{
-  min-width:0;
-}
-.connection-copy strong{
-  font-size:15px;
-}
+.connection-left{display:flex;align-items:center;gap:12px;min-width:0}
+.connection-copy{min-width:0}
+.connection-copy strong{font-size:15px}
 .add-deficiency-btn{
   font-size:15px !important;
   padding:11px 18px !important;
@@ -548,23 +534,63 @@ header #v17LogoutBtn{background:#fff;color:#17324d}
   border-radius:8px;
   box-shadow:0 3px 9px #0002;
 }
-.connection-actions{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.connection-actions button{
-  min-height:40px;
-}
-/* Remove the old centered header-button behavior from V4/V5 overrides. */
-header > button.primary{
-  position:static !important;
-  transform:none !important;
-  margin:0 !important;
-  min-width:0 !important;
-  box-shadow:none !important;
-  display:none !important;
+.connection-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.connection-actions button{min-height:40px}
+/* Neutralize the centered header Add Deficiency button from the alternate layout. */
+header > button.primary{display:none !important}
+
+/* Keep the 13-column table compact and balanced after adding Floor. */
+@media(min-width:701px){
+  .tablewrap{width:100%;overflow:visible !important}
+  .tablewrap table{width:100%;min-width:0;table-layout:fixed}
+  .tablewrap th,.tablewrap td{
+    box-sizing:border-box;
+    text-align:center;
+    vertical-align:middle;
+    padding:8px 5px;
+    line-height:1.2;
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+  .tablewrap thead th{
+    position:sticky !important;
+    top:var(--sticky-area-height,0px) !important;
+    z-index:4500 !important;
+    background:#dff5e7 !important;
+    color:#17324d !important;
+    box-shadow:0 2px 4px #0002 !important;
+    white-space:normal;
+  }
+  .tablewrap th:nth-child(1),.tablewrap td:nth-child(1){width:8%}
+  .tablewrap th:nth-child(2),.tablewrap td:nth-child(2){width:7%}
+  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3){width:5%}
+  .tablewrap th:nth-child(4),.tablewrap td:nth-child(4){width:6%}
+  .tablewrap th:nth-child(5),.tablewrap td:nth-child(5){width:9%}
+  .tablewrap th:nth-child(6),.tablewrap td:nth-child(6){width:10%}
+  .tablewrap th:nth-child(7),.tablewrap td:nth-child(7){width:7%}
+  .tablewrap th:nth-child(8),.tablewrap td:nth-child(8){width:7%}
+  .tablewrap th:nth-child(9),.tablewrap td:nth-child(9){width:7%}
+  .tablewrap th:nth-child(10),.tablewrap td:nth-child(10){width:10%}
+  .tablewrap th:nth-child(11),.tablewrap td:nth-child(11){width:8%}
+  .tablewrap th:nth-child(12),.tablewrap td:nth-child(12){width:8%}
+  .tablewrap th:nth-child(13),.tablewrap td:nth-child(13){width:8%}
+  .tablewrap td:nth-child(1),.tablewrap td:nth-child(2),
+  .tablewrap td:nth-child(3),.tablewrap td:nth-child(7),
+  .tablewrap td:nth-child(8),.tablewrap td:nth-child(9){
+    white-space:nowrap;overflow-wrap:normal;
+  }
+  .tablewrap td:nth-child(9) .badge{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:76px;white-space:nowrap;
+  }
+  .tablewrap td:nth-child(11) button,
+  .tablewrap td:nth-child(12) button,
+  .tablewrap td:nth-child(13) button{
+    display:inline-flex;align-items:center;justify-content:center;
+    box-sizing:border-box;width:96%;min-width:0;min-height:40px;
+    padding:7px 4px;white-space:normal;word-break:normal;
+    overflow-wrap:normal;line-height:1.15;text-align:center;font-size:11px;
+  }
 }
 @media(max-width:700px){
   header{
@@ -572,28 +598,13 @@ header > button.primary{
     padding:12px 14px !important;
     align-items:flex-start !important;
   }
-  header #v17UserBar{
-    width:100%;
-    justify-content:flex-start !important;
-  }
-  .connection-topbar{
-    align-items:flex-start;
-  }
-  .connection-left{
-    width:100%;
-    align-items:flex-start;
-    flex-direction:column;
-    gap:8px;
-  }
-  .connection-actions{
-    width:100%;
-  }
-  .connection-actions button{
-    flex:1;
-  }
-  .add-deficiency-btn{
-    width:100%;
-  }
+  header .brand-block{width:100%}
+  header #v17UserBar{width:100%;justify-content:flex-start !important;margin-left:0}
+  .connection-topbar{align-items:flex-start}
+  .connection-left{width:100%;align-items:flex-start;flex-direction:column;gap:8px}
+  .connection-actions{width:100%}
+  .connection-actions button{flex:1}
+  .add-deficiency-btn{width:100%}
 }
 </style>
 
@@ -658,6 +669,22 @@ header > button.primary{
 <div class="card filter-card">
 <div class="toolbar">
 <select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
+<select id="filterFloor" onchange="render()" aria-label="Filter by floor">
+  <option value="">All Floors</option>
+  <option value="CPT2-26">CPT2-26</option>
+  <option value="CPT2-Build Area">CPT2-Build Area</option>
+  <option value="Beta-37">Beta-37</option>
+  <option value="Beta-36">Beta-36</option>
+  <option value="Beta-35">Beta-35</option>
+  <option value="Beta-34">Beta-34</option>
+  <option value="Beta-33">Beta-33</option>
+  <option value="Beta 17">Beta 17</option>
+  <option value="Gamma-Rec Hub">Gamma-Rec Hub</option>
+  <option value="Gamma-35">Gamma-35</option>
+  <option value="Gamma-34">Gamma-34</option>
+  <option value="Gamma-33">Gamma-33</option>
+  <option value="Gamma-32">Gamma-32</option>
+</select>
 <select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
 <label class="filter-date" title="Filter from date">
   <span>From</span>
@@ -667,7 +694,7 @@ header > button.primary{
   <span>To</span>
   <input id="filterDateTo" type="date" onchange="render()" aria-label="To date">
 </label>
-<input id="search" oninput="render()" placeholder="Search deficiency/location">
+<input id="search" oninput="render()" placeholder="Search deficiency/floor/location">
 <button class="secondary" onclick="clearFilters()">Clear</button>
 </div>
 </div>
@@ -675,7 +702,7 @@ header > button.primary{
 </div>
 <div class="container">
 <div class="card">
-<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
 <div id="mobileRows" class="mobile-records"></div>
 </div>
 </div>
@@ -767,6 +794,22 @@ header > button.primary{
 <input type="hidden" id="editId">
 <div><label>DATE REPORTED</label><input type="date" id="date" required></div>
 <div><label>SITE</label><select id="site" required><option>Beta</option><option>Gamma</option><option>CPT2</option></select></div>
+<div><label>FLOOR</label><select id="floor" required>
+<option value="">Select Floor / Area</option>
+<option value="CPT2-26">CPT2-26</option>
+<option value="CPT2-Build Area">CPT2-Build Area</option>
+<option value="Beta-37">Beta-37</option>
+<option value="Beta-36">Beta-36</option>
+<option value="Beta-35">Beta-35</option>
+<option value="Beta-34">Beta-34</option>
+<option value="Beta-33">Beta-33</option>
+<option value="Beta 17">Beta 17</option>
+<option value="Gamma-Rec Hub">Gamma-Rec Hub</option>
+<option value="Gamma-35">Gamma-35</option>
+<option value="Gamma-34">Gamma-34</option>
+<option value="Gamma-33">Gamma-33</option>
+<option value="Gamma-32">Gamma-32</option>
+</select></div>
 <div class="full"><label>DEFICIENCY</label><textarea id="deficiency" required placeholder="Describe the site deficiency"></textarea></div>
 <div><label>LOCATION / AREA</label><input id="location" placeholder="e.g. 35F Production Area"></div>
 <div><label>REPORTED BY</label><input id="reportedBy" placeholder="Person who reported the deficiency"></div>
@@ -1329,6 +1372,7 @@ async function viewPhoto(recordId,photoName,photoKind='before'){
 }
 function render(){
   const site=document.getElementById('filterSite').value;
+  const floor=document.getElementById('filterFloor').value;
   const status=document.getElementById('filterStatus').value;
   const dateFrom=document.getElementById('filterDateFrom').value;
   const dateTo=document.getElementById('filterDateTo').value;
@@ -1340,14 +1384,15 @@ function render(){
     const matchesDateFrom=!dateFrom||recordDate>=dateFrom;
     const matchesDateTo=!dateTo||recordDate<=dateTo;
     return (!site||x.site===site) &&
+           (!floor||(x.floor||'')===floor) &&
            (!status||x.status===status) &&
            matchesDateFrom && matchesDateTo &&
-           (!q||(x.deficiency+' '+x.location+' '+x.id).toLowerCase().includes(q));
+           (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
   });
 
   rowEl.innerHTML=filtered.length
-    ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
-    : '<tr><td colspan="12" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
+    ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.floor)||'—'}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
+    : '<tr><td colspan="13" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
 
   if(mobileEl){
     mobileEl.innerHTML=filtered.length
@@ -1363,6 +1408,7 @@ function render(){
             <div class="mobile-record-grid">
               <div class="mobile-record-field"><div class="mobile-record-label">Date</div><div class="mobile-record-value">${esc(x.date)}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Site</div><div class="mobile-record-value">${esc(x.site)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Floor</div><div class="mobile-record-value">${esc(x.floor)||'—'}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Location / Area</div><div class="mobile-record-value">${esc(x.location)}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Reported By</div><div class="mobile-record-value">${esc(x.reportedBy)}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Attended By</div><div class="mobile-record-value">${esc(x.attendedBy)}</div></div>
@@ -1544,6 +1590,7 @@ async function edit(i){
   document.getElementById('editId').value=x.id;
   document.getElementById('date').value=x.date;
   document.getElementById('site').value=x.site;
+  document.getElementById('floor').value=x.floor||'';
   document.getElementById('deficiency').value=x.deficiency;
   document.getElementById('location').value=x.location;
   document.getElementById('reportedBy').value=x.reportedBy;
@@ -1581,6 +1628,7 @@ document.getElementById('form').addEventListener('submit',async function(e){
   id:existingId||id(),
   date:document.getElementById('date').value,
   site:document.getElementById('site').value,
+  floor:document.getElementById('floor').value,
   deficiency:document.getElementById('deficiency').value.trim(),
   location:document.getElementById('location').value.trim(),
   reportedBy:document.getElementById('reportedBy').value.trim(),
@@ -1669,6 +1717,7 @@ async function syncFromExcel(){
    id:String(r.ID??''),
    date:normalizeExcelDate(r['DATE REPORTED']),
    site:String(r.SITE??''),
+   floor:String(r.FLOOR??''),
    deficiency:String(r.DEFICIENCY??''),
    location:String(r['LOCATION/AREA']??''),
    reportedBy:String(r['REPORTED BY']??''),
@@ -1751,6 +1800,7 @@ async function sendToPowerAutomate(obj,isNew=false){
   action:isNew?'add':'update',
   dateReported:obj.date,
   site:obj.site,
+  floor:obj.floor||'',
   deficiency:obj.deficiency,
   locationArea:obj.location,
   reportedBy:obj.reportedBy,
@@ -1792,6 +1842,7 @@ async function testPowerAutomate(){
   id:'TD-TEST-'+Date.now(),
   dateReported:today(),
   site:'Beta',
+  floor:'Beta-37',
   deficiency:'POWER AUTOMATE CONNECTION TEST',
   locationArea:'Test Area',
   reportedBy:'Connection Test',
@@ -1810,7 +1861,7 @@ async function testPowerAutomate(){
 }
 updateConnectionStatus();
 
-function clearFilters(){filterSite.value='';filterStatus.value='';filterDateFrom.value='';filterDateTo.value='';search.value='';render()}
+function clearFilters(){filterSite.value='';filterFloor.value='';filterStatus.value='';filterDateFrom.value='';filterDateTo.value='';search.value='';render()}
 
 function updateStickyOffsets(){
   const root=document.documentElement;
@@ -1828,6 +1879,16 @@ if(typeof ResizeObserver!=='undefined'){
 updateStickyOffsets();
 
 render();
+</script>
+
+<script>
+// PWA service worker registration. API requests and form submissions remain network-only.
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .catch(err => console.error('PWA service worker registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
