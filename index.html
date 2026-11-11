@@ -1713,11 +1713,23 @@ async function syncFromExcel(){
   const rows=await response.json();
   if(!Array.isArray(rows)) throw new Error('The Power Automate response was not a list of Excel rows.');
 
-  data=rows.map(r=>({
-   id:String(r.ID??''),
+  // Preserve Floor values already saved in this browser when an older Power Automate
+  // Sync Select response does not yet include the FLOOR column. This is a compatibility
+  // fallback only; the Excel table and flow must still be mapped for cross-device persistence.
+  const locallySavedFloors=new Map(
+    data.map(x=>[String(x.id||''),String(x.floor||'').trim()])
+        .filter(([recordId,floor])=>recordId && floor)
+  );
+
+  data=rows.map(r=>{
+   const recordId=String(r.ID??'');
+   const returnedFloor=String(r.FLOOR??r.Floor??r.floor??'').trim();
+   const floor=returnedFloor || locallySavedFloors.get(recordId) || '';
+   return {
+   id:recordId,
    date:normalizeExcelDate(r['DATE REPORTED']),
    site:String(r.SITE??''),
-   floor:String(r.FLOOR??''),
+   floor:floor,
    deficiency:String(r.DEFICIENCY??''),
    location:String(r['LOCATION/AREA']??''),
    reportedBy:String(r['REPORTED BY']??''),
@@ -1728,7 +1740,8 @@ async function syncFromExcel(){
    photoName:extractPhotoName(String(r.PHOTO??'')),
    fixPhotoUrl:String(r['FIX PHOTO']??''),
    fixPhotoName:extractPhotoName(String(r['FIX PHOTO']??''))
-  })).filter(x=>x.id);
+   };
+  }).filter(x=>x.id);
 
   localStorage.setItem(KEY,JSON.stringify(data));
   render();
