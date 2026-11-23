@@ -722,11 +722,11 @@ header > button.primary{display:none !important}
 </div>
 
 <div class="card site-status-panel" id="siteStatusPanel">
-  <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="true" aria-controls="siteStatusContent">
-    <span>📊 Site Status Overview<small id="siteStatusMeta">Loading current filter results...</small></span>
-    <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌃</span>
+  <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
+    <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
+    <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌄</span>
   </button>
-  <div class="site-status-content" id="siteStatusContent">
+  <div class="site-status-content" id="siteStatusContent" style="display:none">
     <div class="site-status-meta">
       <span>Click any status count to view its matching records.</span>
       <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
@@ -3353,7 +3353,11 @@ function renderSiteStatusStats(records){
   ];
   const sites=['CPT2','Gamma','Beta'];
   const all=Array.isArray(records)?records:[];
-  meta.textContent=all.length+' matching record'+(all.length===1?'':'s')+' • updates with current filters';
+  const totalOpen=all.filter(x=>siteStatusKey(x.status)==='Open').length;
+  const totalOngoing=all.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
+  const totalHold=all.filter(x=>siteStatusKey(x.status)==='On Hold').length;
+  const totalCompleted=all.filter(x=>siteStatusKey(x.status)==='Completed').length;
+  meta.textContent=all.length+' filtered • Open '+totalOpen+' · Ongoing '+totalOngoing+' · On Hold '+totalHold+' · Completed '+totalCompleted;
   grid.innerHTML=sites.map(site=>{
     const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
     const metrics=statuses.map(status=>{
