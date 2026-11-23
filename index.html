@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.3</title>
+<title>Tech Daily Site Deficiency V19.4</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -816,6 +816,128 @@ header > button.primary{display:none !important}
  .filter-layout .filter-actions button{flex:1;min-width:0;font-size:12px;padding:9px 8px}
 }
 </style>
+
+<style>
+/* V19.4 mobile Floor picker: floating bottom sheet, not an inline/dropdown list. */
+.multi-floor-backdrop{display:none}
+.multi-floor-done{display:none}
+@media(max-width:700px){
+  .filter-row--primary{z-index:6500 !important}
+  .multi-floor-filter[open]{
+    position:static !important;
+    z-index:6500 !important;
+  }
+  .multi-floor-summary{
+    min-height:44px !important;
+    height:44px !important;
+    padding:9px 11px !important;
+    border-radius:10px !important;
+    background:#edf5ff !important;
+    border:1px solid #b9cde3 !important;
+    color:#17324d !important;
+    font-weight:700 !important;
+  }
+  .multi-floor-summary::before{
+    content:'☷';
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:22px;
+    height:22px;
+    margin-right:7px;
+    border-radius:6px;
+    background:#dceafd;
+    color:#1769aa;
+    font-size:16px;
+    flex:none;
+  }
+  .multi-floor-summary .multi-floor-chevron{display:none !important}
+  .multi-floor-backdrop{
+    display:block;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:0 !important;
+    background:rgba(12,25,40,.48);
+    backdrop-filter:blur(2px);
+    -webkit-backdrop-filter:blur(2px);
+  }
+  .multi-floor-filter:not([open]) .multi-floor-backdrop{display:none !important}
+  .multi-floor-panel{
+    position:fixed !important;
+    left:12px !important;
+    right:12px !important;
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+    top:auto !important;
+    width:auto !important;
+    max-width:none !important;
+    max-height:min(68vh,560px) !important;
+    margin:0 !important;
+    padding:14px !important;
+    overflow:hidden !important;
+    display:flex !important;
+    flex-direction:column !important;
+    border:1px solid #d5dee7 !important;
+    border-radius:18px !important;
+    background:#fff !important;
+    box-shadow:0 18px 50px rgba(0,0,0,.28) !important;
+    z-index:1 !important;
+  }
+  .multi-floor-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr auto !important;
+    align-items:center;
+    gap:8px !important;
+    padding-bottom:11px !important;
+    border-bottom:1px solid #e7edf3 !important;
+  }
+  .multi-floor-action{
+    min-height:38px;
+    padding:8px 12px !important;
+    border-radius:9px !important;
+    font-size:12px !important;
+  }
+  .multi-floor-done{
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    background:#1769aa !important;
+    color:#fff !important;
+    min-width:64px;
+  }
+  .multi-floor-options{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+    max-height:calc(68vh - 90px) !important;
+    overflow-y:auto !important;
+    padding:12px 2px 2px !important;
+    overscroll-behavior:contain;
+  }
+  .multi-floor-options label{
+    min-height:42px;
+    padding:9px 8px !important;
+    border:1px solid #e1e8ef;
+    border-radius:10px !important;
+    background:#f8fafc;
+    font-size:12px !important;
+    line-height:1.2;
+  }
+  .multi-floor-options label:has(input:checked){
+    border-color:#78a9dc;
+    background:#eaf3ff;
+    color:#164e80;
+  }
+  .multi-floor-options input[type=checkbox]{
+    width:17px !important;
+    height:17px !important;
+    margin:0 !important;
+  }
+}
+@media(max-width:360px){
+  .multi-floor-options{grid-template-columns:1fr !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -849,7 +971,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.3</small>
+    <small>Beta • Gamma • CPT2 • V19.4</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -902,10 +1024,12 @@ header > button.primary{display:none !important}
         <summary class="multi-floor-summary" id="filterFloorSummary">
           <span id="filterFloorSummaryText">All Floors</span><span class="multi-floor-chevron">▾</span>
         </summary>
+        <div class="multi-floor-backdrop" onclick="closeFloorFilterPanel(event)" aria-hidden="true"></div>
         <div class="multi-floor-panel">
           <div class="multi-floor-actions">
             <button type="button" class="multi-floor-action" onclick="selectAllFloorFilters(event)">Select all</button>
             <button type="button" class="multi-floor-action" onclick="clearFloorFilters(event)">Clear</button>
+            <button type="button" class="multi-floor-action multi-floor-done" onclick="closeFloorFilterPanel(event)">Done</button>
           </div>
           <div class="multi-floor-options">
             <label><input class="filter-floor-option" type="checkbox" value="CPT2-26" onchange="render()"> CPT2-26</label>
@@ -3466,6 +3590,11 @@ function clearFloorFilters(event){
  document.querySelectorAll('.filter-floor-option').forEach(el=>el.checked=false);
  updateFloorFilterLabel();
  if(event)render();
+}
+function closeFloorFilterPanel(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ const picker=document.getElementById('filterFloorDropdown');
+ if(picker)picker.open=false;
 }
 function render(){
   const site=document.getElementById('filterSite').value;
