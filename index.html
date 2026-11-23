@@ -2876,7 +2876,7 @@ function v17ShowApp(profile){
   if(adminBtn) adminBtn.style.display=isAdmin?'inline-block':'none';
   if(usersBtn) usersBtn.style.display=isAdmin?'inline-block':'none';
   window.v17CurrentUserProfile=profile;
-  window.v17CurrentAuthUser=v17CurrentAuthUser || null;
+  window.v17CurrentAuthUser=window.v17CurrentAuthUser || null;
 }
 
 function v17ShowLogin(message=''){
