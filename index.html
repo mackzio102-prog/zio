@@ -440,7 +440,7 @@ header > button.primary{
   .tablewrap thead th{
     position:sticky !important;
     top:var(--sticky-area-height,0px) !important;
-    z-index:4500 !important;
+    z-index:3000 !important;
     background:#dff5e7 !important;
     color:#17324d !important;
     box-shadow:0 2px 4px #0002 !important;
@@ -571,7 +571,7 @@ header > button.primary{display:none !important}
   .tablewrap thead th{
     position:sticky !important;
     top:var(--sticky-area-height,0px) !important;
-    z-index:4500 !important;
+    z-index:3000 !important;
     background:#dff5e7 !important;
     color:#17324d !important;
     box-shadow:0 2px 4px #0002 !important;
@@ -794,6 +794,14 @@ header > button.primary{display:none !important}
     grid-template-columns:1fr !important;
     max-height:190px !important;
   }
+}
+</style>
+
+<style>
+/* V19.1 final layer order: the sticky dashboard and Floor pop-out stay above the sticky table header. */
+#stickyArea{z-index:4000 !important}
+@media(min-width:701px){
+  .tablewrap thead th{z-index:3000 !important}
 }
 </style>
 
