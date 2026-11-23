@@ -14,32 +14,43 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
-    private WebView webView;
-    private ValueCallback<Uri[]> fileCallback;
+    private static final String APP_URL = "https://mackzio102-prog.github.io/zio/";
     private static final int FILE_REQUEST = 1001;
     private static final int CAMERA_REQUEST = 1002;
+
+    private WebView webView;
+    private ValueCallback<Uri[]> fileCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         webView = new WebView(this);
         setContentView(webView);
 
-        WebSettings s = webView.getSettings();
-        s.setJavaScriptEnabled(true);
-        s.setDomStorageEnabled(true);
-        s.setAllowFileAccess(true);
-        s.setAllowContentAccess(true);
-        s.setMediaPlaybackRequiresUserGesture(false);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(false);
+        settings.setAllowContentAccess(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        CookieManager.getInstance().setAcceptCookie(true);
+        CookieManager cookies = CookieManager.getInstance();
+        cookies.setAcceptCookie(true);
+        cookies.setAcceptThirdPartyCookies(webView, true);
+
         webView.setWebViewClient(new WebViewClient());
-
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                                              FileChooserParams params) {
-                if (fileCallback != null) fileCallback.onReceiveValue(null);
+                if (fileCallback != null) {
+                    fileCallback.onReceiveValue(null);
+                }
                 fileCallback = callback;
                 try {
                     Intent intent = params.createIntent();
@@ -53,11 +64,13 @@ public class MainActivity extends Activity {
         });
 
         if (android.os.Build.VERSION.SDK_INT >= 23 &&
-            checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
         }
 
-        webView.loadUrl("file:///android_asset/index.html");
+        // Always load the live V18.16 web app so mobile stays in sync with desktop.
+        // Android's default WebView user agent lets the app select the mobile session.
+        webView.loadUrl(APP_URL);
     }
 
     @Override
@@ -69,9 +82,9 @@ public class MainActivity extends Activity {
                 if (data != null && data.getData() != null) {
                     results = new Uri[]{data.getData()};
                 } else if (data != null && data.getClipData() != null) {
-                    int n = data.getClipData().getItemCount();
-                    results = new Uri[n];
-                    for (int i = 0; i < n; i++) {
+                    int count = data.getClipData().getItemCount();
+                    results = new Uri[count];
+                    for (int i = 0; i < count; i++) {
                         results[i] = data.getClipData().getItemAt(i).getUri();
                     }
                 }
@@ -82,8 +95,23 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onDestroy() {
+        if (fileCallback != null) {
+            fileCallback.onReceiveValue(null);
+            fileCallback = null;
+        }
+        if (webView != null) {
+            webView.destroy();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
