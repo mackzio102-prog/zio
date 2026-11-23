@@ -2,7 +2,7 @@
 <!-- saved from url=(0110)file:///C:/Users/zalde.casanos/Downloads/Tech_Daily_Site_Deficiency_V18_16_Floor_Dropdown_Original_Layout.html -->
 <html lang="en" style="--sticky-area-height: 310px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0752b5">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.4</title>
+<title>Tech Daily Site Deficiency V19.5</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -938,6 +938,20 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V19.5 mobile layering and safe-area correction.
+   The sticky status grid previously sat above the filter card's stacking context. */
+@media(max-width:700px){
+  #stickyArea:has(#filterFloorDropdown[open]) .filter-card{
+    z-index:4020 !important;
+  }
+  #stickyArea > header{
+    padding-top:max(40px, calc(18px + env(safe-area-inset-top, 0px))) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -971,7 +985,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.4</small>
+    <small>Beta • Gamma • CPT2 • V19.5</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
