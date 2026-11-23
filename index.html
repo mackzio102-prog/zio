@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency - V18.16</title>
+<title>Tech Daily Site Deficiency V19</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -624,12 +624,50 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V19 site-level status overview */
+.site-status-panel{margin-top:0;margin-bottom:12px;padding:0;overflow:hidden}
+.site-status-toggle{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  padding:13px 15px;background:#f8fafc;color:#17324d;text-align:left;
+  border:0;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;
+}
+.site-status-toggle small{display:block;margin-top:3px;font-size:11px;font-weight:500;color:#66737f}
+.site-status-toggle-mark{font-size:19px;line-height:1;flex:none}
+.site-status-content{padding:12px}
+.site-status-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;color:#66737f;font-size:11px}
+.site-status-reset{padding:7px 10px;font-size:11px;background:#edf2f6;color:#17324d}
+.site-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.site-status-site{min-width:0;border:1px solid #e2e8f0;border-radius:11px;padding:11px;background:#fff}
+.site-status-site-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.site-status-site-name{font-size:14px;font-weight:800;color:#17324d}
+.site-status-total{font-size:11px;color:#52606d;background:#f1f5f9;border-radius:20px;padding:4px 8px;white-space:nowrap}
+.site-status-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.site-status-metric{min-width:0;min-height:66px;padding:7px 4px;border:1px solid #e5eaf0;border-radius:8px;background:#f8fafc;color:#17212b;text-align:center;cursor:pointer}
+.site-status-metric:disabled{opacity:.45;cursor:default}
+.site-status-metric:not(:disabled):hover{filter:brightness(.97);border-color:#94a3b8}
+.site-status-metric strong{display:block;font-size:20px;line-height:1.1;font-weight:800;font-variant-numeric:tabular-nums}
+.site-status-metric span{display:block;margin-top:5px;font-size:10px;font-weight:700;line-height:1.15;overflow-wrap:anywhere}
+.site-status-metric.status-open{background:#fff1f1;border-color:#f5cccc;color:#a61b1b}
+.site-status-metric.status-ongoing{background:#fff8e6;border-color:#f1dfaa;color:#8a6500}
+.site-status-metric.status-hold{background:#f0f2f4;border-color:#d9dfe5;color:#46515c}
+.site-status-metric.status-completed{background:#eaf8ef;border-color:#bfe6cc;color:#146c43}
+@media(max-width:900px){.site-status-grid{grid-template-columns:1fr}.site-status-site{padding:10px}.site-status-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:420px){
+ .site-status-content{padding:9px}
+ .site-status-metric{min-height:60px;padding:6px 2px}
+ .site-status-metric strong{font-size:18px}
+ .site-status-metric span{font-size:9px}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
   <div id="v17LoginCard">
     <h2>🔐 Tech Daily Site Deficiency</h2>
-    <p>V18 Secure Login</p>
+    <p>V19 Secure Login</p>
     <form id="v17LoginForm">
       <div class="v17-field">
         <label for="v17Username">Username or Email</label>
@@ -657,7 +695,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V18</small>
+    <small>Beta • Gamma • CPT2 • V19</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -681,6 +719,22 @@ header > button.primary{display:none !important}
 <div class="card yellow">🟡 Ongoing<div class="stat" id="ongoing">6</div></div>
 <div class="card green">🟢 Completed<div class="stat" id="completed">54</div></div>
 <div class="card black">⚫ On Hold<div class="stat" id="hold">3</div></div>
+</div>
+
+<div class="card site-status-panel" id="siteStatusPanel">
+  <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="true" aria-controls="siteStatusContent">
+    <span>📊 Site Status Overview<small id="siteStatusMeta">Loading current filter results...</small></span>
+    <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌃</span>
+  </button>
+  <div class="site-status-content" id="siteStatusContent">
+    <div class="site-status-meta">
+      <span>Click any status count to view its matching records.</span>
+      <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
+    </div>
+    <div class="site-status-grid" id="siteStatusGrid">
+      <div class="site-status-site">Loading site statistics...</div>
+    </div>
+  </div>
 </div>
 <div class="card filter-card">
 <div class="filter-layout">
@@ -3275,10 +3329,69 @@ function render(){
       : '<div class="mobile-empty">No deficiencies found.</div>';
   }
 
-  document.getElementById('open').textContent=data.filter(x=>x.status==='Open').length;
-  document.getElementById('ongoing').textContent=data.filter(x=>x.status==='Ongoing').length;
-  document.getElementById('completed').textContent=data.filter(x=>x.status==='Completed').length;
-  document.getElementById('hold').textContent=data.filter(x=>x.status==='On Hold').length;
+  // V19: the dashboard totals always reflect the records currently visible under active filters.
+  document.getElementById('open').textContent=filtered.filter(x=>siteStatusKey(x.status)==='Open').length;
+  document.getElementById('ongoing').textContent=filtered.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
+  document.getElementById('completed').textContent=filtered.filter(x=>siteStatusKey(x.status)==='Completed').length;
+  document.getElementById('hold').textContent=filtered.filter(x=>siteStatusKey(x.status)==='On Hold').length;
+  renderSiteStatusStats(filtered);
+}
+function siteStatusKey(value){
+  const key=String(value||'').trim().toLowerCase();
+  const keys={'open':'Open','ongoing':'Ongoing','completed':'Completed','on hold':'On Hold'};
+  return keys[key]||'';
+}
+function renderSiteStatusStats(records){
+  const grid=document.getElementById('siteStatusGrid');
+  const meta=document.getElementById('siteStatusMeta');
+  if(!grid||!meta)return;
+  const statuses=[
+    {name:'Open',cls:'status-open'},
+    {name:'Ongoing',cls:'status-ongoing'},
+    {name:'On Hold',cls:'status-hold'},
+    {name:'Completed',cls:'status-completed'}
+  ];
+  const sites=['CPT2','Gamma','Beta'];
+  const all=Array.isArray(records)?records:[];
+  meta.textContent=all.length+' matching record'+(all.length===1?'':'s')+' • updates with current filters';
+  grid.innerHTML=sites.map(site=>{
+    const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
+    const metrics=statuses.map(status=>{
+      const count=siteRecords.filter(x=>siteStatusKey(x.status)===status.name).length;
+      return '<button type="button" class="site-status-metric '+status.cls+'" '+(count?'':'disabled')+
+        ' onclick="selectSiteStatus(\''+site+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
+        '<strong>'+count+'</strong><span>'+status.name+'</span></button>';
+    }).join('');
+    return '<section class="site-status-site" aria-label="'+site+' status statistics">'+
+      '<div class="site-status-site-head"><span class="site-status-site-name">'+site+'</span>'+
+      '<span class="site-status-total">'+siteRecords.length+' total</span></div>'+
+      '<div class="site-status-metrics">'+metrics+'</div></section>';
+  }).join('');
+}
+function selectSiteStatus(site,status){
+  const siteFilter=document.getElementById('filterSite');
+  const statusFilter=document.getElementById('filterStatus');
+  if(!siteFilter||!statusFilter)return;
+  siteFilter.value=site||'';
+  statusFilter.value=status||'';
+  render();
+}
+function resetSiteStatusFilters(){
+  const siteFilter=document.getElementById('filterSite');
+  const statusFilter=document.getElementById('filterStatus');
+  if(siteFilter)siteFilter.value='';
+  if(statusFilter)statusFilter.value='';
+  render();
+}
+function toggleSiteStatusPanel(){
+  const content=document.getElementById('siteStatusContent');
+  const toggle=document.getElementById('siteStatusToggle');
+  const mark=document.getElementById('siteStatusToggleMark');
+  if(!content||!toggle)return;
+  const open=content.style.display==='none';
+  content.style.display=open?'block':'none';
+  toggle.setAttribute('aria-expanded',String(open));
+  if(mark)mark.textContent=open?'⌃':'⌄';
 }
 function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 let selectedPhoto={name:'',type:'',data:''};
