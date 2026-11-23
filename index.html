@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19</title>
+<title>Tech Daily Site Deficiency V19.1</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -662,6 +662,43 @@ header > button.primary{display:none !important}
 }
 </style>
 
+<style>
+/* V19.1 multi-select Floor filter */
+.multi-floor-filter{position:relative;width:100%;min-width:0}
+.multi-floor-filter summary{list-style:none}
+.multi-floor-filter summary::-webkit-details-marker{display:none}
+.multi-floor-summary{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ width:100%;height:42px;padding:9px 10px;margin:0;
+ border:1px solid #ccd5dd;border-radius:7px;background:#fff;color:#17212b;
+ font-size:14px;font-weight:500;cursor:pointer;user-select:none;
+}
+.multi-floor-summary:hover{border-color:#91a4b8}
+.multi-floor-filter[open] .multi-floor-summary{border-color:#3978b8;box-shadow:0 0 0 2px #3978b81c}
+.multi-floor-chevron{flex:none;color:#52606d;font-size:13px}
+.multi-floor-filter[open] .multi-floor-chevron{transform:rotate(180deg)}
+.multi-floor-panel{
+ position:absolute;top:calc(100% + 5px);left:0;z-index:4900;
+ width:max(100%,250px);max-width:min(340px,85vw);
+ background:#fff;border:1px solid #d5dee7;border-radius:10px;
+ box-shadow:0 12px 30px #142b4430;padding:9px;
+}
+.multi-floor-actions{display:flex;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid #edf0f2}
+.multi-floor-action{padding:6px 9px;background:#edf2f6;color:#17324d;font-size:11px}
+.multi-floor-options{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;max-height:230px;overflow:auto;padding-top:7px}
+.multi-floor-options label{
+ display:flex;align-items:center;gap:7px;min-width:0;padding:7px 5px;
+ border-radius:6px;color:#344054;font-size:12px;font-weight:600;cursor:pointer;
+}
+.multi-floor-options label:hover{background:#f3f6f9}
+.multi-floor-options input[type=checkbox]{width:15px;height:15px;flex:none;margin:0;accent-color:#1769aa}
+@media(max-width:700px){
+ .multi-floor-summary{height:42px;padding:8px 7px;font-size:13px}
+ .multi-floor-panel{max-width:min(310px,90vw)}
+ .multi-floor-options{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -695,7 +732,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19</small>
+    <small>Beta • Gamma • CPT2 • V19.1</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -742,24 +779,35 @@ header > button.primary{display:none !important}
     <label class="filter-field"><span>Site</span>
       <select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
     </label>
-    <label class="filter-field"><span>Floor</span>
-      <select id="filterFloor" onchange="render()" aria-label="Filter by floor">
-        <option value="">All Floors</option>
-        <option value="CPT2-26">CPT2-26</option>
-        <option value="CPT2-Build Area">CPT2-Build Area</option>
-        <option value="Beta-37">Beta-37</option>
-        <option value="Beta-36">Beta-36</option>
-        <option value="Beta-35">Beta-35</option>
-        <option value="Beta-34">Beta-34</option>
-        <option value="Beta-33">Beta-33</option>
-        <option value="Beta 17">Beta 17</option>
-        <option value="Gamma-Rec Hub">Gamma-Rec Hub</option>
-        <option value="Gamma-35">Gamma-35</option>
-        <option value="Gamma-34">Gamma-34</option>
-        <option value="Gamma-33">Gamma-33</option>
-        <option value="Gamma-32">Gamma-32</option>
-      </select>
-    </label>
+    <div class="filter-field">
+      <span>Floor</span>
+      <details class="multi-floor-filter" id="filterFloorDropdown">
+        <summary class="multi-floor-summary" id="filterFloorSummary">
+          <span id="filterFloorSummaryText">All Floors</span><span class="multi-floor-chevron">▾</span>
+        </summary>
+        <div class="multi-floor-panel">
+          <div class="multi-floor-actions">
+            <button type="button" class="multi-floor-action" onclick="selectAllFloorFilters(event)">Select all</button>
+            <button type="button" class="multi-floor-action" onclick="clearFloorFilters(event)">Clear</button>
+          </div>
+          <div class="multi-floor-options">
+            <label><input class="filter-floor-option" type="checkbox" value="CPT2-26" onchange="render()"> CPT2-26</label>
+            <label><input class="filter-floor-option" type="checkbox" value="CPT2-Build Area" onchange="render()"> CPT2-Build Area</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta-37" onchange="render()"> Beta-37</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta-36" onchange="render()"> Beta-36</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta-35" onchange="render()"> Beta-35</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta-34" onchange="render()"> Beta-34</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta-33" onchange="render()"> Beta-33</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Beta 17" onchange="render()"> Beta 17</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Gamma-Rec Hub" onchange="render()"> Gamma-Rec Hub</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Gamma-35" onchange="render()"> Gamma-35</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Gamma-34" onchange="render()"> Gamma-34</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Gamma-33" onchange="render()"> Gamma-33</label>
+            <label><input class="filter-floor-option" type="checkbox" value="Gamma-32" onchange="render()"> Gamma-32</label>
+          </div>
+        </div>
+      </details>
+    </div>
     <label class="filter-field"><span>Status</span>
       <select id="filterStatus" onchange="render()"><option value="">All Statuses</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
     </label>
@@ -3272,12 +3320,41 @@ async function viewPhoto(recordId,photoName,photoKind='before'){
   status.textContent='Could not load photo. '+(err&&err.message?err.message:'Please try again.');
  }
 }
+const FLOOR_FILTER_OPTIONS=[
+ 'CPT2-26','CPT2-Build Area','Beta-37','Beta-36','Beta-35','Beta-34','Beta-33',
+ 'Beta 17','Gamma-Rec Hub','Gamma-35','Gamma-34','Gamma-33','Gamma-32'
+];
+function getSelectedFloorFilters(){
+ return Array.from(document.querySelectorAll('.filter-floor-option:checked')).map(el=>el.value);
+}
+function updateFloorFilterLabel(){
+ const selected=getSelectedFloorFilters();
+ const label=document.getElementById('filterFloorSummaryText');
+ if(!label)return;
+ if(selected.length===0||selected.length===FLOOR_FILTER_OPTIONS.length)label.textContent='All Floors';
+ else if(selected.length===1)label.textContent=selected[0];
+ else label.textContent=selected.length+' floors selected';
+}
+function selectAllFloorFilters(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ document.querySelectorAll('.filter-floor-option').forEach(el=>el.checked=true);
+ updateFloorFilterLabel();
+ render();
+}
+function clearFloorFilters(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ document.querySelectorAll('.filter-floor-option').forEach(el=>el.checked=false);
+ updateFloorFilterLabel();
+ if(event)render();
+}
 function render(){
   const site=document.getElementById('filterSite').value;
-  const floor=document.getElementById('filterFloor').value;
+  const selectedFloors=getSelectedFloorFilters();
+  const floorFilterActive=selectedFloors.length>0 && selectedFloors.length<FLOOR_FILTER_OPTIONS.length;
   const status=document.getElementById('filterStatus').value;
   const dateFrom=document.getElementById('filterDateFrom').value;
   const dateTo=document.getElementById('filterDateTo').value;
+  updateFloorFilterLabel();
   const q=document.getElementById('search').value.toLowerCase();
   const rowEl=document.getElementById('rows');
   const mobileEl=document.getElementById('mobileRows');
@@ -3286,7 +3363,7 @@ function render(){
     const matchesDateFrom=!dateFrom||recordDate>=dateFrom;
     const matchesDateTo=!dateTo||recordDate<=dateTo;
     return (!site||x.site===site) &&
-           (!floor||(x.floor||'')===floor) &&
+           (!floorFilterActive||selectedFloors.includes(String(x.floor||''))) &&
            (!status||x.status===status) &&
            matchesDateFrom && matchesDateTo &&
            (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
@@ -3826,7 +3903,15 @@ async function testPowerAutomate(){
 }
 updateConnectionStatus();
 
-function clearFilters(){filterSite.value='';filterFloor.value='';filterStatus.value='';filterDateFrom.value='';filterDateTo.value='';search.value='';render()}
+function clearFilters(){
+  document.getElementById('filterSite').value='';
+  clearFloorFilters();
+  document.getElementById('filterStatus').value='';
+  document.getElementById('filterDateFrom').value='';
+  document.getElementById('filterDateTo').value='';
+  document.getElementById('search').value='';
+  render();
+}
 
 function updateStickyOffsets(){
   const root=document.documentElement;
