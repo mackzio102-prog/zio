@@ -29,11 +29,28 @@ header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-cont
   z-index:3500;
   background:#edf2f6;
 }
-.filter-date{display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #ccd5dd;border-radius:7px;padding:0 7px;height:38px}
-.filter-date span{font-size:11px;font-weight:700;color:#52606d;white-space:nowrap}
-.filter-date input{border:0;padding:0;margin:0;width:120px;background:transparent;outline:none}
+.filter-date{display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #ccd5dd;border-radius:7px;padding:0 9px;height:42px;min-width:0}
+.filter-date span{font-size:12px;font-weight:700;color:#52606d;white-space:nowrap}
+.filter-date input{border:0;padding:0;margin:0;width:100%;min-width:0;background:transparent;outline:none}
 .filter-date input:focus{outline:none;box-shadow:none}
-@media(max-width:700px){.filter-date{flex:1;min-width:0}.filter-date input{width:100%;min-width:0}}
+.filter-layout{display:flex;flex-direction:column;gap:12px}
+.filter-row{display:grid;gap:10px;align-items:end}
+.filter-row--primary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.filter-row--secondary{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(180px,2fr) auto}
+.filter-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.filter-field>span{font-size:12px;font-weight:700;color:#52606d}
+.filter-layout .filter-field select,.filter-layout .filter-field input{width:100%;min-width:0;height:42px;margin:0;padding:9px 10px}
+.filter-layout .filter-date{width:100%}
+.filter-layout .filter-clear{height:42px;white-space:nowrap}
+@media(max-width:700px){
+  .filter-row--primary{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .filter-row--secondary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .filter-field>span{font-size:11px}
+  .filter-layout .filter-field select,.filter-layout .filter-field input{font-size:13px;padding:8px 7px}
+  .filter-layout .filter-date{padding:0 7px}
+  .filter-layout .filter-field--search,.filter-layout .filter-clear{grid-column:1/-1}
+  .filter-layout .filter-clear{width:100%}
+}
 header h1{font-size:20px;margin:0}header small{opacity:.8}
 .container{max-width:1200px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .card{background:#fff;border-radius:10px;padding:10px;box-shadow:0 1px 5px #0001}.stat{font-size:21px;font-weight:bold;margin-top:3px}
@@ -659,35 +676,45 @@ header > button.primary{display:none !important}
 <div class="card black">⚫ On Hold<div class="stat" id="hold">3</div></div>
 </div>
 <div class="card filter-card">
-<div class="toolbar">
-<select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
-<select id="filterFloor" onchange="render()" aria-label="Filter by floor">
-  <option value="">All Floors</option>
-  <option value="CPT2-26">CPT2-26</option>
-  <option value="CPT2-Build Area">CPT2-Build Area</option>
-  <option value="Beta-37">Beta-37</option>
-  <option value="Beta-36">Beta-36</option>
-  <option value="Beta-35">Beta-35</option>
-  <option value="Beta-34">Beta-34</option>
-  <option value="Beta-33">Beta-33</option>
-  <option value="Beta 17">Beta 17</option>
-  <option value="Gamma-Rec Hub">Gamma-Rec Hub</option>
-  <option value="Gamma-35">Gamma-35</option>
-  <option value="Gamma-34">Gamma-34</option>
-  <option value="Gamma-33">Gamma-33</option>
-  <option value="Gamma-32">Gamma-32</option>
-</select>
-<select id="filterStatus" onchange="render()"><option value="">All Status</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
-<label class="filter-date" title="Filter from date">
-  <span>From</span>
-  <input id="filterDateFrom" type="date" onchange="render()" aria-label="From date">
-</label>
-<label class="filter-date" title="Filter to date">
-  <span>To</span>
-  <input id="filterDateTo" type="date" onchange="render()" aria-label="To date">
-</label>
-<input id="search" oninput="render()" placeholder="Search deficiency/floor/location">
-<button class="secondary" onclick="clearFilters()">Clear</button>
+<div class="filter-layout">
+  <div class="filter-row filter-row--primary" aria-label="Record filters">
+    <label class="filter-field"><span>Site</span>
+      <select id="filterSite" onchange="render()"><option value="">All Sites</option><option>Beta</option><option>Gamma</option><option>CPT2</option></select>
+    </label>
+    <label class="filter-field"><span>Floor</span>
+      <select id="filterFloor" onchange="render()" aria-label="Filter by floor">
+        <option value="">All Floors</option>
+        <option value="CPT2-26">CPT2-26</option>
+        <option value="CPT2-Build Area">CPT2-Build Area</option>
+        <option value="Beta-37">Beta-37</option>
+        <option value="Beta-36">Beta-36</option>
+        <option value="Beta-35">Beta-35</option>
+        <option value="Beta-34">Beta-34</option>
+        <option value="Beta-33">Beta-33</option>
+        <option value="Beta 17">Beta 17</option>
+        <option value="Gamma-Rec Hub">Gamma-Rec Hub</option>
+        <option value="Gamma-35">Gamma-35</option>
+        <option value="Gamma-34">Gamma-34</option>
+        <option value="Gamma-33">Gamma-33</option>
+        <option value="Gamma-32">Gamma-32</option>
+      </select>
+    </label>
+    <label class="filter-field"><span>Status</span>
+      <select id="filterStatus" onchange="render()"><option value="">All Statuses</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
+    </label>
+  </div>
+  <div class="filter-row filter-row--secondary" aria-label="Date and keyword filters">
+    <label class="filter-field"><span>From date</span>
+      <span class="filter-date"><input id="filterDateFrom" type="date" onchange="render()" aria-label="From date"></span>
+    </label>
+    <label class="filter-field"><span>To date</span>
+      <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="To date"></span>
+    </label>
+    <label class="filter-field filter-field--search"><span>Search records</span>
+      <input id="search" oninput="render()" placeholder="Deficiency, floor, location...">
+    </label>
+    <button class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
+  </div>
 </div>
 </div>
 </div>
