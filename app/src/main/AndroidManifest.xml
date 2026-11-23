@@ -6,6 +6,8 @@
     <application
         android:theme="@style/AppTheme"
         android:label="Tech Daily Site Deficiency"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="false"
         android:hardwareAccelerated="true">
         <activity
