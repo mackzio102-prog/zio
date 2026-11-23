@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.1</title>
+<title>Tech Daily Site Deficiency V19.2</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -805,6 +805,17 @@ header > button.primary{display:none !important}
 }
 </style>
 
+<style>
+/* V19.2 filtered-record PDF export control */
+.filter-actions{display:flex;align-items:end;gap:8px;min-width:0}
+.filter-actions button{height:42px;white-space:nowrap}
+.filter-export{background:#1769aa;color:#fff}
+.filter-export:hover{background:#125991}
+@media(max-width:700px){
+ .filter-layout .filter-actions{grid-column:1/-1;width:100%}
+ .filter-layout .filter-actions button{flex:1;min-width:0;font-size:12px;padding:9px 8px}
+}
+</style>
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -838,7 +849,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.1</small>
+    <small>Beta • Gamma • CPT2 • V19.2</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -928,7 +939,10 @@ header > button.primary{display:none !important}
     <label class="filter-field filter-field--search"><span>Search records</span>
       <input id="search" oninput="render()" placeholder="Deficiency, floor, location...">
     </label>
-    <button class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
+    <div class="filter-actions">
+      <button type="button" class="primary filter-export" onclick="exportFilteredRecordsPDF()">📄 Export Filtered PDF</button>
+      <button type="button" class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
+    </div>
   </div>
 </div>
 </div>
@@ -3475,6 +3489,7 @@ function render(){
            (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
   });
 
+  window.currentFilteredRecords=filtered.slice();
   rowEl.innerHTML=filtered.length
     ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.floor)||'—'}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
     : '<tr><td colspan="13" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
@@ -4009,6 +4024,76 @@ async function testPowerAutomate(){
 }
 updateConnectionStatus();
 
+
+function exportFilteredRecordsPDF(){
+ const records=Array.isArray(window.currentFilteredRecords)?window.currentFilteredRecords:[];
+ if(!records.length){
+  if(typeof showAppMessage==='function')showAppMessage('warning','No Records to Export','Your current filters do not return any records.');
+  else alert('No records match your current filters.');
+  return;
+ }
+ const value=id=>document.getElementById(id)?.value||'';
+ const site=value('filterSite')||'All Sites';
+ const selectedFloors=getSelectedFloorFilters();
+ const floors=selectedFloors.length===0||selectedFloors.length===FLOOR_FILTER_OPTIONS.length?'All Floors':selectedFloors.join(', ');
+ const status=value('filterStatus')||'All Statuses';
+ const dateFrom=value('filterDateFrom')||'Any';
+ const dateTo=value('filterDateTo')||'Any';
+ const keyword=value('search').trim()||'None';
+ const generated=new Date().toLocaleString();
+ const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const statuses=[
+  {name:'Open',count:records.filter(x=>siteStatusKey(x.status)==='Open').length},
+  {name:'Ongoing',count:records.filter(x=>siteStatusKey(x.status)==='Ongoing').length},
+  {name:'On Hold',count:records.filter(x=>siteStatusKey(x.status)==='On Hold').length},
+  {name:'Completed',count:records.filter(x=>siteStatusKey(x.status)==='Completed').length}
+ ];
+ const rows=records.map(record=>'<tr>'+
+  '<td>'+safe(record.id)+'</td><td>'+safe(record.date||'—')+'</td>'+
+  '<td>'+safe(record.site||'—')+'</td><td>'+safe(record.floor||'—')+'</td>'+
+  '<td class="description">'+safe(record.deficiency||'—')+'</td>'+
+  '<td>'+safe(record.location||'—')+'</td><td>'+safe(record.reportedBy||'—')+'</td>'+
+  '<td>'+safe(record.attendedBy||'—')+'</td>'+
+  '<td><span class="status status-'+safe(siteStatusKey(record.status).toLowerCase().replace(/\s+/g,'-'))+'">'+safe(record.status||'—')+'</span></td>'+
+  '<td class="remarks">'+safe(record.remarks||'—')+'</td></tr>').join('');
+ const popup=window.open('','_blank');
+ if(!popup){
+  if(typeof showAppMessage==='function')showAppMessage('warning','Pop-up Blocked','Allow pop-ups for this site, then click Export Filtered PDF again.');
+  else alert('Allow pop-ups for this site, then click Export Filtered PDF again.');
+  return;
+ }
+ const title='Tech Daily Site Deficiency — Filtered Records';
+ const doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+ '<title>'+safe(title)+'</title><style>'+
+ '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17212b;margin:0;font-size:9px}'+
+ '.top{border-bottom:2px solid #17324d;padding-bottom:9px;margin-bottom:10px}h1{font-size:18px;color:#17324d;margin:0 0 4px}'+
+ '.generated{font-size:9px;color:#66737f}.summary{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}'+
+ '.summary span{display:inline-block;padding:5px 8px;border:1px solid #dbe3ea;border-radius:5px;background:#f6f8fa;font-weight:700}'+
+ '.filters{border:1px solid #dbe3ea;background:#f8fafc;border-radius:6px;padding:8px;margin:9px 0 12px;line-height:1.55}'+
+ '.count{margin:8px 0;font-size:10px;font-weight:700}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}'+
+ 'th{background:#dff5e7;color:#17324d;font-weight:700;text-align:left}th,td{border:1px solid #d8e0e7;padding:5px 4px;vertical-align:top;overflow-wrap:anywhere}'+
+ 'tbody tr{break-inside:avoid;page-break-inside:avoid}td.description,td.remarks{white-space:pre-wrap}'+
+ 'th:nth-child(1){width:8%}th:nth-child(2){width:7%}th:nth-child(3){width:5%}th:nth-child(4){width:8%}'+
+ 'th:nth-child(5){width:17%}th:nth-child(6){width:12%}th:nth-child(7){width:10%}th:nth-child(8){width:10%}th:nth-child(9){width:8%}th:nth-child(10){width:15%}'+
+ '.status{display:inline-block;padding:3px 5px;border-radius:10px;font-weight:700;white-space:nowrap}'+
+ '.status-open{background:#fde7e9;color:#b4232f}.status-ongoing{background:#fff4cc;color:#8a6500}'+
+ '.status-on-hold{background:#e4e6e8;color:#343a40}.status-completed{background:#dff5e8;color:#146c43}'+
+ '.foot{margin-top:10px;color:#66737f;font-size:8px}.actions{display:flex;gap:8px;margin:0 0 12px}'+
+ '.actions button{border:0;border-radius:5px;padding:8px 12px;background:#17324d;color:#fff;font-weight:700;cursor:pointer}'+
+ '@media print{.actions{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
+ '</style></head><body>'+
+ '<div class="actions"><button onclick="window.print()">Print / Save as PDF</button><button onclick="window.close()">Close</button></div>'+
+ '<header class="top"><h1>'+safe(title)+'</h1><div class="generated">Generated: '+safe(generated)+'</div></header>'+
+ '<div class="summary"><span>Total Records: '+records.length+'</span>'+statuses.map(s=>'<span>'+safe(s.name)+': '+s.count+'</span>').join('')+'</div>'+
+ '<section class="filters"><b>Applied Filters</b><br>Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+'<br>'+
+ 'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>Search: '+safe(keyword)+'</section>'+
+ '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
+ '<table><thead><tr><th>Record ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location / Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th></tr></thead>'+
+ '<tbody>'+rows+'</tbody></table><div class="foot">Confidential internal operational report • Tech Daily Site Deficiency</div>'+
+ '</body></html>';
+ popup.document.open();popup.document.write(doc);popup.document.close();popup.focus();
+ setTimeout(()=>{try{popup.print()}catch(err){console.warn('Print dialog could not be opened automatically:',err)}},400);
+}
 function clearFilters(){
   document.getElementById('filterSite').value='';
   clearFloorFilters();
