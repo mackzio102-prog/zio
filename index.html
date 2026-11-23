@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.2</title>
+<title>Tech Daily Site Deficiency V19.3</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -849,7 +849,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.2</small>
+    <small>Beta • Gamma • CPT2 • V19.3</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -4025,17 +4025,34 @@ async function testPowerAutomate(){
 updateConnectionStatus();
 
 
-function exportFilteredRecordsPDF(){
+async function exportFilteredRecordsPDF(){
  const records=Array.isArray(window.currentFilteredRecords)?window.currentFilteredRecords:[];
  if(!records.length){
   if(typeof showAppMessage==='function')showAppMessage('warning','No Records to Export','Your current filters do not return any records.');
   else alert('No records match your current filters.');
   return;
  }
+
+ // Open the report window immediately during the click to avoid browser pop-up blocking.
+ const popup=window.open('','_blank');
+ if(!popup){
+  if(typeof showAppMessage==='function')showAppMessage('warning','Pop-up Blocked','Allow pop-ups for this site, then click Export Filtered PDF again.');
+  else alert('Allow pop-ups for this site, then click Export Filtered PDF again.');
+  return;
+ }
+
+ const exportButton=document.querySelector('.filter-export');
+ if(exportButton){exportButton.disabled=true;exportButton.textContent='⏳ Loading photos...';}
+ const loadingPage='<!doctype html><html><head><meta charset="utf-8"><title>Preparing report</title>'+
+  '<style>body{font-family:Arial,sans-serif;padding:40px;color:#17324d}p{color:#66737f}</style></head>'+
+  '<body><h2>Preparing filtered PDF report...</h2><p id="progress">Retrieving attached photos. Please keep this window open.</p></body></html>';
+ popup.document.open();popup.document.write(loadingPage);popup.document.close();
+
  const value=id=>document.getElementById(id)?.value||'';
  const site=value('filterSite')||'All Sites';
  const selectedFloors=getSelectedFloorFilters();
- const floors=selectedFloors.length===0||selectedFloors.length===FLOOR_FILTER_OPTIONS.length?'All Floors':selectedFloors.join(', ');
+ const floors=selectedFloors.length===0||selectedFloors.length===FLOOR_FILTER_OPTIONS.length
+  ?'All Floors':selectedFloors.join(', ');
  const status=value('filterStatus')||'All Statuses';
  const dateFrom=value('filterDateFrom')||'Any';
  const dateTo=value('filterDateTo')||'Any';
@@ -4048,52 +4065,145 @@ function exportFilteredRecordsPDF(){
   {name:'On Hold',count:records.filter(x=>siteStatusKey(x.status)==='On Hold').length},
   {name:'Completed',count:records.filter(x=>siteStatusKey(x.status)==='Completed').length}
  ];
- const rows=records.map(record=>'<tr>'+
-  '<td>'+safe(record.id)+'</td><td>'+safe(record.date||'—')+'</td>'+
-  '<td>'+safe(record.site||'—')+'</td><td>'+safe(record.floor||'—')+'</td>'+
-  '<td class="description">'+safe(record.deficiency||'—')+'</td>'+
-  '<td>'+safe(record.location||'—')+'</td><td>'+safe(record.reportedBy||'—')+'</td>'+
-  '<td>'+safe(record.attendedBy||'—')+'</td>'+
-  '<td><span class="status status-'+safe(siteStatusKey(record.status).toLowerCase().replace(/\s+/g,'-'))+'">'+safe(record.status||'—')+'</span></td>'+
-  '<td class="remarks">'+safe(record.remarks||'—')+'</td></tr>').join('');
- const popup=window.open('','_blank');
- if(!popup){
-  if(typeof showAppMessage==='function')showAppMessage('warning','Pop-up Blocked','Allow pop-ups for this site, then click Export Filtered PDF again.');
-  else alert('Allow pop-ups for this site, then click Export Filtered PDF again.');
-  return;
+
+ try{
+  const flowUrl=getFlowUrl();
+  if(!flowUrl)throw new Error('Power Automate connection is not configured in this browser. Open Settings and reconnect before exporting photos.');
+
+  const photoJobs=[];
+  records.forEach(record=>{
+   const beforeName=photoNameFromRecord(record);
+   const fixName=fixPhotoNameFromRecord(record);
+   if(beforeName)photoJobs.push({key:String(record.id)+'|before',record,name:beforeName,kind:'before',label:'Before Photo'});
+   if(fixName)photoJobs.push({key:String(record.id)+'|fix',record,name:fixName,kind:'fix',label:'Fix Photo'});
+  });
+
+  const photoResults=new Map();
+  let completedJobs=0;
+  let failedPhotos=0;
+  let nextJob=0;
+  const worker=async()=>{
+   while(true){
+    const jobIndex=nextJob++;
+    if(jobIndex>=photoJobs.length)return;
+    const job=photoJobs[jobIndex];
+    try{
+     const response=await fetch(flowUrl,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({action:'getPhoto',id:job.record.id,photoName:job.name,photoKind:job.kind}),
+      cache:'no-store'
+     });
+     if(!response.ok)throw new Error('HTTP '+response.status);
+     const result=await response.json();
+     if(!result||!result.data||!/^data:image\//i.test(String(result.data))){
+      throw new Error('No image data returned by the photo service.');
+     }
+     photoResults.set(job.key,{src:String(result.data),label:job.label});
+    }catch(err){
+     console.warn('PDF photo retrieval failed for '+job.record.id+' ('+job.kind+'):',err);
+     photoResults.set(job.key,{src:'',label:job.label,error:true});
+     failedPhotos++;
+    }finally{
+     completedJobs++;
+     const progress=popup.document.getElementById('progress');
+     if(progress)progress.textContent='Retrieving attached photos: '+completedJobs+' of '+photoJobs.length+' complete. Please keep this window open.';
+    }
+   }
+  };
+
+  if(photoJobs.length){
+   const workerCount=Math.min(3,photoJobs.length);
+   await Promise.all(Array.from({length:workerCount},()=>worker()));
+  }
+
+  const photoCell=(record,kind)=>{
+   const result=photoResults.get(String(record.id)+'|'+kind);
+   if(!result)return '<span class="no-photo">No '+(kind==='fix'?'fix ':'')+'photo</span>';
+   if(!result.src)return '<span class="photo-unavailable">Photo unavailable</span>';
+   return '<div class="photo-wrap"><img src="'+safe(result.src)+'" alt="'+safe(result.label)+' for '+safe(record.id)+'"><small>'+safe(result.label)+'</small></div>';
+  };
+
+  const rows=records.map(record=>'<tr>'+
+   '<td>'+safe(record.id)+'</td>'+
+   '<td>'+safe(record.date||'—')+'</td>'+
+   '<td>'+safe(record.site||'—')+'</td>'+
+   '<td>'+safe(record.floor||'—')+'</td>'+
+   '<td class="description">'+safe(record.deficiency||'—')+'</td>'+
+   '<td>'+safe(record.location||'—')+'</td>'+
+   '<td>'+safe(record.reportedBy||'—')+'</td>'+
+   '<td>'+safe(record.attendedBy||'—')+'</td>'+
+   '<td><span class="status status-'+safe(siteStatusKey(record.status).toLowerCase().replace(/\s+/g,'-'))+'">'+safe(record.status||'—')+'</span></td>'+
+   '<td class="remarks">'+safe(record.remarks||'—')+'</td>'+
+   '<td class="photo-column">'+photoCell(record,'before')+'</td>'+
+   '<td class="photo-column">'+photoCell(record,'fix')+'</td>'+
+  '</tr>').join('');
+
+  const title='Tech Daily Site Deficiency — Filtered Records';
+  const doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
+   '<title>'+safe(title)+'</title><style>'+
+   '@page{size:A3 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17212b;margin:0;font-size:9px}'+
+   '.top{border-bottom:2px solid #17324d;padding-bottom:9px;margin-bottom:10px}h1{font-size:18px;color:#17324d;margin:0 0 4px}'+
+   '.generated{font-size:9px;color:#66737f}.summary{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}'+
+   '.summary span{display:inline-block;padding:5px 8px;border:1px solid #dbe3ea;border-radius:5px;background:#f6f8fa;font-weight:700}'+
+   '.filters{border:1px solid #dbe3ea;background:#f8fafc;border-radius:6px;padding:8px;margin:9px 0 12px;line-height:1.55}'+
+   '.count{margin:8px 0;font-size:10px;font-weight:700}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}'+
+   'th{background:#dff5e7;color:#17324d;font-weight:700;text-align:left}th,td{border:1px solid #d8e0e7;padding:5px 4px;vertical-align:top;overflow-wrap:anywhere}'+
+   'tbody tr{break-inside:avoid;page-break-inside:avoid}td.description,td.remarks{white-space:pre-wrap}'+
+   'th:nth-child(1){width:7%}th:nth-child(2){width:6%}th:nth-child(3){width:4%}th:nth-child(4){width:6%}'+
+   'th:nth-child(5){width:12%}th:nth-child(6){width:8%}th:nth-child(7){width:7%}th:nth-child(8){width:7%}'+
+   'th:nth-child(9){width:6%}th:nth-child(10){width:8%}th:nth-child(11),th:nth-child(12){width:14.5%}'+
+   '.photo-column{text-align:center;vertical-align:middle}.photo-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}'+
+   '.photo-wrap img{display:block;width:auto;max-width:100%;max-height:125px;object-fit:contain;border:1px solid #d8e0e7;border-radius:4px}'+
+   '.photo-wrap small{font-size:8px;color:#52606d}.no-photo,.photo-unavailable{display:inline-block;color:#788491;font-size:8px;font-style:italic}'+
+   '.photo-unavailable{color:#a61b1b}.status{display:inline-block;padding:3px 5px;border-radius:10px;font-weight:700;white-space:nowrap}'+
+   '.status-open{background:#fde7e9;color:#b4232f}.status-ongoing{background:#fff4cc;color:#8a6500}'+
+   '.status-on-hold{background:#e4e6e8;color:#343a40}.status-completed{background:#dff5e8;color:#146c43}'+
+   '.foot{margin-top:10px;color:#66737f;font-size:8px}.actions{display:flex;gap:8px;margin:0 0 12px}'+
+   '.actions button{border:0;border-radius:5px;padding:8px 12px;background:#17324d;color:#fff;font-weight:700;cursor:pointer}'+
+   '@media print{.actions{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
+   '</style></head><body>'+
+   '<div class="actions"><button onclick="window.print()">Print / Save as PDF</button><button onclick="window.close()">Close</button></div>'+
+   '<header class="top"><h1>'+safe(title)+'</h1><div class="generated">Generated: '+safe(generated)+'</div></header>'+
+   '<div class="summary"><span>Total Records: '+records.length+'</span>'+
+    statuses.map(s=>'<span>'+safe(s.name)+': '+s.count+'</span>').join('')+
+    '<span>Photos retrieved: '+(photoJobs.length-failedPhotos)+' / '+photoJobs.length+'</span></div>'+
+   '<section class="filters"><b>Applied Filters</b><br>'+
+    'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+'<br>'+
+    'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>'+
+    'Search: '+safe(keyword)+'</section>'+
+   '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
+   '<table><thead><tr><th>Record ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location / Area</th>'+
+    '<th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Before Photo</th><th>Fix Photo</th></tr></thead>'+
+   '<tbody>'+rows+'</tbody></table>'+
+   '<div class="foot">Confidential internal operational report • Tech Daily Site Deficiency'+
+    (failedPhotos?' • '+failedPhotos+' photo(s) could not be retrieved':'')+'</div>'+
+   '</body></html>';
+
+  popup.document.open();popup.document.write(doc);popup.document.close();popup.focus();
+  const images=Array.from(popup.document.images);
+  await Promise.all(images.map(img=>{
+   if(img.complete)return Promise.resolve();
+   return new Promise(resolve=>{
+    img.onload=resolve;img.onerror=resolve;
+    setTimeout(resolve,12000);
+   });
+  }));
+  setTimeout(()=>{try{popup.focus();popup.print()}catch(err){console.warn('Print dialog could not be opened automatically:',err)}},250);
+  if(typeof showAppMessage==='function'){
+   showAppMessage('success','PDF Report Prepared',records.length+' filtered records included. '+(photoJobs.length-failedPhotos)+' photo(s) retrieved'+(failedPhotos?', '+failedPhotos+' photo(s) unavailable':'')+'.');
+  }
+ }catch(err){
+  console.error('PDF export failed:',err);
+  popup.document.open();
+  popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>PDF Export Error</title></head><body style="font-family:Arial;padding:30px;color:#17212b"><h2>Could not prepare the PDF report</h2><p>'+safe(err&&err.message?err.message:'Unexpected error')+'</p><p>Please close this window and try again.</p></body></html>');
+  popup.document.close();
+  if(typeof showAppMessage==='function')showAppMessage('error','PDF Export Failed',String(err&&err.message?err.message:'Please try again.'),6500);
+ }finally{
+  if(exportButton){exportButton.disabled=false;exportButton.textContent='📄 Export Filtered PDF';}
  }
- const title='Tech Daily Site Deficiency — Filtered Records';
- const doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+
- '<title>'+safe(title)+'</title><style>'+
- '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17212b;margin:0;font-size:9px}'+
- '.top{border-bottom:2px solid #17324d;padding-bottom:9px;margin-bottom:10px}h1{font-size:18px;color:#17324d;margin:0 0 4px}'+
- '.generated{font-size:9px;color:#66737f}.summary{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}'+
- '.summary span{display:inline-block;padding:5px 8px;border:1px solid #dbe3ea;border-radius:5px;background:#f6f8fa;font-weight:700}'+
- '.filters{border:1px solid #dbe3ea;background:#f8fafc;border-radius:6px;padding:8px;margin:9px 0 12px;line-height:1.55}'+
- '.count{margin:8px 0;font-size:10px;font-weight:700}table{width:100%;border-collapse:collapse;table-layout:fixed}thead{display:table-header-group}'+
- 'th{background:#dff5e7;color:#17324d;font-weight:700;text-align:left}th,td{border:1px solid #d8e0e7;padding:5px 4px;vertical-align:top;overflow-wrap:anywhere}'+
- 'tbody tr{break-inside:avoid;page-break-inside:avoid}td.description,td.remarks{white-space:pre-wrap}'+
- 'th:nth-child(1){width:8%}th:nth-child(2){width:7%}th:nth-child(3){width:5%}th:nth-child(4){width:8%}'+
- 'th:nth-child(5){width:17%}th:nth-child(6){width:12%}th:nth-child(7){width:10%}th:nth-child(8){width:10%}th:nth-child(9){width:8%}th:nth-child(10){width:15%}'+
- '.status{display:inline-block;padding:3px 5px;border-radius:10px;font-weight:700;white-space:nowrap}'+
- '.status-open{background:#fde7e9;color:#b4232f}.status-ongoing{background:#fff4cc;color:#8a6500}'+
- '.status-on-hold{background:#e4e6e8;color:#343a40}.status-completed{background:#dff5e8;color:#146c43}'+
- '.foot{margin-top:10px;color:#66737f;font-size:8px}.actions{display:flex;gap:8px;margin:0 0 12px}'+
- '.actions button{border:0;border-radius:5px;padding:8px 12px;background:#17324d;color:#fff;font-weight:700;cursor:pointer}'+
- '@media print{.actions{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'+
- '</style></head><body>'+
- '<div class="actions"><button onclick="window.print()">Print / Save as PDF</button><button onclick="window.close()">Close</button></div>'+
- '<header class="top"><h1>'+safe(title)+'</h1><div class="generated">Generated: '+safe(generated)+'</div></header>'+
- '<div class="summary"><span>Total Records: '+records.length+'</span>'+statuses.map(s=>'<span>'+safe(s.name)+': '+s.count+'</span>').join('')+'</div>'+
- '<section class="filters"><b>Applied Filters</b><br>Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+'<br>'+
- 'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>Search: '+safe(keyword)+'</section>'+
- '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
- '<table><thead><tr><th>Record ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location / Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th></tr></thead>'+
- '<tbody>'+rows+'</tbody></table><div class="foot">Confidential internal operational report • Tech Daily Site Deficiency</div>'+
- '</body></html>';
- popup.document.open();popup.document.write(doc);popup.document.close();popup.focus();
- setTimeout(()=>{try{popup.print()}catch(err){console.warn('Print dialog could not be opened automatically:',err)}},400);
 }
+
 function clearFilters(){
   document.getElementById('filterSite').value='';
   clearFloorFilters();
