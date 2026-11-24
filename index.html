@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.5</title>
+<title>Tech Daily Site Deficiency V19.6</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -952,6 +952,17 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V19.6 Team assignment and filter layout. */
+@media(min-width:701px){
+  .filter-row--primary{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+}
+@media(max-width:700px){
+  .filter-row--primary{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -985,7 +996,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.5</small>
+    <small>Beta • Gamma • CPT2 • V19.6</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1063,6 +1074,9 @@ header > button.primary{display:none !important}
         </div>
       </details>
     </div>
+    <label class="filter-field"><span>Team</span>
+      <select id="filterTeam" onchange="render()"><option value="">All Teams</option><option>Tech 1</option><option>Tech 2</option><option>Tech 3</option><option>Facilities</option></select>
+    </label>
     <label class="filter-field"><span>Status</span>
       <select id="filterStatus" onchange="render()"><option value="">All Statuses</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
     </label>
@@ -1088,7 +1102,7 @@ header > button.primary{display:none !important}
 </div>
 <div class="container">
 <div class="card">
-<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"><tr><td>TD-2026-213046</td><td>2025-02-27</td><td>CPT2</td><td>CPT2-26</td><td>Defective sink drain stopper
+<div class="tablewrap"><table><thead><tr><th>ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location/Area</th><th>Reported By</th><th>Attended By</th><th>Assigned Team</th><th>Status</th><th>Remarks</th><th>Photo</th><th>Fix Photo</th><th></th></tr></thead><tbody id="rows"><tr><td>TD-2026-213046</td><td>2025-02-27</td><td>CPT2</td><td>CPT2-26</td><td>Defective sink drain stopper
 Male northwing cr
 2 PC's</td><td>26th floor</td><td>SG Abapo</td><td></td><td><span class="badge b-red">🔴 Open</span></td><td></td><td>—</td><td><span style="display:inline-block;padding:8px 10px;border-radius:7px;background:#f1f3f5;color:#66737f;font-size:12px;font-weight:bold;">No Fix Photo</span></td><td><button class="secondary" onclick="edit('TD-2026-213046')">Update</button></td></tr><tr><td>TD-2026-965954</td><td>2026-05-07</td><td>CPT2</td><td>CPT2-26</td><td>Loose lockset 
 Lateral Cabinet reception area</td><td>26th Floor</td><td>Sic Bringas</td><td></td><td><span class="badge b-red">🔴 Open</span></td><td></td><td>—</td><td><span style="display:inline-block;padding:8px 10px;border-radius:7px;background:#f1f3f5;color:#66737f;font-size:12px;font-weight:bold;">No Fix Photo</span></td><td><button class="secondary" onclick="edit('TD-2026-965954')">Update</button></td></tr><tr><td>TD-2026-315356</td><td>2026-08-27</td><td>CPT2</td><td>CPT2-26</td><td>Defective Faucet (leak)
@@ -3023,6 +3037,7 @@ Wall Repainting</div>
 <div><label>LOCATION / AREA</label><input id="location" placeholder="e.g. 35F Production Area"></div>
 <div><label>REPORTED BY</label><input id="reportedBy" placeholder="Person who reported the deficiency"></div>
 <div><label>ATTENDED BY</label><input id="attendedBy" placeholder="Technician who attended the deficiency"></div>
+<div><label>ASSIGNED TEAM</label><select id="team"><option value="">Select Team</option><option>Tech 1</option><option>Tech 2</option><option>Tech 3</option><option>Facilities</option></select></div>
 <div class="full"><label id="photoLabel">UPLOAD PHOTO</label>
 <input type="file" id="photo" accept="image/*" capture="environment" title="">
 <div id="photoRuleNote" class="photo-note">You can upload the deficiency photo while status is Open, Ongoing, or On Hold.</div>
@@ -3614,6 +3629,7 @@ function render(){
   const site=document.getElementById('filterSite').value;
   const selectedFloors=getSelectedFloorFilters();
   const floorFilterActive=selectedFloors.length>0 && selectedFloors.length<FLOOR_FILTER_OPTIONS.length;
+  const team=document.getElementById('filterTeam').value;
   const status=document.getElementById('filterStatus').value;
   const dateFrom=document.getElementById('filterDateFrom').value;
   const dateTo=document.getElementById('filterDateTo').value;
@@ -3627,15 +3643,16 @@ function render(){
     const matchesDateTo=!dateTo||recordDate<=dateTo;
     return (!site||x.site===site) &&
            (!floorFilterActive||selectedFloors.includes(String(x.floor||''))) &&
+           (!team||String(x.team||'')===team) &&
            (!status||x.status===status) &&
            matchesDateFrom && matchesDateTo &&
-           (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
+           (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+(x.team||'')+' '+x.id).toLowerCase().includes(q));
   });
 
   window.currentFilteredRecords=filtered.slice();
   rowEl.innerHTML=filtered.length
-    ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.floor)||'—'}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
-    : '<tr><td colspan="13" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
+    ? filtered.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.floor)||'—'}</td><td>${esc(x.deficiency)}</td><td>${esc(x.location)}</td><td>${esc(x.reportedBy)}</td><td>${esc(x.attendedBy)}</td><td>${esc(x.team||"—")}</td><td>${badge(x.status)}</td><td>${esc(x.remarks)}</td><td>${photoCell(x)}</td><td>${fixPhotoCell(x)}</td><td><button class="secondary" onclick="edit('${esc(x.id)}')">Update</button></td></tr>`).join('')
+    : '<tr><td colspan="14" style="text-align:center;padding:30px">No deficiencies found.</td></tr>';
 
   if(mobileEl){
     mobileEl.innerHTML=filtered.length
@@ -3655,6 +3672,7 @@ function render(){
               <div class="mobile-record-field"><div class="mobile-record-label">Location / Area</div><div class="mobile-record-value">${esc(x.location)}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Reported By</div><div class="mobile-record-value">${esc(x.reportedBy)}</div></div>
               <div class="mobile-record-field"><div class="mobile-record-label">Attended By</div><div class="mobile-record-value">${esc(x.attendedBy)}</div></div>
+              <div class="mobile-record-field"><div class="mobile-record-label">Assigned Team</div><div class="mobile-record-value">${esc(x.team)||"—"}</div></div>
             </div>
             <div class="mobile-record-remarks">
               <div class="mobile-record-label">Remarks</div>
@@ -3901,6 +3919,7 @@ async function edit(i){
   document.getElementById('location').value=x.location;
   document.getElementById('reportedBy').value=x.reportedBy;
   document.getElementById('attendedBy').value=x.attendedBy;
+  document.getElementById('team').value=x.team||'';
   document.getElementById('remarks').value=x.remarks;
   document.getElementById('status').value=x.status;
   clearAllPhotoState();
@@ -3939,6 +3958,7 @@ document.getElementById('form').addEventListener('submit',async function(e){
   location:document.getElementById('location').value.trim(),
   reportedBy:document.getElementById('reportedBy').value.trim(),
   attendedBy:document.getElementById('attendedBy').value.trim(),
+  team:document.getElementById('team').value,
   remarks:document.getElementById('remarks').value.trim(),
   status:document.getElementById('status').value,
   photoName:selectedPhoto.data ? selectedPhoto.name : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoName||'' : ''),
@@ -4028,6 +4048,7 @@ async function syncFromExcel(){
    location:String(r['LOCATION/AREA']??''),
    reportedBy:String(r['REPORTED BY']??''),
    attendedBy:String(r['ATTENDED BY']??''),
+   team:String(r.TEAM??''),
    status:String(r.STATUS??'Open'),
    remarks:String(r.REMARKS??''),
    photoUrl:String(r.PHOTO??''),
@@ -4111,6 +4132,7 @@ async function sendToPowerAutomate(obj,isNew=false){
   locationArea:obj.location,
   reportedBy:obj.reportedBy,
   attendedBy:obj.attendedBy,
+  team:obj.team||'',
   status:obj.status,
   remarks:obj.remarks,
   photoName:obj.photoName||'',
@@ -4196,6 +4218,7 @@ async function exportFilteredRecordsPDF(){
  const selectedFloors=getSelectedFloorFilters();
  const floors=selectedFloors.length===0||selectedFloors.length===FLOOR_FILTER_OPTIONS.length
   ?'All Floors':selectedFloors.join(', ');
+ const team=value('filterTeam')||'All Teams';
  const status=value('filterStatus')||'All Statuses';
  const dateFrom=value('filterDateFrom')||'Any';
  const dateTo=value('filterDateTo')||'Any';
@@ -4276,6 +4299,7 @@ async function exportFilteredRecordsPDF(){
    '<td>'+safe(record.location||'—')+'</td>'+
    '<td>'+safe(record.reportedBy||'—')+'</td>'+
    '<td>'+safe(record.attendedBy||'—')+'</td>'+
+   '<td>'+safe(record.team||'—')+'</td>'+
    '<td><span class="status status-'+safe(siteStatusKey(record.status).toLowerCase().replace(/\s+/g,'-'))+'">'+safe(record.status||'—')+'</span></td>'+
    '<td class="remarks">'+safe(record.remarks||'—')+'</td>'+
    '<td class="photo-column">'+photoCell(record,'before')+'</td>'+
@@ -4312,12 +4336,12 @@ async function exportFilteredRecordsPDF(){
     statuses.map(s=>'<span>'+safe(s.name)+': '+s.count+'</span>').join('')+
     '<span>Photos retrieved: '+(photoJobs.length-failedPhotos)+' / '+photoJobs.length+'</span></div>'+
    '<section class="filters"><b>Applied Filters</b><br>'+
-    'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+'<br>'+
+    'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+' &nbsp; | &nbsp; Team: '+safe(team)+'<br>'+
     'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>'+
     'Search: '+safe(keyword)+'</section>'+
    '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
    '<table><thead><tr><th>Record ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location / Area</th>'+
-    '<th>Reported By</th><th>Attended By</th><th>Status</th><th>Remarks</th><th>Before Photo</th><th>Fix Photo</th></tr></thead>'+
+    '<th>Reported By</th><th>Attended By</th><th>Assigned Team</th><th>Status</th><th>Remarks</th><th>Before Photo</th><th>Fix Photo</th></tr></thead>'+
    '<tbody>'+rows+'</tbody></table>'+
    '<div class="foot">Confidential internal operational report • Tech Daily Site Deficiency'+
     (failedPhotos?' • '+failedPhotos+' photo(s) could not be retrieved':'')+'</div>'+
@@ -4351,6 +4375,7 @@ function clearFilters(){
   document.getElementById('filterSite').value='';
   clearFloorFilters();
   document.getElementById('filterStatus').value='';
+  document.getElementById('filterTeam').value='';
   document.getElementById('filterDateFrom').value='';
   document.getElementById('filterDateTo').value='';
   document.getElementById('search').value='';
