@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V19.7</title>
+<title>Tech Daily Site Deficiency V19.8</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -953,6 +953,17 @@ header > button.primary{display:none !important}
 </style>
 
 
+
+<style>
+/* V19.8 Attended By filter layout. */
+@media(min-width:701px){
+  .filter-row--primary{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+}
+@media(max-width:700px){
+  .filter-row--primary{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -986,7 +997,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V19.7</small>
+    <small>Beta • Gamma • CPT2 • V19.8</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1066,6 +1077,9 @@ header > button.primary{display:none !important}
     </div>
     <label class="filter-field"><span>Status</span>
       <select id="filterStatus" onchange="render()"><option value="">All Statuses</option><option>Open</option><option>Ongoing</option><option>Completed</option><option>On Hold</option></select>
+    </label>
+    <label class="filter-field"><span>Attended By</span>
+      <select id="filterAttendedBy" onchange="render()"><option value="">All Attended By</option><option>Tech 1</option><option>Tech 2</option><option>Tech 3</option><option>Facilities</option></select>
     </label>
   </div>
   <div class="filter-row filter-row--secondary" aria-label="Date and keyword filters">
@@ -3618,6 +3632,7 @@ function render(){
   const site=document.getElementById('filterSite').value;
   const selectedFloors=getSelectedFloorFilters();
   const floorFilterActive=selectedFloors.length>0 && selectedFloors.length<FLOOR_FILTER_OPTIONS.length;
+  const attendedByFilter=document.getElementById('filterAttendedBy').value;
   const status=document.getElementById('filterStatus').value;
   const dateFrom=document.getElementById('filterDateFrom').value;
   const dateTo=document.getElementById('filterDateTo').value;
@@ -3631,6 +3646,7 @@ function render(){
     const matchesDateTo=!dateTo||recordDate<=dateTo;
     return (!site||x.site===site) &&
            (!floorFilterActive||selectedFloors.includes(String(x.floor||''))) &&
+           (!attendedByFilter||String(x.attendedBy||'')===attendedByFilter) &&
            (!status||x.status===status) &&
            matchesDateFrom && matchesDateTo &&
            (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
@@ -4220,6 +4236,7 @@ async function exportFilteredRecordsPDF(){
  const selectedFloors=getSelectedFloorFilters();
  const floors=selectedFloors.length===0||selectedFloors.length===FLOOR_FILTER_OPTIONS.length
   ?'All Floors':selectedFloors.join(', ');
+ const attendedByFilter=value('filterAttendedBy')||'All Attended By';
  const status=value('filterStatus')||'All Statuses';
  const dateFrom=value('filterDateFrom')||'Any';
  const dateTo=value('filterDateTo')||'Any';
@@ -4336,7 +4353,7 @@ async function exportFilteredRecordsPDF(){
     statuses.map(s=>'<span>'+safe(s.name)+': '+s.count+'</span>').join('')+
     '<span>Photos retrieved: '+(photoJobs.length-failedPhotos)+' / '+photoJobs.length+'</span></div>'+
    '<section class="filters"><b>Applied Filters</b><br>'+
-    'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+'<br>'+
+    'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+' &nbsp; | &nbsp; Attended By: '+safe(attendedByFilter)+'<br>'+
     'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>'+
     'Search: '+safe(keyword)+'</section>'+
    '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
@@ -4375,6 +4392,7 @@ function clearFilters(){
   document.getElementById('filterSite').value='';
   clearFloorFilters();
   document.getElementById('filterStatus').value='';
+  document.getElementById('filterAttendedBy').value='';
   document.getElementById('filterDateFrom').value='';
   document.getElementById('filterDateTo').value='';
   document.getElementById('search').value='';
