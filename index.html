@@ -986,6 +986,15 @@ header > button.primary{display:none !important}
 .filter-excel:hover{background:#14643f}
 </style>
 
+
+<style>
+/* V20.0: keep Excel, PDF, and Clear actions usable on narrow screens. */
+@media(max-width:700px){
+  .filter-layout .filter-actions{display:flex;flex-wrap:wrap;gap:6px}
+  .filter-layout .filter-actions button{flex:1 1 100px;white-space:normal;min-height:42px;line-height:1.2}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -4458,7 +4467,7 @@ function exportFilteredRecordsExcel(){
   const url=URL.createObjectURL(blob);
   const anchor=document.createElement('a');
   const dateStamp=new Date().toISOString().slice(0,10);
-  const techSlug=attendedBy==='All Attended By'?'All_Teams':attendedBy.replace(/[^A-Za-z0-9_-]+/g,'_');
+  const techSlug=attendedBy==='All Attended By'?'All_Attended_By':attendedBy.replace(/[^A-Za-z0-9_-]+/g,'_');
   anchor.href=url;
   anchor.download='Tech_Daily_Site_Deficiency_'+techSlug+'_Filtered_'+dateStamp+'.xlsx';
   document.body.appendChild(anchor);
