@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.29</title>
+<title>Tech Daily Site Deficiency V20.30</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2804,7 +2804,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.29</small>
+    <small>Beta • Gamma • CPT2 • V20.30</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -2936,7 +2936,7 @@ header > button.primary{display:none !important}
       </label>
       <label class="filter-field">
         <span>To</span>
-        <span class="filter-date"><input id="filterDateTo" type="date" onchange="render(); collapseDateFilterAfterTo(\'reportedDate\')" aria-label="Reported date to"></span>
+        <span class="filter-date"><input id="filterDateTo" type="date" onchange="handleDateToSelection('reportedDate')" aria-label="Reported date to"></span>
       </label>
     </div>
 
@@ -2948,7 +2948,7 @@ header > button.primary{display:none !important}
       </label>
       <label class="filter-field">
         <span>To</span>
-        <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render(); collapseDateFilterAfterTo(\'completionDate\')" aria-label="Completion date to"></span>
+        <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="handleDateToSelection('completionDate')" aria-label="Completion date to"></span>
       </label>
     </div>
   </div>
@@ -5735,6 +5735,13 @@ function toggleDashboardFoldout(key){
   panel.toggle.setAttribute('aria-expanded',String(open));
   panel.toggle.classList.toggle('is-open',open);
   if(panel.mark)panel.mark.textContent=open?'⌃':'⌄';
+}
+
+function handleDateToSelection(which){
+  // Refresh the filtered records and visible From–To summary before closing the picker.
+  render();
+  updateDateFilterSummaries();
+  collapseDateFilterAfterTo(which);
 }
 
 function collapseDateFilterAfterTo(which){
