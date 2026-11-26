@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.16</title>
+<title>Tech Daily Site Deficiency V20.17</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2116,6 +2116,127 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.17: Keep the current filter and matching count in one compact box at the left. */
+.filter-date-groups .site-status-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:11px;
+}
+.filter-date-groups .site-status-current-view{
+  display:flex;
+  flex:0 1 auto;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:6px 10px;
+  width:max-content;
+  max-width:100%;
+  margin:0;
+  padding:9px 12px;
+  border:1px solid #b8cbe0;
+  border-left:5px solid #1769aa;
+  border-radius:9px;
+  background:#edf4fb;
+  text-align:left;
+}
+.filter-date-groups .site-status-current-view__label{
+  display:block;
+  color:#52677d;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+.filter-date-groups .site-status-current-view strong{
+  display:block;
+  color:#17324d;
+  font-size:15px;
+  line-height:1.25;
+  font-weight:800;
+}
+.filter-date-groups .site-status-current-view__count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:5px 8px;
+  border-radius:7px;
+  background:#17324d;
+  color:#fff;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:800;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.filter-date-groups .site-status-meta-actions{
+  display:flex;
+  flex:1 1 220px;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  min-width:0;
+}
+.filter-date-groups .site-status-meta-actions > span{
+  color:#52606d;
+  font-size:11px;
+  line-height:1.35;
+}
+.filter-date-groups .site-status-reset{
+  flex:none;
+  min-height:36px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+/* Color each status label to match its status, while keeping all labels legible. */
+.filter-date-groups .site-status-metric.status-open span{color:#a61b1b}
+.filter-date-groups .site-status-metric.status-ongoing span{color:#8a6500}
+.filter-date-groups .site-status-metric.status-hold span{color:#46515c}
+.filter-date-groups .site-status-metric.status-completed span{color:#146c43}
+.filter-date-groups .site-status-metric span{
+  font-weight:800;
+}
+@media(max-width:700px){
+  .filter-date-groups .site-status-meta{
+    align-items:stretch;
+    flex-direction:column;
+    gap:8px;
+  }
+  .filter-date-groups .site-status-current-view{
+    width:100%;
+    justify-content:flex-start;
+    gap:6px 8px;
+    padding:9px 10px;
+  }
+  .filter-date-groups .site-status-current-view__label{
+    flex:1 1 100%;
+  }
+  .filter-date-groups .site-status-current-view strong{
+    font-size:14px;
+  }
+  .filter-date-groups .site-status-current-view__count{
+    margin-left:0;
+    font-size:11px;
+  }
+  .filter-date-groups .site-status-meta-actions{
+    flex-direction:row;
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .filter-date-groups .site-status-meta-actions > span{
+    flex:1 1 150px;
+    font-size:10px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2149,7 +2270,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.16</small>
+    <small>Beta • Gamma • CPT2 • V20.17</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -2249,14 +2370,16 @@ header > button.primary{display:none !important}
 
     <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
       id="siteStatusContent" style="display:none">
-      <div class="site-status-current-view" aria-live="polite">
-        <span class="site-status-current-view__label">CURRENT SITE / STATUS FILTER</span>
-        <strong id="siteStatusViewName">All sites • All statuses</strong>
-        <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
-      </div>
       <div class="site-status-meta">
-        <span>Click any status count to view its matching records.</span>
-        <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
+        <div class="site-status-current-view" aria-live="polite">
+          <span class="site-status-current-view__label">CURRENT FILTER</span>
+          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
+          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
+        </div>
+        <div class="site-status-meta-actions">
+          <span id="siteStatusMeta">Select any colored status count to view matching records.</span>
+          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
+        </div>
       </div>
       <div class="site-status-grid" id="siteStatusGrid">
         <div class="site-status-site">Loading site statistics...</div>
@@ -4961,14 +5084,13 @@ function renderSiteStatusStats(records){
   const totalCompleted=all.filter(x=>siteStatusKey(x.status)==='Completed').length;
   const selectedSite=document.getElementById('filterSite')?.value||'';
   const selectedStatus=document.getElementById('filterStatus')?.value||'';
-  const siteViewName=selectedSite||'All sites';
-  const statusViewName=selectedStatus||'All statuses';
+  const siteViewName=selectedSite||'All Sites';
+  const statusViewName=selectedStatus||'All Statuses';
   const viewName=document.getElementById('siteStatusViewName');
   const viewCount=document.getElementById('siteStatusViewCount');
   if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
   if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
-  meta.textContent=siteViewName+' • '+statusViewName+' — '+all.length+' matching record'+(all.length===1?'':'s')+
-    ' | Open '+totalOpen+' · Ongoing '+totalOngoing+' · On Hold '+totalHold+' · Completed '+totalCompleted;
+  meta.textContent='Select any colored status count to view its matching records.';
   grid.innerHTML=sites.map(site=>{
     const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
     const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
