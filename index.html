@@ -4976,7 +4976,7 @@ function renderSiteStatusStats(records){
       const count=siteRecords.filter(x=>siteStatusKey(x.status)===status.name).length;
       const isSelectedMetric=(!selectedSite||isSelectedSite)&&!!selectedStatus&&siteStatusKey(selectedStatus)===status.name;
       return '<button type="button" class="site-status-metric '+status.cls+(isSelectedMetric?' is-selected':'')+'" '+(count?'':'disabled')+
-        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\\''+site+'\\',\\''+status.name+'\\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
+        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\''+site+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
         '<strong>'+count+'</strong><span>'+status.name+'</span></button>';
     }).join('');
     return '<section class="site-status-site'+(isSelectedSite?' is-filtered':'')+'" aria-label="'+site+' status statistics">'+
