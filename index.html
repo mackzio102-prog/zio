@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.55</title>
+<title>Tech Daily Site Deficiency V20.56</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4075,6 +4075,40 @@ header > button.primary{display:none !important}
     min-height:55px !important;
     height:55px !important;
     max-height:55px !important;
+  }
+}
+</style>
+
+
+<style>
+/* V20.56: Reduce status badge text and inner spacing so labels/counts fit without overlapping. */
+#siteStatusToggle.site-status-summary-only .site-status-header-summary{
+  gap:6px !important;
+}
+#siteStatusToggle.site-status-summary-only .site-status-header-item{
+  box-sizing:border-box !important;
+  gap:3px !important;
+  padding:3px 4px !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+#siteStatusToggle.site-status-summary-only .site-status-header-item strong{
+  font-size:11px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle.site-status-summary-only .site-status-header-summary{
+    gap:3px !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-header-item{
+    gap:2px !important;
+    padding:3px 2px !important;
+    font-size:clamp(7px,2vw,8px) !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-header-item strong{
+    font-size:clamp(9px,2.5vw,10px) !important;
   }
 }
 </style>
