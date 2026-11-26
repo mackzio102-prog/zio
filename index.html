@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.12</title>
+<title>Tech Daily Site Deficiency V20.13</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1759,6 +1759,144 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.13: Refined mobile spacing and equal-size Excel / Settings controls. */
+@media(max-width:700px){
+  /* Header and account controls */
+  #stickyArea > header{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:9px !important;
+    padding:12px 14px !important;
+  }
+  #stickyArea > header .brand-block{
+    width:100% !important;
+    gap:1px;
+  }
+  #stickyArea > header .brand-block h1{
+    font-size:18px !important;
+    line-height:1.2;
+  }
+  #stickyArea > header #v17UserInfo{
+    margin-top:4px !important;
+  }
+  #stickyArea > header #v17UserBar{
+    width:100% !important;
+    margin:0 !important;
+    gap:5px !important;
+  }
+
+  /* Consistent space around the connection, status, and filter layers */
+  #stickyArea > .container{
+    padding-top:9px !important;
+    padding-bottom:8px !important;
+  }
+  #stickyArea .connection-card{
+    margin:0 0 8px !important;
+    padding:10px !important;
+  }
+  #stickyArea .connection-topbar{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:9px !important;
+  }
+  #stickyArea .connection-left{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    width:100% !important;
+    gap:7px !important;
+  }
+  #stickyArea .add-deficiency-btn{
+    width:100% !important;
+    min-height:42px !important;
+    margin:0 !important;
+  }
+  #stickyArea .connection-copy{
+    width:100% !important;
+    line-height:1.35;
+  }
+
+  /* Exact same two-column box size for both connection actions */
+  #stickyArea .connection-actions{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    align-items:stretch !important;
+    width:100% !important;
+    gap:8px !important;
+  }
+  #stickyArea .connection-actions button{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:42px !important;
+    height:42px !important;
+    margin:0 !important;
+    padding:8px 5px !important;
+    font-size:12px !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+    text-align:center !important;
+  }
+
+  #stickyArea .grid{
+    gap:7px !important;
+    margin:0 0 8px !important;
+  }
+  #stickyArea .grid .card{
+    min-width:0;
+    min-height:62px;
+    padding:8px 9px !important;
+    border-radius:9px;
+  }
+  #stickyArea .filter-card{
+    margin:0 !important;
+    padding:10px !important;
+  }
+  #stickyArea .filter-layout{
+    gap:9px !important;
+  }
+  #stickyArea .filter-row{
+    gap:7px !important;
+  }
+  #stickyArea .filter-field{
+    gap:4px !important;
+  }
+  #stickyArea .filter-date-groups{
+    gap:6px !important;
+  }
+  #stickyArea .filter-row--tools{
+    gap:8px !important;
+  }
+
+  /* Records layer begins with the same measured gap as the dashboard layers */
+  #stickyArea + .container{
+    padding-top:8px !important;
+    padding-bottom:10px !important;
+  }
+  #stickyArea + .container > .card{
+    padding:9px !important;
+    border-radius:10px;
+  }
+  .mobile-record-card{
+    margin-bottom:8px !important;
+    padding:11px !important;
+  }
+}
+@media(max-width:360px){
+  #stickyArea .connection-actions button{
+    font-size:11px !important;
+    padding-left:3px !important;
+    padding-right:3px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1792,7 +1930,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.12</small>
+    <small>Beta • Gamma • CPT2 • V20.13</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
