@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.38</title>
+<title>Tech Daily Site Deficiency V20.39</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3322,7 +3322,7 @@ header > button.primary{display:none !important}
 /* V20.38: Remove excessive vertical whitespace from the expanded mobile status results. */
 @media(max-width:700px){
   #siteStatusContent{
-    display:block !important;
+    /* Let the inline display value controlled by the foldout toggle show/hide this panel. */
     height:auto !important;
     min-height:0 !important;
     max-height:none !important;
@@ -3514,7 +3514,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.38</small>
+    <small>Beta • Gamma • CPT2 • V20.39</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
