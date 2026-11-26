@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.35</title>
+<title>Tech Daily Site Deficiency V20.36</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3075,6 +3075,143 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.36: Reflow mobile dashboard headers so labels fit without clipping.
+   Site Status gets its own full-width row; the two date controls share the next row. */
+@media(max-width:700px){
+  .filter-date-groups{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    grid-template-rows:auto auto auto !important;
+    align-items:stretch !important;
+    gap:7px !important;
+    width:100% !important;
+  }
+  #siteStatusToggle.site-status-summary-only{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:42px !important;
+    height:42px !important;
+    padding:8px 10px !important;
+    overflow:hidden !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-content{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-title{
+    display:block !important;
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    margin:0 !important;
+    font-size:13px !important;
+    line-height:1.2 !important;
+    white-space:nowrap !important;
+    overflow:visible !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-header-summary{
+    display:none !important;
+  }
+
+  #reportedDateFilter{
+    grid-column:1 !important;
+    grid-row:2 !important;
+  }
+  #completionDateFilter{
+    grid-column:2 !important;
+    grid-row:2 !important;
+  }
+  .filter-date-groups .filter-date-toggle{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:58px !important;
+    height:58px !important;
+    padding:8px 38px 8px 10px !important;
+    overflow:hidden !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading{
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    gap:3px !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading strong{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    font-size:clamp(10px,2.9vw,12px) !important;
+    line-height:1.2 !important;
+    text-align:left !important;
+    white-space:nowrap !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading span{
+    display:none !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    display:none !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__chevron{
+    position:absolute !important;
+    top:50% !important;
+    right:8px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:22px !important;
+    height:22px !important;
+    min-width:22px !important;
+    min-height:22px !important;
+    margin:0 !important;
+    padding:0 !important;
+    transform:translateY(-50%) !important;
+    font-size:15px !important;
+    line-height:1 !important;
+  }
+
+  .filter-date-groups .dashboard-foldout-content{
+    grid-column:1 / -1 !important;
+    grid-row:3 !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  #reportedDateContent,
+  #completionDateContent{
+    grid-column:1 / -1 !important;
+    grid-row:3 !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    padding:8px !important;
+  }
+}
+@media(max-width:360px){
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-title{
+    font-size:12px !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading strong{
+    font-size:10px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3108,7 +3245,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.35</small>
+    <small>Beta • Gamma • CPT2 • V20.36</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
