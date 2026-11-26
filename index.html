@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.54</title>
+<title>Tech Daily Site Deficiency V20.55</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4052,6 +4052,31 @@ header > button.primary{display:none !important}
 
 <style>
 /* V20.54: No interface/layout changes; status counters are populated by renderSiteStatusStats. */
+</style>
+
+
+<style>
+/* V20.55: Uniform dimensions for Site Status Overview, Reported Date and Completion Date boxes. */
+.filter-date-groups > #siteStatusToggle,
+.filter-date-groups > #reportedDateFilter,
+.filter-date-groups > #completionDateFilter{
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:0 !important;
+  min-height:76px !important;
+  height:76px !important;
+  max-height:76px !important;
+  align-self:stretch !important;
+}
+@media(max-width:700px){
+  .filter-date-groups > #siteStatusToggle,
+  .filter-date-groups > #reportedDateFilter,
+  .filter-date-groups > #completionDateFilter{
+    min-height:55px !important;
+    height:55px !important;
+    max-height:55px !important;
+  }
+}
 </style>
 
 </head>
