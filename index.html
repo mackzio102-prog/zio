@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.34</title>
+<title>Tech Daily Site Deficiency V20.35</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3044,6 +3044,37 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.35: On mobile, show only the Site Status Overview title. */
+@media(max-width:700px){
+  #siteStatusToggle.site-status-summary-only{
+    min-height:42px !important;
+    height:42px !important;
+    padding:8px 10px !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-content{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    width:100% !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-title{
+    display:block !important;
+    flex:1 1 auto !important;
+    width:auto !important;
+    margin:0 !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-header-summary{
+    display:none !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3077,7 +3108,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.34</small>
+    <small>Beta • Gamma • CPT2 • V20.35</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
