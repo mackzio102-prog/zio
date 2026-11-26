@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.23</title>
+<title>Tech Daily Site Deficiency V20.24</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2626,6 +2626,27 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.24: Add clear breathing room between the overview title and status badges. */
+#siteStatusToggle .site-status-toggle-content{
+  gap:0 !important;
+}
+#siteStatusToggle .site-status-toggle-title{
+  display:block !important;
+  margin:0 0 10px !important;
+  padding:0 !important;
+}
+#siteStatusToggle .site-status-header-summary{
+  margin-top:0 !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle .site-status-toggle-title{
+    margin-bottom:8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2659,7 +2680,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.23</small>
+    <small>Beta • Gamma • CPT2 • V20.24</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
