@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.36</title>
+<title>Tech Daily Site Deficiency V20.37</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3212,6 +3212,111 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.37: Restore a working Site Status Overview result panel on mobile.
+   Keep the mobile header compact; the detail breakdown appears only on tap. */
+#siteStatusToggle.site-status-summary-only{
+  position:relative !important;
+  cursor:pointer !important;
+  padding-right:42px !important;
+}
+#siteStatusToggle.site-status-summary-only .site-status-toggle-mark{
+  position:absolute !important;
+  top:50% !important;
+  right:9px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:24px !important;
+  height:24px !important;
+  margin:0 !important;
+  transform:translateY(-50%) !important;
+  color:#52606d !important;
+  font-size:16px !important;
+  line-height:1 !important;
+}
+#siteStatusContent{
+  grid-column:1 / -1 !important;
+  grid-row:2;
+  width:100% !important;
+  min-width:0 !important;
+  padding:10px !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle.site-status-summary-only{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    min-height:42px !important;
+    height:42px !important;
+    padding:8px 40px 8px 10px !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-content{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-title{
+    display:block !important;
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    margin:0 !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    white-space:nowrap !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-header-summary{
+    display:none !important;
+  }
+  #siteStatusToggle.site-status-summary-only .site-status-toggle-mark{
+    right:8px !important;
+    width:22px !important;
+    height:22px !important;
+    font-size:15px !important;
+  }
+  #siteStatusContent{
+    grid-column:1 / -1 !important;
+    grid-row:3 !important;
+    width:100% !important;
+    padding:9px !important;
+  }
+  #siteStatusContent .site-status-meta{
+    align-items:stretch !important;
+    flex-direction:column !important;
+    gap:8px !important;
+  }
+  #siteStatusContent .site-status-current-view{
+    width:100% !important;
+    max-width:100% !important;
+  }
+  #siteStatusContent .site-status-meta-actions{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    flex-wrap:wrap !important;
+    gap:7px !important;
+  }
+  #siteStatusContent .site-status-grid{
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+  }
+  #siteStatusContent .site-status-metrics{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+  #siteStatusContent .site-status-metric{
+    min-width:0 !important;
+    min-height:58px !important;
+    padding:7px 3px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3245,7 +3350,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.36</small>
+    <small>Beta • Gamma • CPT2 • V20.37</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -3317,8 +3422,8 @@ header > button.primary{display:none !important}
   </div>
     <div class="filter-date-groups" aria-label="Site status and date filters">
     <!-- All three headers stay in the same top row. Only their content opens below. -->
-    <div class="dashboard-foldout-toggle site-status-toggle site-status-summary-only" id="siteStatusToggle"
-      role="group" aria-label="Site Status Overview">
+    <button type="button" class="dashboard-foldout-toggle site-status-toggle site-status-summary-only" id="siteStatusToggle"
+      onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent" aria-label="Open Site Status Overview details">
       <span class="site-status-toggle-content">
         <span class="site-status-toggle-title">📊 Site Status Overview</span>
         <span class="site-status-header-summary" id="siteStatusHeaderSummary" aria-label="Current filtered status totals">
@@ -3328,7 +3433,8 @@ header > button.primary{display:none !important}
           <span class="site-status-header-item status-completed"><span>Completed</span><strong id="siteStatusHeaderCompleted">0</strong></span>
         </span>
       </span>
-    </div>
+      <span class="site-status-toggle-mark" id="siteStatusToggleMark" aria-hidden="true">⌄</span>
+    </button>
 
     <button type="button" class="dashboard-foldout-toggle filter-date-toggle" id="reportedDateFilter"
       onclick="toggleDateFilterPanel('reportedDate')" aria-expanded="false" aria-controls="reportedDateContent">
@@ -3349,6 +3455,24 @@ header > button.primary{display:none !important}
       <span class="filter-date-group__range" id="completionDateSummaryText">Any date</span>
       <span class="filter-date-group__chevron" id="completionDateChevron" aria-hidden="true">⌄</span>
     </button>
+
+    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
+      id="siteStatusContent" style="display:none">
+      <div class="site-status-meta">
+        <div class="site-status-current-view" aria-live="polite">
+          <span class="site-status-current-view__label">CURRENT FILTER</span>
+          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
+          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
+        </div>
+        <div class="site-status-meta-actions">
+          <span id="siteStatusHelpText">Select any colored status count to view its matching records.</span>
+          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
+        </div>
+      </div>
+      <div class="site-status-grid" id="siteStatusGrid">
+        <div class="site-status-site">Loading site statistics...</div>
+      </div>
+    </div>
 
     <div class="filter-date-group__fields dashboard-foldout-content dashboard-foldout-content--reported"
       id="reportedDateContent" style="display:none">
@@ -6055,24 +6179,45 @@ function siteStatusKey(value){
   return keys[key]||'';
 }
 function renderSiteStatusStats(records){
+  const grid=document.getElementById('siteStatusGrid');
+  const meta=document.getElementById('siteStatusHelpText');
+  if(!grid||!meta)return;
+  const statuses=[
+    {name:'Open',cls:'status-open'},
+    {name:'Ongoing',cls:'status-ongoing'},
+    {name:'On Hold',cls:'status-hold'},
+    {name:'Completed',cls:'status-completed'}
+  ];
+  const sites=['CPT2','Gamma','Beta'];
   const all=Array.isArray(records)?records:[];
   const totalOpen=all.filter(x=>siteStatusKey(x.status)==='Open').length;
   const totalOngoing=all.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
   const totalHold=all.filter(x=>siteStatusKey(x.status)==='On Hold').length;
   const totalCompleted=all.filter(x=>siteStatusKey(x.status)==='Completed').length;
-  const headerCounts={
-    Open:document.getElementById('siteStatusHeaderOpen'),
-    Ongoing:document.getElementById('siteStatusHeaderOngoing'),
-    'On Hold':document.getElementById('siteStatusHeaderHold'),
-    Completed:document.getElementById('siteStatusHeaderCompleted')
-  };
-  if(headerCounts.Open)headerCounts.Open.textContent=totalOpen;
-  if(headerCounts.Ongoing)headerCounts.Ongoing.textContent=totalOngoing;
-  if(headerCounts['On Hold'])headerCounts['On Hold'].textContent=totalHold;
-  if(headerCounts.Completed)headerCounts.Completed.textContent=totalCompleted;
-  const headerSummary=document.getElementById('siteStatusHeaderSummary');
-  if(headerSummary)headerSummary.setAttribute('aria-label',
-    'Open '+totalOpen+', Ongoing '+totalOngoing+', On Hold '+totalHold+', Completed '+totalCompleted);
+  const selectedSite=document.getElementById('filterSite')?.value||'';
+  const selectedStatus=document.getElementById('filterStatus')?.value||'';
+  const siteViewName=selectedSite||'All Sites';
+  const statusViewName=selectedStatus||'All Statuses';
+  const viewName=document.getElementById('siteStatusViewName');
+  const viewCount=document.getElementById('siteStatusViewCount');
+  if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
+  if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
+  meta.textContent='Select any colored status count to view its matching records.';
+  grid.innerHTML=sites.map(site=>{
+    const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
+    const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
+    const metrics=statuses.map(status=>{
+      const count=siteRecords.filter(x=>siteStatusKey(x.status)===status.name).length;
+      const isSelectedMetric=(!selectedSite||isSelectedSite)&&!!selectedStatus&&siteStatusKey(selectedStatus)===status.name;
+      return '<button type="button" class="site-status-metric '+status.cls+(isSelectedMetric?' is-selected':'')+'" '+(count?'':'disabled')+
+        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\''+site+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
+        '<strong>'+count+'</strong><span>'+status.name+'</span></button>';
+    }).join('');
+    return '<section class="site-status-site'+(isSelectedSite?' is-filtered':'')+'" aria-label="'+site+' status statistics">'+
+      '<div class="site-status-site-head"><span class="site-status-site-name">'+site+'</span>'+
+      '<span class="site-status-total">'+siteRecords.length+' total</span></div>'+
+      '<div class="site-status-metrics">'+metrics+'</div></section>';
+  }).join('');
 }
 function selectSiteStatus(site,status){
   const siteFilter=document.getElementById('filterSite');
