@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.25</title>
+<title>Tech Daily Site Deficiency V20.26</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2674,6 +2674,50 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.26: Center and enlarge the active date-range result within each desktop date panel. */
+@media(min-width:701px){
+  .filter-date-groups .filter-date-toggle{
+    display:grid !important;
+    grid-template-columns:minmax(0,40%) minmax(0,1fr) 18px !important;
+    align-items:center !important;
+    justify-content:stretch !important;
+    gap:8px !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading{
+    grid-column:1;
+    grid-row:1;
+    min-width:0 !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    grid-column:2;
+    grid-row:1;
+    justify-self:center !important;
+    align-self:center !important;
+    max-width:100% !important;
+    margin:0 !important;
+    padding:7px 12px !important;
+    border:1px solid #c7d7e8 !important;
+    border-radius:8px !important;
+    background:#eaf2fb !important;
+    color:#17324d !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+    line-height:1.2 !important;
+    text-align:center !important;
+    font-variant-numeric:tabular-nums;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__chevron{
+    grid-column:3;
+    grid-row:1;
+    justify-self:end !important;
+    align-self:center !important;
+    margin:0 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2707,7 +2751,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.25</small>
+    <small>Beta • Gamma • CPT2 • V20.26</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
