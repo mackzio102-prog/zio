@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tech-daily-site-deficiency-v20-35-pwa-v1';
+const CACHE_NAME = 'tech-daily-site-deficiency-v20-36-pwa-v1';
 const APP_SHELL = [
   './index.html',
   './manifest.webmanifest',
