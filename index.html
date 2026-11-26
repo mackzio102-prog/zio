@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.39</title>
+<title>Tech Daily Site Deficiency V20.40</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3481,6 +3481,65 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.40: Show selected Reported Date and Completion Date ranges under their labels on mobile. */
+@media(max-width:700px){
+  .filter-date-groups .filter-date-toggle{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    gap:3px !important;
+    min-height:68px !important;
+    height:auto !important;
+    padding:8px 34px 8px 10px !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading{
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    gap:0 !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading strong{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    font-size:11px !important;
+    line-height:1.2 !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    display:block !important;
+    flex:0 1 auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    color:#52606d !important;
+    font-size:10px !important;
+    font-weight:600 !important;
+    line-height:1.2 !important;
+    text-align:left !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+}
+@media(max-width:360px){
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    font-size:9px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3514,7 +3573,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.39</small>
+    <small>Beta • Gamma • CPT2 • V20.40</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
