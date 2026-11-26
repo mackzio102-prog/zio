@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.53</title>
+<title>Tech Daily Site Deficiency V20.54</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4050,129 +4050,8 @@ header > button.primary{display:none !important}
 }
 </style>
 
-
 <style>
-/* V20.50: Make Site Status Overview result panel reliably open in the web app/mobile browser. */
-#siteStatusContent[hidden]{display:none !important}
-#siteStatusContent:not([hidden]){
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-#siteStatusToggle[aria-expanded="true"]{
-  cursor:pointer !important;
-}
-#siteStatusToggle[aria-expanded="true"] + .dashboard-foldout-content{
-  display:block !important;
-}
-@media(max-width:700px){
-  #siteStatusContent:not([hidden]){
-    grid-column:1 / -1 !important;
-    grid-row:3 !important;
-    width:100% !important;
-    height:auto !important;
-    max-height:none !important;
-    overflow:visible !important;
-    margin:0 !important;
-    visibility:visible !important;
-    opacity:1 !important;
-  }
-}
-</style>
-
-
-<style>
-/* V20.51: Keep overview hidden until opened and force it visible only when expanded. */
-#siteStatusContent[hidden]{display:none !important}
-#siteStatusContent:not([hidden]){
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-</style>
-
-
-<style>
-/* V20.52: Place overview results directly beneath its header and give them a dedicated grid row. */
-#siteStatusContent[hidden]{display:none !important}
-#siteStatusContent:not([hidden]){
-  display:block !important;
-  grid-column:1 / -1 !important;
-  grid-row:2 !important;
-  align-self:start !important;
-  width:100% !important;
-  min-width:0 !important;
-  height:auto !important;
-  max-height:none !important;
-  margin:0 !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  overflow:visible !important;
-}
-@media(max-width:700px){
-  #reportedDateFilter{grid-row:3 !important;grid-column:1 !important}
-  #completionDateFilter{grid-row:3 !important;grid-column:2 !important}
-  #siteStatusContent:not([hidden]){
-    grid-row:2 !important;
-    grid-column:1 / -1 !important;
-    width:100% !important;
-    padding:8px !important;
-  }
-}
-</style>
-
-
-<style>
-/* V20.53: Force Site Status Overview open and populate visible site results. */
-#siteStatusContent[hidden]{display:none !important}
-#siteStatusContent:not([hidden]){
-  display:block !important;
-  position:relative !important;
-  grid-column:1 / -1 !important;
-  grid-row:2 !important;
-  width:100% !important;
-  min-width:0 !important;
-  height:auto !important;
-  min-height:0 !important;
-  max-height:none !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  overflow:visible !important;
-  z-index:5 !important;
-}
-#siteStatusContent #siteStatusGrid{
-  display:grid !important;
-  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-  width:100% !important;
-  height:auto !important;
-  min-height:0 !important;
-  align-content:start !important;
-}
-@media(max-width:700px){
-  .filter-date-groups{
-    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-    grid-template-rows:auto auto auto !important;
-  }
-  #siteStatusToggle.site-status-summary-only{
-    grid-column:1 / -1 !important;
-    grid-row:1 !important;
-  }
-  #siteStatusContent:not([hidden]){
-    grid-column:1 / -1 !important;
-    grid-row:2 !important;
-  }
-  #reportedDateFilter{grid-column:1 !important;grid-row:3 !important}
-  #completionDateFilter{grid-column:2 !important;grid-row:3 !important}
-  #siteStatusContent #siteStatusGrid{
-    grid-template-columns:minmax(0,1fr) !important;
-  }
-}
-@media(min-width:701px){
-  #siteStatusToggle.site-status-summary-only{grid-column:1 / -1 !important;grid-row:1 !important}
-  #siteStatusContent:not([hidden]){grid-column:1 / -1 !important;grid-row:2 !important}
-  #reportedDateFilter{grid-row:3 !important;grid-column:1 !important}
-  #completionDateFilter{grid-row:3 !important;grid-column:2 !important}
-}
+/* V20.54: No interface/layout changes; status counters are populated by renderSiteStatusStats. */
 </style>
 
 </head>
@@ -4208,7 +4087,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.53</small>
+    <small>Beta • Gamma • CPT2 • V20.54</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -4294,24 +4173,6 @@ header > button.primary{display:none !important}
       <span class="site-status-toggle-mark" id="siteStatusToggleMark" aria-hidden="true">⌄</span>
     </button>
 
-    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
-      id="siteStatusContent" hidden style="display:none">
-      <div class="site-status-meta">
-        <div class="site-status-current-view" aria-live="polite">
-          <span class="site-status-current-view__label">CURRENT FILTER</span>
-          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
-          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
-        </div>
-        <div class="site-status-meta-actions">
-          <span id="siteStatusHelpText">Select any colored status count to view its matching records.</span>
-          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
-        </div>
-      </div>
-      <div class="site-status-grid" id="siteStatusGrid">
-        <div class="site-status-site">Loading site statistics...</div>
-      </div>
-    </div>
-
     <button type="button" class="dashboard-foldout-toggle filter-date-toggle" id="reportedDateFilter"
       onclick="toggleDateFilterPanel('reportedDate')" aria-expanded="false" aria-controls="reportedDateContent">
       <span class="filter-date-group__heading">
@@ -4332,7 +4193,23 @@ header > button.primary{display:none !important}
       <span class="filter-date-group__chevron" id="completionDateChevron" aria-hidden="true">⌄</span>
     </button>
 
-    
+    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
+      id="siteStatusContent" style="display:none">
+      <div class="site-status-meta">
+        <div class="site-status-current-view" aria-live="polite">
+          <span class="site-status-current-view__label">CURRENT FILTER</span>
+          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
+          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
+        </div>
+        <div class="site-status-meta-actions">
+          <span id="siteStatusHelpText">Select any colored status count to view its matching records.</span>
+          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
+        </div>
+      </div>
+      <div class="site-status-grid" id="siteStatusGrid">
+        <div class="site-status-site">Loading site statistics...</div>
+      </div>
+    </div>
 
     <div class="filter-date-group__fields dashboard-foldout-content dashboard-foldout-content--reported"
       id="reportedDateContent" style="display:none">
@@ -7043,50 +6920,57 @@ function renderSiteStatusStats(records){
   const meta=document.getElementById('siteStatusHelpText');
   if(!grid||!meta)return;
   const statuses=[
-    {name:'Open',cls:'status-open',header:'siteStatusHeaderOpen'},
-    {name:'Ongoing',cls:'status-ongoing',header:'siteStatusHeaderOngoing'},
-    {name:'On Hold',cls:'status-hold',header:'siteStatusHeaderHold'},
-    {name:'Completed',cls:'status-completed',header:'siteStatusHeaderCompleted'}
+    {name:'Open',cls:'status-open'},
+    {name:'Ongoing',cls:'status-ongoing'},
+    {name:'On Hold',cls:'status-hold'},
+    {name:'Completed',cls:'status-completed'}
   ];
-  const sites=[
-    {name:'CPT2',match:s=>s.includes('cpt2')||s.includes('cyberpark')},
-    {name:'Gamma',match:s=>s.includes('gamma')},
-    {name:'Beta',match:s=>s.includes('beta')}
-  ];
+  const sites=['CPT2','Gamma','Beta'];
   const all=Array.isArray(records)?records:[];
-  const getSite=x=>String(x.site||'').trim().toLowerCase();
-  const siteMatch=(x,site)=>site.match(getSite(x));
-  statuses.forEach(status=>{
-    const count=all.filter(x=>siteStatusKey(x.status)===status.name).length;
-    const el=document.getElementById(status.header);
-    if(el)el.textContent=count;
+  const totalOpen=all.filter(x=>siteStatusKey(x.status)==='Open').length;
+  const totalOngoing=all.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
+  const totalHold=all.filter(x=>siteStatusKey(x.status)==='On Hold').length;
+  const totalCompleted=all.filter(x=>siteStatusKey(x.status)==='Completed').length;
+
+  // V20.54: Update the existing status totals only; keep the original page layout unchanged.
+  const headerTotals={
+    siteStatusHeaderOpen:totalOpen,
+    siteStatusHeaderOngoing:totalOngoing,
+    siteStatusHeaderHold:totalHold,
+    siteStatusHeaderCompleted:totalCompleted
+  };
+  Object.entries(headerTotals).forEach(([id,value])=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=String(value);
   });
+
   const selectedSite=document.getElementById('filterSite')?.value||'';
   const selectedStatus=document.getElementById('filterStatus')?.value||'';
+  const siteViewName=selectedSite||'All Sites';
+  const statusViewName=selectedStatus||'All Statuses';
   const viewName=document.getElementById('siteStatusViewName');
   const viewCount=document.getElementById('siteStatusViewCount');
-  if(viewName)viewName.textContent=(selectedSite||'All Sites')+' • '+(selectedStatus||'All Statuses');
+  if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
   if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
   meta.textContent='Tap a status count to filter records.';
   const resetButton=document.querySelector('#siteStatusContent .site-status-reset');
   if(resetButton)resetButton.style.display=(selectedSite||selectedStatus)?'inline-flex':'none';
   grid.innerHTML=sites.map(site=>{
-    const siteRecords=all.filter(x=>siteMatch(x,site));
-    const isSelectedSite=!!selectedSite&&siteMatch({site:selectedSite},site);
+    const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
+    const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
     const metrics=statuses.map(status=>{
       const count=siteRecords.filter(x=>siteStatusKey(x.status)===status.name).length;
       const isSelectedMetric=(!selectedSite||isSelectedSite)&&!!selectedStatus&&siteStatusKey(selectedStatus)===status.name;
       return '<button type="button" class="site-status-metric '+status.cls+(isSelectedMetric?' is-selected':'')+'" '+(count?'':'disabled')+
-        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\''+site.name+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site.name+'">'+
+        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\''+site+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
         '<strong>'+count+'</strong><span>'+status.name+'</span></button>';
     }).join('');
-    return '<section class="site-status-site'+(isSelectedSite?' is-filtered':'')+'" aria-label="'+site.name+' status statistics">'+
-      '<div class="site-status-site-head"><span class="site-status-site-name">'+site.name+'</span>'+
+    return '<section class="site-status-site'+(isSelectedSite?' is-filtered':'')+'" aria-label="'+site+' status statistics">'+
+      '<div class="site-status-site-head"><span class="site-status-site-name">'+site+'</span>'+
       '<span class="site-status-total">'+siteRecords.length+' total</span></div>'+
       '<div class="site-status-metrics">'+metrics+'</div></section>';
   }).join('');
 }
-
 function selectSiteStatus(site,status){
   const siteFilter=document.getElementById('filterSite');
   const statusFilter=document.getElementById('filterStatus');
@@ -7122,10 +7006,7 @@ function closeOtherDashboardFoldouts(activeKey){
   };
   Object.entries(panels).forEach(([key,panel])=>{
     if(key===activeKey)return;
-    if(panel.content){
-      panel.content.style.setProperty('display','none','important');
-      if(key==='siteStatus')panel.content.hidden=true;
-    }
+    if(panel.content)panel.content.style.display='none';
     if(panel.toggle){
       panel.toggle.setAttribute('aria-expanded','false');
       panel.toggle.classList.remove('is-open');
@@ -7153,25 +7034,12 @@ function toggleDashboardFoldout(key){
   };
   const panel=panels[key];
   if(!panel||!panel.content||!panel.toggle)return;
-
-  // Use the button's expanded state, not inline display text, so the panel
-  // opens reliably even when CSS or the mobile webview overrides display.
-  const open=panel.toggle.getAttribute('aria-expanded')!=='true';
+  const open=panel.content.style.display==='none';
   if(open)closeOtherDashboardFoldouts(key);
-
-  const displayValue=open?(key==='siteStatus'?'block':'grid'):'none';
-  panel.content.style.setProperty('display',displayValue,'important');
-  panel.content.hidden=!open;
+  panel.content.style.display=open?(key==='siteStatus'?'block':'grid'):'none';
   panel.toggle.setAttribute('aria-expanded',String(open));
   panel.toggle.classList.toggle('is-open',open);
   if(panel.mark)panel.mark.textContent=open?'⌃':'⌄';
-
-  if(open&&key==='siteStatus'){
-    // Refresh the overview result immediately when it is opened.
-    render();
-    panel.content.style.setProperty('display','block','important');
-    panel.content.hidden=false;
-  }
 }
 
 function handleDateToSelection(which){
@@ -7208,43 +7076,8 @@ function collapseDateFilterAfterTo(which){
 }
 
 function toggleSiteStatusPanel(){
-  const button=document.getElementById('siteStatusToggle');
-  const panel=document.getElementById('siteStatusContent');
-  const mark=document.getElementById('siteStatusToggleMark');
-  if(!button||!panel)return;
-
-  const open=button.getAttribute('aria-expanded')!=='true';
-  if(open){
-    closeOtherDashboardFoldouts('siteStatus');
-    panel.hidden=false;
-    panel.style.setProperty('display','block','important');
-    panel.style.setProperty('visibility','visible','important');
-    panel.style.setProperty('opacity','1','important');
-    panel.style.setProperty('grid-column','1 / -1','important');
-    panel.style.setProperty('grid-row','2','important');
-    button.setAttribute('aria-expanded','true');
-    button.setAttribute('aria-label','Close Site Status Overview details');
-    button.classList.add('is-open');
-    if(mark)mark.textContent='⌃';
-
-    // Render from the current filtered records, then re-assert visible state.
-    render();
-    panel.hidden=false;
-    panel.style.setProperty('display','block','important');
-    panel.style.setProperty('visibility','visible','important');
-    panel.style.setProperty('opacity','1','important');
-    panel.style.setProperty('grid-column','1 / -1','important');
-    panel.style.setProperty('grid-row','2','important');
-  }else{
-    panel.hidden=true;
-    panel.style.setProperty('display','none','important');
-    button.setAttribute('aria-expanded','false');
-    button.setAttribute('aria-label','Open Site Status Overview details');
-    button.classList.remove('is-open');
-    if(mark)mark.textContent='⌄';
-  }
+  toggleDashboardFoldout('siteStatus');
 }
-
 function toggleDateFilterPanel(which){
   if(which==='reportedDate'||which==='completionDate')toggleDashboardFoldout(which);
 }
