@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.10</title>
+<title>Tech Daily Site Deficiency V20.11</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1632,6 +1632,90 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.11: Admin tables remain visible and usable inside mobile admin panels.
+   The main deficiency list uses .tablewrap as a desktop-only table, so these
+   two modal tables need an explicit mobile exception. */
+@media(max-width:700px){
+  #v17UsersModal,
+  #v17AdminModal{
+    align-items:flex-start !important;
+    justify-content:center !important;
+    padding:calc(8px + env(safe-area-inset-top, 0px)) 8px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #v17UsersBox,
+  #v17AdminBox{
+    width:100% !important;
+    max-width:none !important;
+    max-height:calc(100vh - 16px) !important;
+    max-height:calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    margin:0 !important;
+    padding:12px !important;
+    overflow:auto !important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  #v17UsersBox .tablewrap,
+  #v17AdminBox .tablewrap{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+    margin-top:10px !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  #v17UsersTable,
+  #v17AdminTable{
+    display:table !important;
+    width:max-content !important;
+    table-layout:auto !important;
+    border-collapse:collapse;
+  }
+  #v17UsersTable{min-width:720px !important}
+  #v17AdminTable{min-width:640px !important}
+  #v17UsersTable th,
+  #v17UsersTable td,
+  #v17AdminTable th,
+  #v17AdminTable td{
+    padding:8px 7px !important;
+    font-size:11px !important;
+    vertical-align:top;
+  }
+  #v17UsersTable th,
+  #v17UsersTable td{white-space:nowrap !important}
+  #v17AdminTable th{white-space:nowrap !important}
+  #v17AdminTable td{white-space:nowrap !important}
+  #v17AdminTable th:last-child,
+  #v17AdminTable td:last-child{
+    min-width:180px;
+    max-width:260px;
+    white-space:normal !important;
+    overflow-wrap:anywhere;
+  }
+  #v17UsersBox .v17-user-muted,
+  #v17AdminBox .v17-admin-muted{
+    line-height:1.4;
+    overflow-wrap:anywhere;
+  }
+  #v17UsersBox .v17-user-actions,
+  #v17AdminBox .v17-admin-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  #v17UsersBox .v17-user-actions button,
+  #v17AdminBox .v17-admin-actions button{
+    min-height:36px;
+    padding:7px 9px;
+    font-size:12px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1665,7 +1749,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.10</small>
+    <small>Beta • Gamma • CPT2 • V20.11</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
