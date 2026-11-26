@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.44</title>
+<title>Tech Daily Site Deficiency V20.45</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3791,6 +3791,48 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.45: Center both date filter labels precisely within each mobile box. */
+@media screen and (max-width:700px){
+  #reportedDateFilter,
+  #completionDateFilter{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    padding:5px 8px !important;
+  }
+  #reportedDateFilter .filter-date-group__heading,
+  #completionDateFilter .filter-date-group__heading{
+    width:100% !important;
+    max-width:100% !important;
+    text-align:center !important;
+    align-self:center !important;
+  }
+  #reportedDateFilter .filter-date-group__heading strong,
+  #completionDateFilter .filter-date-group__heading strong{
+    width:100% !important;
+    text-align:center !important;
+  }
+  #reportedDateFilter #reportedDateSummaryText,
+  #completionDateFilter #completionDateSummaryText{
+    width:100% !important;
+    max-width:100% !important;
+    text-align:center !important;
+    align-self:center !important;
+  }
+  #reportedDateFilter .filter-date-group__chevron,
+  #completionDateFilter .filter-date-group__chevron{
+    position:absolute !important;
+    top:50% !important;
+    right:6px !important;
+    transform:translateY(-50%) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3824,7 +3866,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.44</small>
+    <small>Beta • Gamma • CPT2 • V20.45</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
