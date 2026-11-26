@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.22</title>
+<title>Tech Daily Site Deficiency V20.23</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2568,6 +2568,64 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.23: Compact status badges into one horizontal line: label and count side by side. */
+#siteStatusToggle{
+  min-height:76px !important;
+  height:76px !important;
+}
+#siteStatusToggle .site-status-toggle-content{
+  gap:8px !important;
+}
+#siteStatusToggle .site-status-header-summary{
+  gap:10px !important;
+}
+#siteStatusToggle .site-status-header-item{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  height:32px !important;
+  min-height:32px !important;
+  padding:4px 7px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+}
+#siteStatusToggle .site-status-header-item strong{
+  font-size:14px !important;
+  line-height:1 !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle{
+    min-height:72px !important;
+    height:72px !important;
+  }
+  #siteStatusToggle .site-status-toggle-content{
+    gap:7px !important;
+  }
+  #siteStatusToggle .site-status-header-summary{
+    gap:6px !important;
+  }
+  #siteStatusToggle .site-status-header-item{
+    flex-direction:row !important;
+    gap:4px !important;
+    height:30px !important;
+    min-height:30px !important;
+    padding:4px 3px !important;
+    font-size:clamp(8px,2.5vw,10px) !important;
+  }
+  #siteStatusToggle .site-status-header-item strong{
+    font-size:clamp(10px,3vw,12px) !important;
+  }
+}
+@media(max-width:360px){
+  #siteStatusToggle .site-status-header-summary{gap:4px !important}
+  #siteStatusToggle .site-status-header-item{gap:3px !important;padding-left:2px !important;padding-right:2px !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2601,7 +2659,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.22</small>
+    <small>Beta • Gamma • CPT2 • V20.23</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
