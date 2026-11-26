@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.47</title>
+<title>Tech Daily Site Deficiency V20.48</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3940,6 +3940,77 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.48: Keep date heading clearly visible between top edge and date result. */
+@media screen and (max-width:700px){
+  #reportedDateFilter,
+  #completionDateFilter{
+    position:relative !important;
+    overflow:hidden !important;
+  }
+  #reportedDateFilter .filter-date-group__heading,
+  #completionDateFilter .filter-date-group__heading{
+    position:absolute !important;
+    top:25% !important;
+    left:50% !important;
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:calc(100% - 44px) !important;
+    max-width:calc(100% - 44px) !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    transform:translate(-50%,-50%) !important;
+    text-align:center !important;
+    z-index:3 !important;
+  }
+  #reportedDateFilter .filter-date-group__heading strong,
+  #completionDateFilter .filter-date-group__heading strong{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    color:#17324d !important;
+    font-family:inherit !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+    line-height:16px !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    text-shadow:0 0 2px #fff !important;
+  }
+  #reportedDateFilter .filter-date-group__heading span,
+  #completionDateFilter .filter-date-group__heading span{
+    display:none !important;
+  }
+  #reportedDateFilter #reportedDateSummaryText,
+  #completionDateFilter #completionDateSummaryText{
+    top:50% !important;
+    z-index:2 !important;
+    font-size:9px !important;
+    line-height:14px !important;
+    height:14px !important;
+    max-height:14px !important;
+  }
+}
+@media screen and (max-width:360px){
+  #reportedDateFilter .filter-date-group__heading strong,
+  #completionDateFilter .filter-date-group__heading strong{
+    font-size:11px !important;
+  }
+  #reportedDateFilter #reportedDateSummaryText,
+  #completionDateFilter #completionDateSummaryText{
+    font-size:8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3973,7 +4044,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.47</small>
+    <small>Beta • Gamma • CPT2 • V20.48</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
