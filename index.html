@@ -10,10 +10,10 @@
 <link rel="shortcut icon" type="image/webp" href="./icons/app-icon.webp">
 <link rel="apple-touch-icon" href="./icons/app-icon.webp">
 <link rel="manifest" href="./manifest.webmanifest">
-<!-- V20.1: Automatically stamp completion date in Remarks on first transition to Completed. -->
+<!-- V20.2: Place automatic completion-date stamp before existing Remarks text. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.1</title>
+<title>Tech Daily Site Deficiency V20.2</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4008,7 +4008,7 @@ function stampCompletedDateInRemarks(remarks){
  const completionLine='Completed Date: '+completedDate;
 
  return existingRemarks
-  ? existingRemarks+'\n'+completionLine
+  ? completionLine+'\n'+existingRemarks
   : completionLine;
 }
 
