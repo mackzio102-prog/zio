@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.15</title>
+<title>Tech Daily Site Deficiency V20.16</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1993,6 +1993,129 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.16: Make Site Status filters, selected site, counts and labels clearer. */
+.site-status-current-view{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 12px;
+  margin-bottom:11px;
+  padding:11px 13px;
+  border:1px solid #b8cbe0;
+  border-left:5px solid #1769aa;
+  border-radius:10px;
+  background:#edf4fb;
+}
+.site-status-current-view__label{
+  color:#52677d;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:.55px;
+  text-transform:uppercase;
+}
+.site-status-current-view strong{
+  color:#17324d;
+  font-size:16px;
+  line-height:1.25;
+  font-weight:800;
+}
+.site-status-current-view__count{
+  margin-left:auto;
+  padding:5px 9px;
+  border-radius:7px;
+  background:#17324d;
+  color:#fff;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+}
+.filter-date-groups .site-status-toggle small{
+  font-size:12px;
+  line-height:1.35;
+  font-weight:600;
+  color:#44596e;
+}
+.filter-date-groups .site-status-grid{gap:10px}
+.filter-date-groups .site-status-site{
+  padding:12px;
+  border:1px solid #d6e0ea;
+  background:#fff;
+  transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.filter-date-groups .site-status-site.is-filtered{
+  border:2px solid #1769aa;
+  background:#f3f8ff;
+  box-shadow:0 2px 9px #1769aa20;
+}
+.filter-date-groups .site-status-site-name{
+  font-size:16px;
+  line-height:1.2;
+  letter-spacing:.1px;
+}
+.filter-date-groups .site-status-total{
+  font-size:12px;
+  font-weight:800;
+  padding:5px 9px;
+}
+.filter-date-groups .site-status-metrics{gap:7px}
+.filter-date-groups .site-status-metric{
+  min-height:78px;
+  padding:9px 5px;
+  border-radius:9px;
+}
+.filter-date-groups .site-status-metric strong{
+  font-size:26px;
+  line-height:1.1;
+}
+.filter-date-groups .site-status-metric span{
+  margin-top:6px;
+  font-size:12px;
+  line-height:1.15;
+}
+.filter-date-groups .site-status-metric.is-selected{
+  outline:3px solid #17324d;
+  outline-offset:1px;
+  box-shadow:0 2px 8px #17324d30;
+  filter:saturate(1.12);
+}
+@media(max-width:700px){
+  .site-status-current-view{
+    gap:6px 8px;
+    padding:10px;
+  }
+  .site-status-current-view__label{
+    flex:1 1 100%;
+    font-size:10px;
+  }
+  .site-status-current-view strong{font-size:15px}
+  .site-status-current-view__count{
+    margin-left:auto;
+    font-size:12px;
+    padding:5px 8px;
+  }
+  .filter-date-groups .site-status-grid{gap:9px}
+  .filter-date-groups .site-status-site{padding:10px}
+  .filter-date-groups .site-status-site-name{font-size:15px}
+  .filter-date-groups .site-status-metric{
+    min-height:72px;
+    padding:8px 3px;
+  }
+  .filter-date-groups .site-status-metric strong{font-size:23px}
+  .filter-date-groups .site-status-metric span{font-size:11px}
+}
+@media(max-width:420px){
+  .site-status-current-view strong{font-size:14px}
+  .site-status-current-view__count{font-size:11px}
+  .filter-date-groups .site-status-metric{min-height:68px}
+  .filter-date-groups .site-status-metric strong{font-size:21px}
+  .filter-date-groups .site-status-metric span{font-size:10px}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2026,7 +2149,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.15</small>
+    <small>Beta • Gamma • CPT2 • V20.16</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -2126,6 +2249,11 @@ header > button.primary{display:none !important}
 
     <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
       id="siteStatusContent" style="display:none">
+      <div class="site-status-current-view" aria-live="polite">
+        <span class="site-status-current-view__label">CURRENT SITE / STATUS FILTER</span>
+        <strong id="siteStatusViewName">All sites • All statuses</strong>
+        <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
+      </div>
       <div class="site-status-meta">
         <span>Click any status count to view its matching records.</span>
         <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
@@ -4831,16 +4959,27 @@ function renderSiteStatusStats(records){
   const totalOngoing=all.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
   const totalHold=all.filter(x=>siteStatusKey(x.status)==='On Hold').length;
   const totalCompleted=all.filter(x=>siteStatusKey(x.status)==='Completed').length;
-  meta.textContent=all.length+' filtered • Open '+totalOpen+' · Ongoing '+totalOngoing+' · On Hold '+totalHold+' · Completed '+totalCompleted;
+  const selectedSite=document.getElementById('filterSite')?.value||'';
+  const selectedStatus=document.getElementById('filterStatus')?.value||'';
+  const siteViewName=selectedSite||'All sites';
+  const statusViewName=selectedStatus||'All statuses';
+  const viewName=document.getElementById('siteStatusViewName');
+  const viewCount=document.getElementById('siteStatusViewCount');
+  if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
+  if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
+  meta.textContent=siteViewName+' • '+statusViewName+' — '+all.length+' matching record'+(all.length===1?'':'s')+
+    ' | Open '+totalOpen+' · Ongoing '+totalOngoing+' · On Hold '+totalHold+' · Completed '+totalCompleted;
   grid.innerHTML=sites.map(site=>{
     const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
+    const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
     const metrics=statuses.map(status=>{
       const count=siteRecords.filter(x=>siteStatusKey(x.status)===status.name).length;
-      return '<button type="button" class="site-status-metric '+status.cls+'" '+(count?'':'disabled')+
-        ' onclick="selectSiteStatus(\''+site+'\',\''+status.name+'\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
+      const isSelectedMetric=(!selectedSite||isSelectedSite)&&!!selectedStatus&&siteStatusKey(selectedStatus)===status.name;
+      return '<button type="button" class="site-status-metric '+status.cls+(isSelectedMetric?' is-selected':'')+'" '+(count?'':'disabled')+
+        ' aria-pressed="'+String(isSelectedMetric)+'" onclick="selectSiteStatus(\\''+site+'\\',\\''+status.name+'\\')" aria-label="Show '+count+' '+status.name+' records for '+site+'">'+
         '<strong>'+count+'</strong><span>'+status.name+'</span></button>';
     }).join('');
-    return '<section class="site-status-site" aria-label="'+site+' status statistics">'+
+    return '<section class="site-status-site'+(isSelectedSite?' is-filtered':'')+'" aria-label="'+site+' status statistics">'+
       '<div class="site-status-site-head"><span class="site-status-site-name">'+site+'</span>'+
       '<span class="site-status-total">'+siteRecords.length+' total</span></div>'+
       '<div class="site-status-metrics">'+metrics+'</div></section>';
