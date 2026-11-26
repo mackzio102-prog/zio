@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.19</title>
+<title>Tech Daily Site Deficiency V20.20</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2382,6 +2382,81 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.20: Equal spacing and sizing for every status tile in the overview layer. */
+.filter-date-groups .site-status-toggle-content{
+  width:100% !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  gap:8px !important;
+}
+.filter-date-groups .site-status-header-summary{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  justify-content:stretch !important;
+  gap:12px !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.filter-date-groups .site-status-header-item{
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:34px !important;
+  min-height:34px !important;
+  margin:0 !important;
+  padding:6px 9px !important;
+  border-width:1px !important;
+  border-style:solid !important;
+  border-radius:8px !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+.filter-date-groups .site-status-header-item strong{
+  display:inline-block;
+  flex:none;
+  font-size:13px !important;
+  line-height:1 !important;
+}
+@media(max-width:700px){
+  .filter-date-groups .site-status-toggle-content{
+    gap:7px !important;
+  }
+  .filter-date-groups .site-status-header-summary{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:7px !important;
+  }
+  .filter-date-groups .site-status-header-item{
+    height:30px !important;
+    min-height:30px !important;
+    gap:4px !important;
+    padding:5px 3px !important;
+    font-size:clamp(8px,2.5vw,9px) !important;
+  }
+  .filter-date-groups .site-status-header-item strong{
+    font-size:clamp(9px,2.8vw,10px) !important;
+  }
+}
+@media(max-width:360px){
+  .filter-date-groups .site-status-header-summary{
+    gap:5px !important;
+  }
+  .filter-date-groups .site-status-header-item{
+    gap:2px !important;
+    padding-left:2px !important;
+    padding-right:2px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2415,7 +2490,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.19</small>
+    <small>Beta • Gamma • CPT2 • V20.20</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
