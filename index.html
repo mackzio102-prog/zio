@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.11</title>
+<title>Tech Daily Site Deficiency V20.12</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1716,6 +1716,49 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.12: Consistent vertical spacing between the main app layers. */
+@media(min-width:701px){
+  #stickyArea > .container{
+    padding-top:12px !important;
+    padding-bottom:8px !important;
+  }
+  #stickyArea .connection-card{
+    margin-bottom:8px !important;
+  }
+  #stickyArea .grid{
+    margin-top:0 !important;
+    margin-bottom:8px !important;
+  }
+  #stickyArea .filter-layout{
+    gap:10px !important;
+  }
+  #stickyArea + .container{
+    padding-top:8px !important;
+  }
+}
+@media(max-width:700px){
+  #stickyArea > .container{
+    padding-top:10px !important;
+    padding-bottom:8px !important;
+  }
+  #stickyArea .connection-card{
+    margin-bottom:8px !important;
+  }
+  #stickyArea .grid{
+    margin-top:0 !important;
+    margin-bottom:8px !important;
+  }
+  #stickyArea .filter-layout{
+    gap:9px !important;
+  }
+  #stickyArea + .container{
+    padding-top:8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1749,7 +1792,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.11</small>
+    <small>Beta • Gamma • CPT2 • V20.12</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
