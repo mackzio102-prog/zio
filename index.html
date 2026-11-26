@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.6</title>
+<title>Tech Daily Site Deficiency V20.7</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1235,6 +1235,163 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.7: Site Status, Reported Date and Completion Date share one dashboard foldout row. */
+.filter-date-groups{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+  align-items:start !important;
+}
+.filter-date-groups > .site-status-panel,
+.filter-date-groups > .filter-date-group{
+  min-width:0;
+  width:100%;
+  min-height:68px;
+  height:auto;
+  margin:0 !important;
+  padding:0;
+  align-self:start;
+  overflow:hidden;
+  border:1px solid #d9e2eb;
+  border-radius:9px;
+  background:#f8fafc;
+  box-shadow:none;
+}
+.filter-date-groups > .site-status-panel{
+  display:flex;
+  flex-direction:column;
+}
+.filter-date-groups .site-status-toggle,
+.filter-date-groups .filter-date-group__summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-sizing:border-box;
+  width:100%;
+  min-height:68px;
+  height:68px;
+  gap:8px;
+  padding:9px 10px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#17324d;
+  text-align:left;
+  cursor:pointer;
+}
+.filter-date-groups .site-status-toggle{
+  font-size:12px;
+  font-weight:800;
+}
+.filter-date-groups .site-status-toggle > span:first-child{
+  display:block;
+  flex:1;
+  min-width:0;
+}
+.filter-date-groups .site-status-toggle small{
+  display:block;
+  margin-top:3px;
+  color:#718096;
+  font-size:10px;
+  font-weight:500;
+  line-height:1.2;
+}
+.filter-date-groups .site-status-toggle-mark,
+.filter-date-groups .filter-date-group__chevron{
+  flex:none;
+  color:#52606d;
+  font-size:17px;
+  line-height:1;
+}
+.filter-date-groups .filter-date-group__summary{
+  list-style:none;
+}
+.filter-date-groups .filter-date-group__summary::-webkit-details-marker{display:none}
+.filter-date-groups .filter-date-group__summary::marker{content:""}
+.filter-date-groups .filter-date-group__heading{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  min-width:0;
+  gap:3px;
+}
+.filter-date-groups .filter-date-group__heading strong{
+  color:#17324d;
+  font-size:12px;
+  line-height:1.2;
+}
+.filter-date-groups .filter-date-group__heading span{
+  color:#718096;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.2;
+}
+.filter-date-groups .filter-date-group__range{
+  flex:none;
+  max-width:34%;
+  padding:4px 6px;
+  overflow:hidden;
+  border-radius:6px;
+  background:#edf2f7;
+  color:#52606d;
+  font-size:9px;
+  font-weight:700;
+  text-align:right;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.filter-date-groups .filter-date-group__fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:0 9px 9px;
+}
+.filter-date-groups .filter-date-group .filter-field{min-width:0;gap:4px}
+.filter-date-groups .filter-date-group .filter-field>span:first-child{
+  color:#52606d;
+  font-size:11px;
+}
+.filter-date-groups .filter-date-group .filter-date{
+  width:100%;
+  height:38px;
+  padding:0 6px;
+  background:#fff;
+}
+.filter-date-groups .filter-date-group .filter-date input{
+  width:100%;
+  height:36px;
+  font-size:12px;
+}
+.filter-date-groups > .site-status-panel[aria-expanded="true"],
+.filter-date-groups > .filter-date-group[open]{
+  border-color:#b9cde3;
+  box-shadow:0 2px 7px #17324d12;
+}
+.filter-date-groups .site-status-content{padding:10px}
+.filter-date-groups .site-status-meta{font-size:10px}
+.filter-date-groups .site-status-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.filter-date-groups .site-status-site{padding:8px}
+.filter-date-groups .site-status-metrics{gap:4px}
+.filter-date-groups .site-status-metric{min-height:58px}
+.filter-date-groups .filter-date-group__chevron{transition:transform .16s ease}
+.filter-date-groups .filter-date-group[open] .filter-date-group__chevron{transform:rotate(180deg)}
+@media(max-width:1050px){
+  .filter-date-groups{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .filter-date-groups > .site-status-panel{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .filter-date-groups{grid-template-columns:1fr !important;gap:7px !important}
+  .filter-date-groups > .site-status-panel{grid-column:auto}
+  .filter-date-groups .site-status-toggle,
+  .filter-date-groups .filter-date-group__summary{min-height:58px;height:58px;padding:7px 9px}
+  .filter-date-groups > .site-status-panel,
+  .filter-date-groups > .filter-date-group{min-height:58px}
+  .filter-date-groups .filter-date-group__range{max-width:40%;font-size:10px}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1268,7 +1425,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.6</small>
+    <small>Beta • Gamma • CPT2 • V20.7</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1294,21 +1451,6 @@ header > button.primary{display:none !important}
 <div class="card black">⚫ On Hold<div class="stat" id="hold">3</div></div>
 </div>
 
-<div class="card site-status-panel" id="siteStatusPanel">
-  <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
-    <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
-    <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌄</span>
-  </button>
-  <div class="site-status-content" id="siteStatusContent" style="display:none">
-    <div class="site-status-meta">
-      <span>Click any status count to view its matching records.</span>
-      <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
-    </div>
-    <div class="site-status-grid" id="siteStatusGrid">
-      <div class="site-status-site">Loading site statistics...</div>
-    </div>
-  </div>
-</div>
 <div class="card filter-card">
 <div class="filter-layout">
   <div class="filter-row filter-row--primary" aria-label="Record filters">
@@ -1354,6 +1496,21 @@ header > button.primary{display:none !important}
     </label>
   </div>
     <div class="filter-date-groups" aria-label="Reported and completion date filters">
+    <div class="card site-status-panel" id="siteStatusPanel">
+      <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
+        <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
+        <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌄</span>
+      </button>
+      <div class="site-status-content" id="siteStatusContent" style="display:none">
+        <div class="site-status-meta">
+          <span>Click any status count to view its matching records.</span>
+          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
+        </div>
+        <div class="site-status-grid" id="siteStatusGrid">
+          <div class="site-status-site">Loading site statistics...</div>
+        </div>
+      </div>
+    </div>
     <details class="filter-date-group" id="reportedDateFilter">
       <summary class="filter-date-group__summary">
         <span class="filter-date-group__heading">
@@ -1396,7 +1553,6 @@ header > button.primary{display:none !important}
       </div>
     </details>
   </div>
-  <div class="filter-date-groups-note">Open either date section only when you need to set a date range. Active ranges remain visible when collapsed.</div>
 
   <div class="filter-row filter-row--tools" aria-label="Search and export">
     <label class="filter-field filter-field--search">
