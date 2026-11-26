@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.7</title>
+<title>Tech Daily Site Deficiency V20.8</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1377,10 +1377,7 @@ header > button.primary{display:none !important}
 .filter-date-groups .site-status-metric{min-height:58px}
 .filter-date-groups .filter-date-group__chevron{transition:transform .16s ease}
 .filter-date-groups .filter-date-group[open] .filter-date-group__chevron{transform:rotate(180deg)}
-@media(max-width:1050px){
-  .filter-date-groups{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
-  .filter-date-groups > .site-status-panel{grid-column:1/-1}
-}
+
 @media(max-width:700px){
   .filter-date-groups{grid-template-columns:1fr !important;gap:7px !important}
   .filter-date-groups > .site-status-panel{grid-column:auto}
@@ -1389,6 +1386,43 @@ header > button.primary{display:none !important}
   .filter-date-groups > .site-status-panel,
   .filter-date-groups > .filter-date-group{min-height:58px}
   .filter-date-groups .filter-date-group__range{max-width:40%;font-size:10px}
+}
+</style>
+
+
+<style>
+/* V20.8: Site Status expands full width; dashboard foldouts behave as a single accordion. */
+.filter-date-groups > .site-status-panel.is-open{
+  grid-column:1/-1 !important;
+  width:100%;
+}
+.filter-date-groups > .site-status-panel.is-open .site-status-toggle{
+  background:#f1f6fb;
+}
+.filter-date-groups > .site-status-panel.is-open .site-status-content{
+  width:100%;
+}
+@media(min-width:701px) and (max-width:1050px){
+  .filter-date-groups{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+  .filter-date-groups > .site-status-panel{
+    grid-column:auto;
+  }
+  .filter-date-groups .site-status-toggle,
+  .filter-date-groups .filter-date-group__summary{
+    gap:5px;
+    padding-left:7px;
+    padding-right:7px;
+  }
+  .filter-date-groups .filter-date-group__heading span{
+    display:none;
+  }
+}
+@media(max-width:700px){
+  .filter-date-groups > .site-status-panel.is-open{
+    grid-column:1/-1 !important;
+  }
 }
 </style>
 
@@ -1425,7 +1459,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.7</small>
+    <small>Beta • Gamma • CPT2 • V20.8</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -4255,16 +4289,45 @@ function resetSiteStatusFilters(){
   if(statusFilter)statusFilter.value='';
   render();
 }
+function closeOtherDashboardFoldouts(active){
+  const sitePanel=document.getElementById('siteStatusPanel');
+  const siteContent=document.getElementById('siteStatusContent');
+  const siteToggle=document.getElementById('siteStatusToggle');
+  const siteMark=document.getElementById('siteStatusToggleMark');
+
+  // Close the Site Status panel unless it is the active section.
+  if(sitePanel && active!==sitePanel){
+    if(siteContent)siteContent.style.display='none';
+    if(siteToggle)siteToggle.setAttribute('aria-expanded','false');
+    if(siteMark)siteMark.textContent='⌄';
+    sitePanel.classList.remove('is-open');
+  }
+
+  // Close both date panels except the one the user just opened.
+  document.querySelectorAll('.filter-date-group').forEach(group=>{
+    if(group!==active && group.open)group.open=false;
+  });
+}
 function toggleSiteStatusPanel(){
+  const panel=document.getElementById('siteStatusPanel');
   const content=document.getElementById('siteStatusContent');
   const toggle=document.getElementById('siteStatusToggle');
   const mark=document.getElementById('siteStatusToggleMark');
-  if(!content||!toggle)return;
+  if(!panel||!content||!toggle)return;
   const open=content.style.display==='none';
+  if(open)closeOtherDashboardFoldouts(panel);
   content.style.display=open?'block':'none';
   toggle.setAttribute('aria-expanded',String(open));
+  panel.classList.toggle('is-open',open);
   if(mark)mark.textContent=open?'⌃':'⌄';
 }
+
+// Native date details participate in the same one-open-at-a-time accordion.
+document.querySelectorAll('.filter-date-group').forEach(group=>{
+  group.addEventListener('toggle',()=>{
+    if(group.open)closeOtherDashboardFoldouts(group);
+  });
+});
 function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 let selectedPhoto={name:'',type:'',data:''};
 let selectedFixPhoto={name:'',type:'',data:''};
