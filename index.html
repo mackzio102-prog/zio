@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.37</title>
+<title>Tech Daily Site Deficiency V20.38</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3317,6 +3317,170 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.38: Remove excessive vertical whitespace from the expanded mobile status results. */
+@media(max-width:700px){
+  #siteStatusContent{
+    display:block !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    align-self:start !important;
+    margin:0 !important;
+    padding:8px !important;
+    overflow:visible !important;
+  }
+  #siteStatusContent .site-status-meta{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:7px !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 0 8px !important;
+    padding:0 !important;
+  }
+  #siteStatusContent .site-status-current-view{
+    display:flex !important;
+    flex:0 0 auto !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:8px 9px !important;
+    gap:5px 7px !important;
+  }
+  #siteStatusContent .site-status-current-view__label{
+    flex:1 1 100% !important;
+    margin:0 !important;
+    line-height:1.15 !important;
+  }
+  #siteStatusContent .site-status-current-view strong{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    font-size:14px !important;
+    line-height:1.2 !important;
+  }
+  #siteStatusContent .site-status-current-view__count{
+    flex:0 0 auto !important;
+    margin:0 !important;
+    padding:4px 7px !important;
+    font-size:11px !important;
+  }
+  #siteStatusContent .site-status-meta-actions{
+    display:flex !important;
+    flex:0 0 auto !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    flex-wrap:wrap !important;
+    gap:6px !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  #siteStatusContent .site-status-meta-actions > span{
+    display:block !important;
+    flex:0 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    font-size:10px !important;
+    line-height:1.25 !important;
+  }
+  #siteStatusContent .site-status-reset{
+    flex:0 0 auto !important;
+    min-height:32px !important;
+    height:32px !important;
+    margin:0 !important;
+    padding:5px 8px !important;
+    font-size:11px !important;
+    line-height:1.1 !important;
+  }
+  #siteStatusContent .site-status-grid{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) !important;
+    grid-auto-rows:max-content !important;
+    align-content:start !important;
+    justify-content:start !important;
+    gap:7px !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  #siteStatusContent .site-status-site{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:8px !important;
+  }
+  #siteStatusContent .site-status-site-head{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:6px !important;
+    margin:0 0 6px !important;
+    padding:0 !important;
+  }
+  #siteStatusContent .site-status-site-name{
+    font-size:15px !important;
+    line-height:1.2 !important;
+  }
+  #siteStatusContent .site-status-total{
+    padding:4px 7px !important;
+    font-size:11px !important;
+    line-height:1.2 !important;
+  }
+  #siteStatusContent .site-status-metrics{
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:4px !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+  #siteStatusContent .site-status-metric{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:0 !important;
+    min-height:52px !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:5px 2px !important;
+    gap:2px !important;
+  }
+  #siteStatusContent .site-status-metric strong{
+    font-size:19px !important;
+    line-height:1.05 !important;
+  }
+  #siteStatusContent .site-status-metric span{
+    font-size:10px !important;
+    line-height:1.1 !important;
+    white-space:nowrap !important;
+  }
+}
+@media(max-width:360px){
+  #siteStatusContent .site-status-current-view strong{font-size:12px !important}
+  #siteStatusContent .site-status-current-view__count{font-size:10px !important}
+  #siteStatusContent .site-status-metric{min-height:48px !important}
+  #siteStatusContent .site-status-metric strong{font-size:17px !important}
+  #siteStatusContent .site-status-metric span{font-size:9px !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3350,7 +3514,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.37</small>
+    <small>Beta • Gamma • CPT2 • V20.38</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -6202,7 +6366,9 @@ function renderSiteStatusStats(records){
   const viewCount=document.getElementById('siteStatusViewCount');
   if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
   if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
-  meta.textContent='Select any colored status count to view its matching records.';
+  meta.textContent='Tap a status count to filter records.';
+  const resetButton=document.querySelector('#siteStatusContent .site-status-reset');
+  if(resetButton)resetButton.style.display=(selectedSite||selectedStatus)?'inline-flex':'none';
   grid.innerHTML=sites.map(site=>{
     const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
     const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
