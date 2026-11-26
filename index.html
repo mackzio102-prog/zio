@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.4</title>
+<title>Tech Daily Site Deficiency V20.5</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1000,6 +1000,124 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.5 dashboard date-filter layout: equal reported/completion panels and controls. */
+.filter-date-groups{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  align-items:stretch;
+}
+.filter-date-group{
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+  min-width:0;
+  height:100%;
+  padding:12px;
+  border:1px solid #dfe6ed;
+  border-radius:10px;
+  background:#f8fafc;
+}
+.filter-date-group__heading{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:3px;
+  min-height:39px;
+}
+.filter-date-group__heading strong{
+  color:#17324d;
+  font-size:13px;
+  line-height:1.2;
+}
+.filter-date-group__heading span{
+  color:#66737f;
+  font-size:11px;
+  font-weight:400;
+  line-height:1.3;
+}
+.filter-date-group__fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  align-items:end;
+}
+.filter-date-group .filter-field{min-width:0}
+.filter-date-group .filter-field>span:first-child{
+  color:#52606d;
+  font-size:11px;
+  font-weight:700;
+}
+.filter-date-group .filter-date{
+  width:100%;
+  height:42px;
+  min-width:0;
+  padding:0 9px;
+  background:#fff;
+}
+.filter-date-group .filter-date input{
+  width:100%;
+  min-width:0;
+  height:40px;
+  font-size:13px;
+}
+.filter-date-groups-note{
+  margin-top:-5px;
+  padding:0 2px;
+  color:#66737f;
+  font-size:11px;
+  line-height:1.35;
+}
+.filter-row--tools{
+  grid-template-columns:minmax(220px,1fr) auto;
+  align-items:end;
+  gap:10px;
+}
+.filter-row--tools .filter-field input{
+  height:42px;
+}
+.filter-row--tools .filter-actions{
+  display:flex;
+  align-items:end;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.filter-row--tools .filter-actions button{
+  height:42px;
+  white-space:nowrap;
+}
+@media(max-width:900px){
+  .filter-row--tools{grid-template-columns:1fr}
+  .filter-row--tools .filter-actions{justify-content:stretch}
+  .filter-row--tools .filter-actions button{flex:1 1 140px}
+}
+@media(max-width:700px){
+  .filter-date-groups{grid-template-columns:1fr;gap:10px}
+  .filter-date-group{padding:10px}
+  .filter-date-group__fields{gap:8px}
+  .filter-date-group .filter-date{padding:0 7px}
+  .filter-row--tools{grid-template-columns:1fr}
+  .filter-row--tools .filter-actions{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+  }
+  .filter-row--tools .filter-actions button{
+    min-width:0;
+    padding:9px 6px;
+    font-size:12px;
+    line-height:1.2;
+    white-space:normal;
+  }
+}
+@media(max-width:360px){
+  .filter-date-group__fields{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1033,7 +1151,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.0</small>
+    <small>Beta • Gamma • CPT2 • V20.5</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1118,14 +1236,46 @@ header > button.primary{display:none !important}
       <select id="filterAttendedBy" onchange="render()"><option value="">All Attended By</option><option>Tech 1</option><option>Tech 2</option><option>Tech 3</option><option>Facilities</option></select>
     </label>
   </div>
-  <div class="filter-row filter-row--secondary" aria-label="Date and keyword filters">
-    <label class="filter-field"><span>From date</span>
-      <span class="filter-date"><input id="filterDateFrom" type="date" onchange="render()" aria-label="From date"></span>
-    </label>
-    <label class="filter-field"><span>To date</span>
-      <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="To date"></span>
-    </label>
-    <label class="filter-field filter-field--search"><span>Search records</span>
+    <div class="filter-date-groups" aria-label="Reported and completion date filters">
+    <section class="filter-date-group" aria-labelledby="reportedDateHeading">
+      <div class="filter-date-group__heading">
+        <strong id="reportedDateHeading">Reported Date</strong>
+        <span>Date the deficiency was initially reported</span>
+      </div>
+      <div class="filter-date-group__fields">
+        <label class="filter-field">
+          <span>From</span>
+          <span class="filter-date"><input id="filterDateFrom" type="date" onchange="render()" aria-label="Reported date from"></span>
+        </label>
+        <label class="filter-field">
+          <span>To</span>
+          <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="Reported date to"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="filter-date-group" aria-labelledby="completionDateHeading">
+      <div class="filter-date-group__heading">
+        <strong id="completionDateHeading">Completion Date</strong>
+        <span>Date the deficiency was marked Completed</span>
+      </div>
+      <div class="filter-date-group__fields">
+        <label class="filter-field">
+          <span>From</span>
+          <span class="filter-date"><input id="filterCompletedFrom" type="date" onchange="render()" aria-label="Completion date from"></span>
+        </label>
+        <label class="filter-field">
+          <span>To</span>
+          <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completion date to"></span>
+        </label>
+      </div>
+    </section>
+  </div>
+  <div class="filter-date-groups-note">Completion Date uses the automatic Completed Date recorded at the top of Remarks.</div>
+
+  <div class="filter-row filter-row--tools" aria-label="Search and export">
+    <label class="filter-field filter-field--search">
+      <span>Search records</span>
       <input id="search" oninput="render()" placeholder="Deficiency, floor, location...">
     </label>
     <div class="filter-actions">
@@ -1133,15 +1283,6 @@ header > button.primary{display:none !important}
       <button type="button" class="primary filter-export" onclick="exportFilteredRecordsPDF()">📄 Export Filtered PDF</button>
       <button type="button" class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
     </div>
-  </div>
-  <div class="filter-row filter-row--completion" aria-label="Completion date filters">
-    <label class="filter-field"><span>Completed from</span>
-      <span class="filter-date"><input id="filterCompletedFrom" type="date" onchange="render()" aria-label="Completed from date"></span>
-    </label>
-    <label class="filter-field"><span>Completed to</span>
-      <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completed to date"></span>
-    </label>
-    <div class="filter-completion-note">Filters by the automatic Completed Date recorded at the top of Remarks.</div>
   </div>
 </div>
 </div>
