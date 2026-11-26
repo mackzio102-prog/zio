@@ -4006,7 +4006,10 @@ async function loadExistingEditPhoto(recordId,photoName,photoKind='before'){
 
 async function edit(i){
   let x=data.find(a=>a.id===i); if(!x)return;
-  lockOriginalPhotoForCurrentEdit=!isAdminUser()&&String(x.status||'').trim().toLowerCase()==='completed';
+  lockOriginalPhotoForCurrentEdit=!isAdminUser()&&(
+   String(x.status||'').trim().toLowerCase()==='completed' ||
+   !!getCompletionDateFromRemarks(x.remarks)
+  );
   document.getElementById('editId').value=x.id;
   document.getElementById('date').value=x.date;
   document.getElementById('site').value=x.site;
@@ -4094,8 +4097,10 @@ document.getElementById('form').addEventListener('submit',async function(e){
  const existingIndex=existingId ? data.findIndex(x=>x.id===existingId) : -1;
  const existingRecord=existingIndex>=0 ? data[existingIndex] : null;
  const isAdmin=isAdminUser();
- const originalPhotoLockedForRecord=!isAdmin && !!existingRecord &&
-  String(existingRecord.status||'').trim().toLowerCase()==='completed';
+ const originalPhotoLockedForRecord=!isAdmin && !!existingRecord && (
+  String(existingRecord.status||'').trim().toLowerCase()==='completed' ||
+  !!getCompletionDateFromRemarks(existingRecord.remarks)
+ );
  if(originalPhotoLockedForRecord && selectedPhoto.data){
   alert('Original Photo is locked for non-admin users after a record is Completed.');
   return;
