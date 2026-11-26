@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.21</title>
+<title>Tech Daily Site Deficiency V20.22</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2536,6 +2536,38 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.22: Force a true vertical gap between the overview title and status tiles.
+   The older first-child span rule overrode display:flex, making them look stuck together. */
+#siteStatusToggle .site-status-toggle-content{
+  display:flex !important;
+  flex:1 1 auto !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  justify-content:center !important;
+  gap:13px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#siteStatusToggle .site-status-toggle-title{
+  display:block !important;
+  flex:none !important;
+  width:100% !important;
+  margin:0 !important;
+  line-height:1.25 !important;
+}
+#siteStatusToggle .site-status-header-summary{
+  flex:none !important;
+  margin:0 !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle .site-status-toggle-content{
+    gap:10px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2569,7 +2601,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.21</small>
+    <small>Beta • Gamma • CPT2 • V20.22</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
