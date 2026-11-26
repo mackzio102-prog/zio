@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.48</title>
+<title>Tech Daily Site Deficiency V20.49</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4011,6 +4011,45 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.49: Compact Excel and Power Automate connection text on mobile to preserve usable space. */
+@media screen and (max-width:700px){
+  #stickyArea .connection-copy{
+    min-width:0 !important;
+    width:100% !important;
+    line-height:1.2 !important;
+  }
+  #stickyArea .connection-copy strong{
+    display:block !important;
+    font-size:12px !important;
+    font-weight:700 !important;
+    line-height:1.2 !important;
+    margin:0 !important;
+  }
+  #stickyArea #connectionStatus{
+    font-size:10px !important;
+    line-height:1.25 !important;
+    margin-top:3px !important;
+    overflow-wrap:anywhere !important;
+  }
+  #stickyArea .connection-card{
+    padding:8px !important;
+  }
+  #stickyArea .connection-topbar{
+    gap:6px !important;
+  }
+}
+@media screen and (max-width:360px){
+  #stickyArea .connection-copy strong{
+    font-size:11px !important;
+  }
+  #stickyArea #connectionStatus{
+    font-size:9px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -4044,7 +4083,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.48</small>
+    <small>Beta • Gamma • CPT2 • V20.49</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
