@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.20</title>
+<title>Tech Daily Site Deficiency V20.21</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2457,6 +2457,85 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.21: Larger Site Status Overview title and readable, evenly spaced status tiles. */
+.filter-date-groups .site-status-toggle{
+  min-height:94px !important;
+  height:94px !important;
+}
+.filter-date-groups .site-status-toggle-content{
+  gap:9px !important;
+}
+.filter-date-groups .site-status-toggle-title{
+  font-size:15px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+}
+.filter-date-groups .site-status-header-summary{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:12px !important;
+  width:100% !important;
+}
+.filter-date-groups .site-status-header-item{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:3px !important;
+  width:100% !important;
+  height:48px !important;
+  min-height:48px !important;
+  padding:5px 4px !important;
+  border-radius:8px !important;
+  font-size:13px !important;
+  line-height:1.1 !important;
+}
+.filter-date-groups .site-status-header-item strong{
+  font-size:16px !important;
+  line-height:1 !important;
+}
+@media(max-width:700px){
+  .filter-date-groups .site-status-toggle{
+    min-height:88px !important;
+    height:88px !important;
+  }
+  .filter-date-groups .site-status-toggle-content{
+    gap:7px !important;
+  }
+  .filter-date-groups .site-status-toggle-title{
+    font-size:12px !important;
+  }
+  .filter-date-groups .site-status-header-summary{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:7px !important;
+  }
+  .filter-date-groups .site-status-header-item{
+    height:44px !important;
+    min-height:44px !important;
+    gap:3px !important;
+    padding:4px 2px !important;
+    font-size:clamp(9px,2.7vw,11px) !important;
+  }
+  .filter-date-groups .site-status-header-item strong{
+    font-size:clamp(12px,3.2vw,14px) !important;
+  }
+}
+@media(max-width:360px){
+  .filter-date-groups .site-status-header-summary{
+    gap:5px !important;
+  }
+  .filter-date-groups .site-status-header-item{
+    font-size:9px !important;
+  }
+  .filter-date-groups .site-status-header-item strong{
+    font-size:12px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2490,7 +2569,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.20</small>
+    <small>Beta • Gamma • CPT2 • V20.21</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
