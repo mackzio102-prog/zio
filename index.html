@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.14</title>
+<title>Tech Daily Site Deficiency V20.15</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1952,6 +1952,47 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.15: Align the desktop dashboard foldout labels consistently to the left. */
+@media(min-width:701px){
+  .filter-date-groups .dashboard-foldout-toggle{
+    align-items:center !important;
+    justify-content:flex-start !important;
+    text-align:left !important;
+  }
+  #siteStatusToggle > span:first-child{
+    display:block !important;
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-group__heading{
+    display:flex !important;
+    flex:1 1 auto !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    min-width:0 !important;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-group__heading strong,
+  .filter-date-groups .filter-date-group__heading span{
+    width:100%;
+    text-align:left !important;
+  }
+  .filter-date-groups .filter-date-group__range{
+    margin-left:auto !important;
+    text-align:right !important;
+  }
+  .filter-date-groups .site-status-toggle-mark,
+  .filter-date-groups .filter-date-group__chevron{
+    align-self:center !important;
+    margin-left:8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1985,7 +2026,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.14</small>
+    <small>Beta • Gamma • CPT2 • V20.15</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
