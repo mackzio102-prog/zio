@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.51</title>
+<title>Tech Daily Site Deficiency V20.52</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4091,6 +4091,36 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.52: Place overview results directly beneath its header and give them a dedicated grid row. */
+#siteStatusContent[hidden]{display:none !important}
+#siteStatusContent:not([hidden]){
+  display:block !important;
+  grid-column:1 / -1 !important;
+  grid-row:2 !important;
+  align-self:start !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:auto !important;
+  max-height:none !important;
+  margin:0 !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  overflow:visible !important;
+}
+@media(max-width:700px){
+  #reportedDateFilter{grid-row:3 !important;grid-column:1 !important}
+  #completionDateFilter{grid-row:3 !important;grid-column:2 !important}
+  #siteStatusContent:not([hidden]){
+    grid-row:2 !important;
+    grid-column:1 / -1 !important;
+    width:100% !important;
+    padding:8px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -4124,7 +4154,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.51</small>
+    <small>Beta • Gamma • CPT2 • V20.52</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -4210,6 +4240,24 @@ header > button.primary{display:none !important}
       <span class="site-status-toggle-mark" id="siteStatusToggleMark" aria-hidden="true">⌄</span>
     </button>
 
+    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
+      id="siteStatusContent" hidden style="display:none">
+      <div class="site-status-meta">
+        <div class="site-status-current-view" aria-live="polite">
+          <span class="site-status-current-view__label">CURRENT FILTER</span>
+          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
+          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
+        </div>
+        <div class="site-status-meta-actions">
+          <span id="siteStatusHelpText">Select any colored status count to view its matching records.</span>
+          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
+        </div>
+      </div>
+      <div class="site-status-grid" id="siteStatusGrid">
+        <div class="site-status-site">Loading site statistics...</div>
+      </div>
+    </div>
+
     <button type="button" class="dashboard-foldout-toggle filter-date-toggle" id="reportedDateFilter"
       onclick="toggleDateFilterPanel('reportedDate')" aria-expanded="false" aria-controls="reportedDateContent">
       <span class="filter-date-group__heading">
@@ -4230,23 +4278,7 @@ header > button.primary{display:none !important}
       <span class="filter-date-group__chevron" id="completionDateChevron" aria-hidden="true">⌄</span>
     </button>
 
-    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
-      id="siteStatusContent" hidden style="display:none">
-      <div class="site-status-meta">
-        <div class="site-status-current-view" aria-live="polite">
-          <span class="site-status-current-view__label">CURRENT FILTER</span>
-          <strong id="siteStatusViewName">All Sites • All Statuses</strong>
-          <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
-        </div>
-        <div class="site-status-meta-actions">
-          <span id="siteStatusHelpText">Select any colored status count to view its matching records.</span>
-          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
-        </div>
-      </div>
-      <div class="site-status-grid" id="siteStatusGrid">
-        <div class="site-status-site">Loading site statistics...</div>
-      </div>
-    </div>
+    
 
     <div class="filter-date-group__fields dashboard-foldout-content dashboard-foldout-content--reported"
       id="reportedDateContent" style="display:none">
