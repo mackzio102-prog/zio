@@ -10,9 +10,10 @@
 <link rel="shortcut icon" type="image/webp" href="./icons/app-icon.webp">
 <link rel="apple-touch-icon" href="./icons/app-icon.webp">
 <link rel="manifest" href="./manifest.webmanifest">
+<!-- V20.1: Automatically stamp completion date in Remarks on first transition to Completed. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.0</title>
+<title>Tech Daily Site Deficiency V20.1</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3989,6 +3990,28 @@ async function edit(i){
   }
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
+// V20.1: Add a completion-date stamp to Remarks when a record is marked Completed.
+function stampCompletedDateInRemarks(remarks){
+ const lines=String(remarks||'').split(/\r?\n/);
+ // Replace an older completion-date line if the record was reopened and completed again.
+ const preservedLines=lines.filter(line=>!/^\s*Completed Date\s*:/i.test(line));
+ const existingRemarks=preservedLines.join('\n').trim();
+
+ const now=new Date();
+ const months=[
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
+ ];
+ // Uses the device's local calendar date.
+ const completedDate=String(now.getDate()).padStart(2,'0')+
+  ' '+months[now.getMonth()]+' '+now.getFullYear();
+ const completionLine='Completed Date: '+completedDate;
+
+ return existingRemarks
+  ? existingRemarks+'\n'+completionLine
+  : completionLine;
+}
+
 document.getElementById('form').addEventListener('submit',async function(e){
  e.preventDefault();
  const currentStatus=document.getElementById('status').value;
@@ -4002,6 +4025,18 @@ document.getElementById('form').addEventListener('submit',async function(e){
  }
  const existingId=document.getElementById('editId').value;
  const existingIndex=existingId ? data.findIndex(x=>x.id===existingId) : -1;
+ const existingRecord=existingIndex>=0 ? data[existingIndex] : null;
+ let remarksValue=document.getElementById('remarks').value.trim();
+ let completionStampAdded=false;
+
+ // Add the completion date only when the record first changes to Completed.
+ // Existing completed records are not assigned a new (potentially incorrect) date.
+ if(currentStatus==='Completed' &&
+    (!existingRecord || String(existingRecord.status||'').trim().toLowerCase()!=='completed')){
+  remarksValue=stampCompletedDateInRemarks(remarksValue);
+  completionStampAdded=true;
+ }
+
  let obj={
   id:existingId||id(),
   date:document.getElementById('date').value,
@@ -4011,7 +4046,7 @@ document.getElementById('form').addEventListener('submit',async function(e){
   location:document.getElementById('location').value.trim(),
   reportedBy:document.getElementById('reportedBy').value.trim(),
   attendedBy:document.getElementById('attendedBy').value.trim(),
-  remarks:document.getElementById('remarks').value.trim(),
+  remarks:remarksValue,
   status:document.getElementById('status').value,
   photoName:selectedPhoto.data ? selectedPhoto.name : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoName||'' : ''),
   photoType:selectedPhoto.data ? selectedPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].photoType||'' : ''),
