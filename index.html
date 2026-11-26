@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.40</title>
+<title>Tech Daily Site Deficiency V20.41</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3540,6 +3540,40 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.41: Keep mobile selected date results on a single compact line. */
+@media(max-width:700px){
+  .filter-date-groups .filter-date-toggle{
+    min-height:58px !important;
+    height:58px !important;
+    gap:3px !important;
+    padding:6px 30px 6px 9px !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    overflow-wrap:normal !important;
+    font-size:10px !important;
+    line-height:1.15 !important;
+  }
+  .filter-date-groups .filter-date-toggle .filter-date-group__heading strong{
+    font-size:11px !important;
+    line-height:1.15 !important;
+  }
+}
+@media(max-width:360px){
+  .filter-date-groups .filter-date-toggle .filter-date-group__range{
+    font-size:9px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3573,7 +3607,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.40</small>
+    <small>Beta • Gamma • CPT2 • V20.41</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
