@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.45</title>
+<title>Tech Daily Site Deficiency V20.46</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3833,6 +3833,98 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.46: Center the date heading and selected result together in the middle of each mobile box. */
+@media screen and (max-width:700px){
+  #reportedDateFilter,
+  #completionDateFilter{
+    position:relative !important;
+    display:block !important;
+    height:56px !important;
+    min-height:56px !important;
+    max-height:56px !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+  #reportedDateFilter .filter-date-group__heading,
+  #completionDateFilter .filter-date-group__heading{
+    position:absolute !important;
+    top:calc(50% - 7px) !important;
+    left:50% !important;
+    display:block !important;
+    width:calc(100% - 44px) !important;
+    max-width:calc(100% - 44px) !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    transform:translate(-50%,-50%) !important;
+    text-align:center !important;
+  }
+  #reportedDateFilter .filter-date-group__heading strong,
+  #completionDateFilter .filter-date-group__heading strong{
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    color:#17324d !important;
+    font-size:10px !important;
+    line-height:12px !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+  }
+  #reportedDateFilter .filter-date-group__heading span,
+  #completionDateFilter .filter-date-group__heading span{
+    display:none !important;
+  }
+  #reportedDateFilter #reportedDateSummaryText,
+  #completionDateFilter #completionDateSummaryText{
+    position:absolute !important;
+    top:calc(50% + 7px) !important;
+    left:50% !important;
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:calc(100% - 44px) !important;
+    max-width:calc(100% - 44px) !important;
+    min-width:0 !important;
+    height:12px !important;
+    max-height:12px !important;
+    margin:0 !important;
+    padding:0 !important;
+    transform:translate(-50%,-50%) !important;
+    color:#34465a !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    font-family:inherit !important;
+    font-size:8px !important;
+    font-weight:700 !important;
+    line-height:12px !important;
+    letter-spacing:0 !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+  #reportedDateFilter .filter-date-group__chevron,
+  #completionDateFilter .filter-date-group__chevron{
+    position:absolute !important;
+    top:50% !important;
+    right:6px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:18px !important;
+    height:18px !important;
+    margin:0 !important;
+    padding:0 !important;
+    transform:translateY(-50%) !important;
+    font-size:13px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -3866,7 +3958,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.45</small>
+    <small>Beta • Gamma • CPT2 • V20.46</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
