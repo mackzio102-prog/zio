@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.5</title>
+<title>Tech Daily Site Deficiency V20.6</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1118,6 +1118,123 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.6: Collapsible date sections reduce dashboard height and expose more records. */
+.filter-date-groups{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  align-items:start;
+}
+.filter-date-group{
+  display:block;
+  min-width:0;
+  height:auto;
+  padding:0;
+  overflow:hidden;
+  border:1px solid #d9e2eb;
+  border-radius:9px;
+  background:#f8fafc;
+}
+.filter-date-group[open]{
+  border-color:#b9cde3;
+  box-shadow:0 2px 7px #17324d12;
+}
+.filter-date-group__summary{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:52px;
+  padding:8px 11px;
+  cursor:pointer;
+  list-style:none;
+  user-select:none;
+}
+.filter-date-group__summary::-webkit-details-marker{display:none}
+.filter-date-group__summary::marker{content:""}
+.filter-date-group__heading{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  flex:1;
+  min-width:0;
+}
+.filter-date-group__heading strong{
+  color:#17324d;
+  font-size:12px;
+  line-height:1.2;
+}
+.filter-date-group__heading span{
+  color:#718096;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.25;
+}
+.filter-date-group__range{
+  flex:none;
+  max-width:42%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#52606d;
+  font-size:10px;
+  font-weight:700;
+  text-align:right;
+  padding:4px 7px;
+  background:#edf2f7;
+  border-radius:6px;
+}
+.filter-date-group__chevron{
+  flex:none;
+  color:#52606d;
+  font-size:17px;
+  line-height:1;
+  transition:transform .16s ease;
+}
+.filter-date-group[open] .filter-date-group__chevron{transform:rotate(180deg)}
+.filter-date-group__fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  padding:0 11px 11px;
+  align-items:end;
+}
+.filter-date-group .filter-field{min-width:0;gap:4px}
+.filter-date-group .filter-field>span:first-child{
+  color:#52606d;
+  font-size:11px;
+  font-weight:700;
+}
+.filter-date-group .filter-date{
+  width:100%;
+  height:40px;
+  min-width:0;
+  padding:0 8px;
+  background:#fff;
+}
+.filter-date-group .filter-date input{
+  width:100%;
+  min-width:0;
+  height:38px;
+  font-size:12px;
+}
+.filter-date-groups-note{
+  margin-top:-3px;
+  padding:0 2px;
+  color:#7b8794;
+  font-size:10px;
+  line-height:1.3;
+}
+@media(max-width:700px){
+  .filter-date-groups{grid-template-columns:1fr;gap:7px}
+  .filter-date-group__summary{min-height:49px;padding:7px 9px}
+  .filter-date-group__range{max-width:39%;font-size:10px}
+  .filter-date-group__fields{gap:7px;padding:0 9px 9px}
+  .filter-date-group .filter-date{padding:0 6px}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1151,7 +1268,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.5</small>
+    <small>Beta • Gamma • CPT2 • V20.6</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1237,11 +1354,15 @@ header > button.primary{display:none !important}
     </label>
   </div>
     <div class="filter-date-groups" aria-label="Reported and completion date filters">
-    <section class="filter-date-group" aria-labelledby="reportedDateHeading">
-      <div class="filter-date-group__heading">
-        <strong id="reportedDateHeading">Reported Date</strong>
-        <span>Date the deficiency was initially reported</span>
-      </div>
+    <details class="filter-date-group" id="reportedDateFilter">
+      <summary class="filter-date-group__summary">
+        <span class="filter-date-group__heading">
+          <strong>Reported Date</strong>
+          <span>Filter by the date the deficiency was reported</span>
+        </span>
+        <span class="filter-date-group__range" id="reportedDateSummaryText">Any date</span>
+        <span class="filter-date-group__chevron" aria-hidden="true">⌄</span>
+      </summary>
       <div class="filter-date-group__fields">
         <label class="filter-field">
           <span>From</span>
@@ -1252,13 +1373,17 @@ header > button.primary{display:none !important}
           <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="Reported date to"></span>
         </label>
       </div>
-    </section>
+    </details>
 
-    <section class="filter-date-group" aria-labelledby="completionDateHeading">
-      <div class="filter-date-group__heading">
-        <strong id="completionDateHeading">Completion Date</strong>
-        <span>Date the deficiency was marked Completed</span>
-      </div>
+    <details class="filter-date-group" id="completionDateFilter">
+      <summary class="filter-date-group__summary">
+        <span class="filter-date-group__heading">
+          <strong>Completion Date</strong>
+          <span>Filter by the date the deficiency was marked Completed</span>
+        </span>
+        <span class="filter-date-group__range" id="completionDateSummaryText">Any date</span>
+        <span class="filter-date-group__chevron" aria-hidden="true">⌄</span>
+      </summary>
       <div class="filter-date-group__fields">
         <label class="filter-field">
           <span>From</span>
@@ -1269,9 +1394,9 @@ header > button.primary{display:none !important}
           <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completion date to"></span>
         </label>
       </div>
-    </section>
+    </details>
   </div>
-  <div class="filter-date-groups-note">Completion Date uses the automatic Completed Date recorded at the top of Remarks.</div>
+  <div class="filter-date-groups-note">Open either date section only when you need to set a date range. Active ranges remain visible when collapsed.</div>
 
   <div class="filter-row filter-row--tools" aria-label="Search and export">
     <label class="filter-field filter-field--search">
@@ -3815,6 +3940,35 @@ function closeFloorFilterPanel(event){
  const picker=document.getElementById('filterFloorDropdown');
  if(picker)picker.open=false;
 }
+function formatDateFilterLabel(value){
+  if(!value)return '';
+  const parts=String(value).split('-');
+  if(parts.length!==3)return String(value);
+  return parts[2]+'/'+parts[1]+'/'+parts[0];
+}
+function updateDateFilterSummaries(){
+  const formatRange=(from,to)=>{
+    if(from&&to)return formatDateFilterLabel(from)+' – '+formatDateFilterLabel(to);
+    if(from)return 'From '+formatDateFilterLabel(from);
+    if(to)return 'Through '+formatDateFilterLabel(to);
+    return 'Any date';
+  };
+  const reported=document.getElementById('reportedDateSummaryText');
+  const completed=document.getElementById('completionDateSummaryText');
+  if(reported){
+    reported.textContent=formatRange(
+      document.getElementById('filterDateFrom').value,
+      document.getElementById('filterDateTo').value
+    );
+  }
+  if(completed){
+    completed.textContent=formatRange(
+      document.getElementById('filterCompletedFrom').value,
+      document.getElementById('filterCompletedTo').value
+    );
+  }
+}
+
 function render(){
   const site=document.getElementById('filterSite').value;
   const selectedFloors=getSelectedFloorFilters();
@@ -3827,6 +3981,7 @@ function render(){
   const completionDateTo=document.getElementById('filterCompletedTo').value;
   const hasCompletionDateFilter=!!completionDateFrom||!!completionDateTo;
   updateFloorFilterLabel();
+  updateDateFilterSummaries();
   const q=document.getElementById('search').value.toLowerCase();
   const rowEl=document.getElementById('rows');
   const mobileEl=document.getElementById('mobileRows');
