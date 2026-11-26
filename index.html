@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.32</title>
+<title>Tech Daily Site Deficiency V20.33</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2895,6 +2895,57 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.33: Keep Excel, PDF and Clear Filters together on one mobile row. */
+.filter-action-label-mobile{display:none}
+@media(max-width:700px){
+  .filter-row--tools .filter-actions{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    align-items:stretch !important;
+    justify-content:stretch !important;
+    gap:7px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+  .filter-row--tools .filter-actions button,
+  .filter-layout .filter-actions button.filter-clear{
+    display:flex !important;
+    grid-column:auto !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:40px !important;
+    height:40px !important;
+    margin:0 !important;
+    padding:5px 3px !important;
+    font-size:11px !important;
+    line-height:1.1 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+  .filter-action-label-desktop{display:none !important}
+  .filter-action-label-mobile{
+    display:inline !important;
+    min-width:0;
+    white-space:nowrap;
+  }
+}
+@media(max-width:360px){
+  .filter-row--tools .filter-actions{gap:5px !important}
+  .filter-row--tools .filter-actions button,
+  .filter-layout .filter-actions button.filter-clear{
+    min-height:38px !important;
+    height:38px !important;
+    font-size:10px !important;
+    padding:4px 2px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2928,7 +2979,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.32</small>
+    <small>Beta • Gamma • CPT2 • V20.33</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -3083,9 +3134,9 @@ header > button.primary{display:none !important}
       <input id="search" oninput="render()" placeholder="Deficiency, floor, location...">
     </label>
     <div class="filter-actions">
-      <button type="button" class="primary filter-excel" onclick="exportFilteredRecordsExcel()">📊 Export Filtered Excel</button>
-      <button type="button" class="primary filter-export" onclick="exportFilteredRecordsPDF()">📄 Export Filtered PDF</button>
-      <button type="button" class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
+      <button type="button" class="primary filter-excel" aria-label="Export Filtered Excel" onclick="exportFilteredRecordsExcel()"><span class="filter-action-label-desktop">📊 Export Filtered Excel</span><span class="filter-action-label-mobile">📊 Excel</span></button>
+      <button type="button" class="primary filter-export" aria-label="Export Filtered PDF" onclick="exportFilteredRecordsPDF()"><span class="filter-action-label-desktop">📄 Export Filtered PDF</span><span class="filter-action-label-mobile">📄 PDF</span></button>
+      <button type="button" class="secondary filter-clear" aria-label="Clear filters" onclick="clearFilters()"><span class="filter-action-label-desktop">Clear filters</span><span class="filter-action-label-mobile">Clear</span></button>
     </div>
   </div>
 </div>
