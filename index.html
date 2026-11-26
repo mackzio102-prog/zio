@@ -10,10 +10,10 @@
 <link rel="shortcut icon" type="image/webp" href="./icons/app-icon.webp">
 <link rel="apple-touch-icon" href="./icons/app-icon.webp">
 <link rel="manifest" href="./manifest.webmanifest">
-<!-- V20.3: Add completion-date range filters. -->
+<!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.3</title>
+<title>Tech Daily Site Deficiency V20.4</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -3090,7 +3090,7 @@ Wall Repainting</div>
 <div class="full"><label id="photoLabel">UPLOAD PHOTO</label>
 <input type="file" id="photo" accept="image/*" capture="environment" title="">
 <div id="photoRuleNote" class="photo-note">You can upload the deficiency photo while status is Open, Ongoing, or On Hold.</div>
-<div id="photoPreview" class="photo-preview" style="display: none;"><img id="photoPreviewImg" alt="Photo preview"><div><div id="photoName" class="photo-name"></div><div class="photo-actions"><button type="button" class="secondary" onclick="removePhoto()">Remove Photo</button></div></div></div>
+<div id="photoPreview" class="photo-preview" style="display: none;"><img id="photoPreviewImg" alt="Photo preview"><div><div id="photoName" class="photo-name"></div><div class="photo-actions" id="photoRemoveActions"><button type="button" class="secondary" onclick="removePhoto()">Remove Photo</button></div></div></div>
 </div>
  <div class="full"><label id="fixPhotoLabel">FIX PHOTO (LOCKED)</label>
  <input type="file" id="fixPhoto" accept="image/*" capture="environment" title="Fix Photo upload is available only for Completed status" disabled="">
@@ -3816,6 +3816,14 @@ function toggleSiteStatusPanel(){
 function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 let selectedPhoto={name:'',type:'',data:''};
 let selectedFixPhoto={name:'',type:'',data:''};
+// True when this non-admin user opened a record that was already Completed.
+let lockOriginalPhotoForCurrentEdit=false;
+function isAdminUser(){
+ return String(window.v17CurrentUserProfile?.role||'').trim().toLowerCase()==='admin';
+}
+function isOriginalPhotoLocked(){
+ return !isAdminUser() && lockOriginalPhotoForCurrentEdit;
+}
 function clearPhotoState(){
  selectedPhoto={name:'',type:'',data:''};
  document.getElementById('photo').value='';
@@ -3840,20 +3848,29 @@ function updatePhotoRules(){
  const photoNote=document.getElementById('photoRuleNote');
  const fixNote=document.getElementById('fixPhotoRuleNote');
  const completed=status==='Completed';
- photoInput.disabled=completed;
+ const originalLocked=!isAdminUser() && (completed||lockOriginalPhotoForCurrentEdit);
+ photoInput.disabled=originalLocked;
  fixInput.disabled=!completed;
- photoLabel.textContent=completed?'UPLOAD PHOTO (LOCKED)':'UPLOAD PHOTO';
+ photoLabel.textContent=originalLocked?'UPLOAD PHOTO (LOCKED)':'UPLOAD PHOTO';
  fixLabel.textContent=completed?'FIX PHOTO':'FIX PHOTO (LOCKED)';
- photoNote.textContent=completed
-  ? 'Photo upload is locked because the status is Completed.'
-  : 'You can upload the deficiency photo while status is Open, Ongoing, or On Hold.';
+ photoNote.textContent=originalLocked
+  ? 'Original Photo is locked for non-admin users on completed records. Contact an administrator if it needs correction.'
+  : 'You can upload the original Photo while the record is not Completed.';
  fixNote.textContent=completed
-  ? 'You can upload the Fix Photo because the status is Completed.'
+  ? 'You can upload or replace the Fix Photo because the status is Completed.'
   : 'Fix Photo upload is locked until the status is Completed.';
- photoInput.title=completed?'Photo upload is locked for Completed status':'';
+ photoInput.title=originalLocked?'Original Photo is locked for this non-admin user':'';
  fixInput.title=completed?'':'Fix Photo upload is available only for Completed status';
+ const removePhotoActions=document.getElementById('photoRemoveActions');
+ if(removePhotoActions)removePhotoActions.style.display=originalLocked?'none':'';
 }
-function removePhoto(){clearPhotoState();}
+function removePhoto(){
+ if(isOriginalPhotoLocked() || (document.getElementById('status').value==='Completed'&&!isAdminUser())){
+  alert('Original Photo cannot be changed or removed by non-admin users after a record is Completed.');
+  return;
+ }
+ clearPhotoState();
+}
 function removeFixPhoto(){clearFixPhotoState();}
 function showPhotoPreview(){
  const box=document.getElementById('photoPreview');
@@ -3891,8 +3908,8 @@ function compressImage(file,maxSize=1600,quality=.78){
  });
 }
 document.getElementById('photo').addEventListener('change',async function(){
- if(document.getElementById('status').value==='Completed'){
-  alert('Photo upload is locked when the status is Completed.');
+ if((document.getElementById('status').value==='Completed'&&!isAdminUser()) || isOriginalPhotoLocked()){
+  alert('Original Photo cannot be changed or removed by non-admin users after a record is Completed.');
   clearPhotoState();
   return;
  }
@@ -3947,6 +3964,7 @@ function openAdd(){
  document.getElementById('editId').value='';
  document.getElementById('date').value=today();
  document.getElementById('status').value='Open';
+ lockOriginalPhotoForCurrentEdit=false;
  document.getElementById('modalTitle').textContent='Report / Add Deficiency';
  updatePhotoRules();
  document.getElementById('modal').style.display='flex';
@@ -3988,6 +4006,7 @@ async function loadExistingEditPhoto(recordId,photoName,photoKind='before'){
 
 async function edit(i){
   let x=data.find(a=>a.id===i); if(!x)return;
+  lockOriginalPhotoForCurrentEdit=!isAdminUser()&&String(x.status||'').trim().toLowerCase()==='completed';
   document.getElementById('editId').value=x.id;
   document.getElementById('date').value=x.date;
   document.getElementById('site').value=x.site;
@@ -4011,7 +4030,10 @@ async function edit(i){
     loadExistingEditPhoto(x.id,existingFixName,'fix');
   }
 }
-function closeModal(){document.getElementById('modal').style.display='none'}
+function closeModal(){
+ document.getElementById('modal').style.display='none';
+ lockOriginalPhotoForCurrentEdit=false;
+}
 // V20.1: Add a completion-date stamp to Remarks when a record is marked Completed.
 function stampCompletedDateInRemarks(remarks){
  const lines=String(remarks||'').split(/\r?\n/);
@@ -4060,8 +4082,8 @@ function getCompletionDateFromRemarks(remarks){
 document.getElementById('form').addEventListener('submit',async function(e){
  e.preventDefault();
  const currentStatus=document.getElementById('status').value;
- if(currentStatus==='Completed' && selectedPhoto.data){
-  alert('Photo upload is not allowed when the status is Completed.');
+ if(currentStatus==='Completed' && selectedPhoto.data && !isAdminUser()){
+  alert('Non-admin users cannot change the original Photo on a Completed record.');
   return;
  }
  if(currentStatus!=='Completed' && selectedFixPhoto.data){
@@ -4071,6 +4093,19 @@ document.getElementById('form').addEventListener('submit',async function(e){
  const existingId=document.getElementById('editId').value;
  const existingIndex=existingId ? data.findIndex(x=>x.id===existingId) : -1;
  const existingRecord=existingIndex>=0 ? data[existingIndex] : null;
+ const isAdmin=isAdminUser();
+ const originalPhotoLockedForRecord=!isAdmin && !!existingRecord &&
+  String(existingRecord.status||'').trim().toLowerCase()==='completed';
+ if(originalPhotoLockedForRecord && selectedPhoto.data){
+  alert('Original Photo is locked for non-admin users after a record is Completed.');
+  return;
+ }
+ const previousFixPhotoName=existingRecord
+  ? (String(existingRecord.fixPhotoName||'').trim()||fixPhotoNameFromRecord(existingRecord))
+  : '';
+ const previousFixPhotoUrl=existingRecord ? String(existingRecord.fixPhotoUrl||'') : '';
+ const replacingExistingFixPhoto=!!(selectedFixPhoto.data && previousFixPhotoName &&
+  previousFixPhotoName!==selectedFixPhoto.name);
  let remarksValue=document.getElementById('remarks').value.trim();
  let completionStampAdded=false;
 
@@ -4100,7 +4135,10 @@ document.getElementById('form').addEventListener('submit',async function(e){
    fixPhotoName:selectedFixPhoto.data ? selectedFixPhoto.name : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoName||'' : ''),
    fixPhotoType:selectedFixPhoto.data ? selectedFixPhoto.type : (existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoType||'' : ''),
    fixPhotoData:selectedFixPhoto.data,
-   fixPhotoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoUrl||'' : '')
+   fixPhotoUrl:(existingIndex>=0 && data[existingIndex] ? data[existingIndex].fixPhotoUrl||'' : ''),
+   previousFixPhotoName:replacingExistingFixPhoto?previousFixPhotoName:'',
+   previousFixPhotoUrl:replacingExistingFixPhoto?previousFixPhotoUrl:'',
+   replaceFixPhoto:replacingExistingFixPhoto
  };
  let i=existingIndex;
  const isNew=i<0;
@@ -4272,7 +4310,11 @@ async function sendToPowerAutomate(obj,isNew=false){
    fixPhotoName:obj.fixPhotoName||'',
    fixPhotoType:obj.fixPhotoType||'',
    fixPhotoData:obj.fixPhotoData||'',
-   fixPhotoUrl:obj.fixPhotoUrl||''
+   fixPhotoUrl:obj.fixPhotoUrl||'',
+   previousFixPhotoName:obj.previousFixPhotoName||'',
+   previousFixPhotoUrl:obj.previousFixPhotoUrl||'',
+   replaceFixPhoto:!!obj.replaceFixPhoto,
+   userRole:String(window.v17CurrentUserProfile?.role||'user')
  };
  try{
   // Browser-safe request: text/plain avoids the CORS preflight.
