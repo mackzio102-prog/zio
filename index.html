@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.8</title>
+<title>Tech Daily Site Deficiency V20.9</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1426,6 +1426,181 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.9: Fixed header row. Expanding Site Status fills only the content row below it. */
+.filter-date-groups{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-template-rows:auto auto;
+  gap:8px 9px !important;
+  align-items:start !important;
+}
+.filter-date-groups .dashboard-foldout-toggle{
+  grid-row:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-width:0;
+  min-height:64px;
+  height:64px;
+  gap:6px;
+  margin:0;
+  padding:8px 9px;
+  border:1px solid #d9e2eb;
+  border-radius:9px;
+  background:#f8fafc;
+  color:#17324d;
+  box-shadow:none;
+  text-align:left;
+  cursor:pointer;
+}
+.filter-date-groups .dashboard-foldout-toggle:hover{background:#f1f6fb}
+.filter-date-groups .dashboard-foldout-toggle.is-open{
+  border-color:#9fb8d2;
+  background:#edf4fb;
+}
+#siteStatusToggle{grid-column:1}
+#reportedDateFilter{grid-column:2}
+#completionDateFilter{grid-column:3}
+.filter-date-groups .site-status-toggle{
+  font-size:12px;
+  font-weight:800;
+}
+.filter-date-groups .site-status-toggle>span:first-child{
+  display:block;
+  flex:1;
+  min-width:0;
+}
+.filter-date-groups .site-status-toggle small{
+  display:block;
+  margin-top:3px;
+  color:#718096;
+  font-size:10px;
+  font-weight:500;
+  line-height:1.2;
+}
+.filter-date-groups .site-status-toggle-mark,
+.filter-date-groups .filter-date-group__chevron{
+  flex:none;
+  color:#52606d;
+  font-size:17px;
+  line-height:1;
+}
+.filter-date-groups .filter-date-group__heading{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  min-width:0;
+  gap:3px;
+}
+.filter-date-groups .filter-date-group__heading strong{
+  color:#17324d;
+  font-size:12px;
+  line-height:1.2;
+}
+.filter-date-groups .filter-date-group__heading span{
+  color:#718096;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.2;
+}
+.filter-date-groups .filter-date-group__range{
+  flex:none;
+  max-width:35%;
+  padding:4px 5px;
+  overflow:hidden;
+  border-radius:6px;
+  background:#edf2f7;
+  color:#52606d;
+  font-size:9px;
+  font-weight:700;
+  text-align:right;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.filter-date-groups .dashboard-foldout-content{
+  grid-row:2;
+  min-width:0;
+  margin:0;
+  align-self:start;
+  border:1px solid #d9e2eb;
+  border-radius:9px;
+  background:#fff;
+  box-shadow:0 2px 7px #17324d12;
+}
+#siteStatusContent{
+  grid-column:1/-1;
+  width:100%;
+  padding:10px;
+}
+#reportedDateContent{
+  grid-column:2;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:9px;
+}
+#completionDateContent{
+  grid-column:3;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:9px;
+}
+.filter-date-groups .dashboard-foldout-content .filter-field{min-width:0;gap:4px}
+.filter-date-groups .dashboard-foldout-content .filter-field>span:first-child{
+  color:#52606d;
+  font-size:11px;
+}
+.filter-date-groups .dashboard-foldout-content .filter-date{
+  width:100%;
+  min-width:0;
+  height:38px;
+  padding:0 6px;
+  background:#f8fafc;
+}
+.filter-date-groups .dashboard-foldout-content .filter-date input{
+  width:100%;
+  min-width:0;
+  height:36px;
+  font-size:12px;
+}
+.filter-date-groups .site-status-meta{
+  margin-bottom:8px;
+  font-size:10px;
+}
+.filter-date-groups .site-status-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.filter-date-groups .site-status-site{padding:8px}
+.filter-date-groups .site-status-metrics{gap:4px}
+.filter-date-groups .site-status-metric{min-height:58px}
+@media(max-width:700px){
+  .filter-date-groups{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:6px !important;
+  }
+  .filter-date-groups .dashboard-foldout-toggle{
+    min-height:55px;
+    height:55px;
+    gap:3px;
+    padding:6px 5px;
+  }
+  .filter-date-groups .site-status-toggle{font-size:10px}
+  .filter-date-groups .site-status-toggle small{display:none}
+  .filter-date-groups .filter-date-group__heading strong{font-size:10px}
+  .filter-date-groups .filter-date-group__heading span{display:none}
+  .filter-date-groups .filter-date-group__range{display:none}
+  .filter-date-groups .site-status-toggle-mark,
+  .filter-date-groups .filter-date-group__chevron{font-size:14px}
+  #siteStatusContent{grid-column:1/-1}
+  #reportedDateContent{grid-column:1/-1}
+  #completionDateContent{grid-column:1/-1}
+  .filter-date-groups .site-status-grid{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1459,7 +1634,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.8</small>
+    <small>Beta • Gamma • CPT2 • V20.9</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -1529,63 +1704,68 @@ header > button.primary{display:none !important}
       <select id="filterAttendedBy" onchange="render()"><option value="">All Attended By</option><option>Tech 1</option><option>Tech 2</option><option>Tech 3</option><option>Facilities</option></select>
     </label>
   </div>
-    <div class="filter-date-groups" aria-label="Reported and completion date filters">
-    <div class="card site-status-panel" id="siteStatusPanel">
-      <button type="button" class="site-status-toggle" id="siteStatusToggle" onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
-        <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
-        <span class="site-status-toggle-mark" id="siteStatusToggleMark">⌄</span>
-      </button>
-      <div class="site-status-content" id="siteStatusContent" style="display:none">
-        <div class="site-status-meta">
-          <span>Click any status count to view its matching records.</span>
-          <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
-        </div>
-        <div class="site-status-grid" id="siteStatusGrid">
-          <div class="site-status-site">Loading site statistics...</div>
-        </div>
+    <div class="filter-date-groups" aria-label="Site status and date filters">
+    <!-- All three headers stay in the same top row. Only their content opens below. -->
+    <button type="button" class="dashboard-foldout-toggle site-status-toggle" id="siteStatusToggle"
+      onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
+      <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
+      <span class="site-status-toggle-mark" id="siteStatusToggleMark" aria-hidden="true">⌄</span>
+    </button>
+
+    <button type="button" class="dashboard-foldout-toggle filter-date-toggle" id="reportedDateFilter"
+      onclick="toggleDateFilterPanel('reportedDate')" aria-expanded="false" aria-controls="reportedDateContent">
+      <span class="filter-date-group__heading">
+        <strong>Reported Date</strong>
+        <span>Filter by report date</span>
+      </span>
+      <span class="filter-date-group__range" id="reportedDateSummaryText">Any date</span>
+      <span class="filter-date-group__chevron" id="reportedDateChevron" aria-hidden="true">⌄</span>
+    </button>
+
+    <button type="button" class="dashboard-foldout-toggle filter-date-toggle" id="completionDateFilter"
+      onclick="toggleDateFilterPanel('completionDate')" aria-expanded="false" aria-controls="completionDateContent">
+      <span class="filter-date-group__heading">
+        <strong>Completion Date</strong>
+        <span>Filter by completed date</span>
+      </span>
+      <span class="filter-date-group__range" id="completionDateSummaryText">Any date</span>
+      <span class="filter-date-group__chevron" id="completionDateChevron" aria-hidden="true">⌄</span>
+    </button>
+
+    <div class="site-status-content dashboard-foldout-content dashboard-foldout-content--site"
+      id="siteStatusContent" style="display:none">
+      <div class="site-status-meta">
+        <span>Click any status count to view its matching records.</span>
+        <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show all sites / statuses</button>
+      </div>
+      <div class="site-status-grid" id="siteStatusGrid">
+        <div class="site-status-site">Loading site statistics...</div>
       </div>
     </div>
-    <details class="filter-date-group" id="reportedDateFilter">
-      <summary class="filter-date-group__summary">
-        <span class="filter-date-group__heading">
-          <strong>Reported Date</strong>
-          <span>Filter by the date the deficiency was reported</span>
-        </span>
-        <span class="filter-date-group__range" id="reportedDateSummaryText">Any date</span>
-        <span class="filter-date-group__chevron" aria-hidden="true">⌄</span>
-      </summary>
-      <div class="filter-date-group__fields">
-        <label class="filter-field">
-          <span>From</span>
-          <span class="filter-date"><input id="filterDateFrom" type="date" onchange="render()" aria-label="Reported date from"></span>
-        </label>
-        <label class="filter-field">
-          <span>To</span>
-          <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="Reported date to"></span>
-        </label>
-      </div>
-    </details>
 
-    <details class="filter-date-group" id="completionDateFilter">
-      <summary class="filter-date-group__summary">
-        <span class="filter-date-group__heading">
-          <strong>Completion Date</strong>
-          <span>Filter by the date the deficiency was marked Completed</span>
-        </span>
-        <span class="filter-date-group__range" id="completionDateSummaryText">Any date</span>
-        <span class="filter-date-group__chevron" aria-hidden="true">⌄</span>
-      </summary>
-      <div class="filter-date-group__fields">
-        <label class="filter-field">
-          <span>From</span>
-          <span class="filter-date"><input id="filterCompletedFrom" type="date" onchange="render()" aria-label="Completion date from"></span>
-        </label>
-        <label class="filter-field">
-          <span>To</span>
-          <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completion date to"></span>
-        </label>
-      </div>
-    </details>
+    <div class="filter-date-group__fields dashboard-foldout-content dashboard-foldout-content--reported"
+      id="reportedDateContent" style="display:none">
+      <label class="filter-field">
+        <span>From</span>
+        <span class="filter-date"><input id="filterDateFrom" type="date" onchange="render()" aria-label="Reported date from"></span>
+      </label>
+      <label class="filter-field">
+        <span>To</span>
+        <span class="filter-date"><input id="filterDateTo" type="date" onchange="render()" aria-label="Reported date to"></span>
+      </label>
+    </div>
+
+    <div class="filter-date-group__fields dashboard-foldout-content dashboard-foldout-content--completion"
+      id="completionDateContent" style="display:none">
+      <label class="filter-field">
+        <span>From</span>
+        <span class="filter-date"><input id="filterCompletedFrom" type="date" onchange="render()" aria-label="Completion date from"></span>
+      </label>
+      <label class="filter-field">
+        <span>To</span>
+        <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completion date to"></span>
+      </label>
+    </div>
   </div>
 
   <div class="filter-row filter-row--tools" aria-label="Search and export">
@@ -4289,45 +4469,67 @@ function resetSiteStatusFilters(){
   if(statusFilter)statusFilter.value='';
   render();
 }
-function closeOtherDashboardFoldouts(active){
-  const sitePanel=document.getElementById('siteStatusPanel');
-  const siteContent=document.getElementById('siteStatusContent');
-  const siteToggle=document.getElementById('siteStatusToggle');
-  const siteMark=document.getElementById('siteStatusToggleMark');
-
-  // Close the Site Status panel unless it is the active section.
-  if(sitePanel && active!==sitePanel){
-    if(siteContent)siteContent.style.display='none';
-    if(siteToggle)siteToggle.setAttribute('aria-expanded','false');
-    if(siteMark)siteMark.textContent='⌄';
-    sitePanel.classList.remove('is-open');
-  }
-
-  // Close both date panels except the one the user just opened.
-  document.querySelectorAll('.filter-date-group').forEach(group=>{
-    if(group!==active && group.open)group.open=false;
+function closeOtherDashboardFoldouts(activeKey){
+  const panels={
+    siteStatus:{
+      content:document.getElementById('siteStatusContent'),
+      toggle:document.getElementById('siteStatusToggle'),
+      mark:document.getElementById('siteStatusToggleMark')
+    },
+    reportedDate:{
+      content:document.getElementById('reportedDateContent'),
+      toggle:document.getElementById('reportedDateFilter'),
+      mark:document.getElementById('reportedDateChevron')
+    },
+    completionDate:{
+      content:document.getElementById('completionDateContent'),
+      toggle:document.getElementById('completionDateFilter'),
+      mark:document.getElementById('completionDateChevron')
+    }
+  };
+  Object.entries(panels).forEach(([key,panel])=>{
+    if(key===activeKey)return;
+    if(panel.content)panel.content.style.display='none';
+    if(panel.toggle){
+      panel.toggle.setAttribute('aria-expanded','false');
+      panel.toggle.classList.remove('is-open');
+    }
+    if(panel.mark)panel.mark.textContent='⌄';
   });
+}
+function toggleDashboardFoldout(key){
+  const panels={
+    siteStatus:{
+      content:document.getElementById('siteStatusContent'),
+      toggle:document.getElementById('siteStatusToggle'),
+      mark:document.getElementById('siteStatusToggleMark')
+    },
+    reportedDate:{
+      content:document.getElementById('reportedDateContent'),
+      toggle:document.getElementById('reportedDateFilter'),
+      mark:document.getElementById('reportedDateChevron')
+    },
+    completionDate:{
+      content:document.getElementById('completionDateContent'),
+      toggle:document.getElementById('completionDateFilter'),
+      mark:document.getElementById('completionDateChevron')
+    }
+  };
+  const panel=panels[key];
+  if(!panel||!panel.content||!panel.toggle)return;
+  const open=panel.content.style.display==='none';
+  if(open)closeOtherDashboardFoldouts(key);
+  panel.content.style.display=open?(key==='siteStatus'?'block':'grid'):'none';
+  panel.toggle.setAttribute('aria-expanded',String(open));
+  panel.toggle.classList.toggle('is-open',open);
+  if(panel.mark)panel.mark.textContent=open?'⌃':'⌄';
 }
 function toggleSiteStatusPanel(){
-  const panel=document.getElementById('siteStatusPanel');
-  const content=document.getElementById('siteStatusContent');
-  const toggle=document.getElementById('siteStatusToggle');
-  const mark=document.getElementById('siteStatusToggleMark');
-  if(!panel||!content||!toggle)return;
-  const open=content.style.display==='none';
-  if(open)closeOtherDashboardFoldouts(panel);
-  content.style.display=open?'block':'none';
-  toggle.setAttribute('aria-expanded',String(open));
-  panel.classList.toggle('is-open',open);
-  if(mark)mark.textContent=open?'⌃':'⌄';
+  toggleDashboardFoldout('siteStatus');
 }
-
-// Native date details participate in the same one-open-at-a-time accordion.
-document.querySelectorAll('.filter-date-group').forEach(group=>{
-  group.addEventListener('toggle',()=>{
-    if(group.open)closeOtherDashboardFoldouts(group);
-  });
-});
+function toggleDateFilterPanel(which){
+  if(which==='reportedDate'||which==='completionDate')toggleDashboardFoldout(which);
+}
 function esc(v=''){return v.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 let selectedPhoto={name:'',type:'',data:''};
 let selectedFixPhoto={name:'',type:'',data:''};
