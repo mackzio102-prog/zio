@@ -10,10 +10,10 @@
 <link rel="shortcut icon" type="image/webp" href="./icons/app-icon.webp">
 <link rel="apple-touch-icon" href="./icons/app-icon.webp">
 <link rel="manifest" href="./manifest.webmanifest">
-<!-- V20.2: Place automatic completion-date stamp before existing Remarks text. -->
+<!-- V20.3: Add completion-date range filters. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.2</title>
+<title>Tech Daily Site Deficiency V20.3</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -45,6 +45,8 @@ header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-cont
 .filter-row{display:grid;gap:10px;align-items:end}
 .filter-row--primary{grid-template-columns:repeat(3,minmax(0,1fr))}
 .filter-row--secondary{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(180px,2fr) auto}
+.filter-row--completion{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(180px,2fr)}
+.filter-completion-note{align-self:center;color:#66737f;font-size:12px;line-height:1.35;padding:6px 2px}
 .filter-field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .filter-field>span{font-size:12px;font-weight:700;color:#52606d}
 .filter-layout .filter-field select,.filter-layout .filter-field input{width:100%;min-width:0;height:42px;margin:0;padding:9px 10px}
@@ -53,6 +55,8 @@ header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-cont
 @media(max-width:700px){
   .filter-row--primary{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
   .filter-row--secondary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .filter-row--completion{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .filter-completion-note{grid-column:1/-1;font-size:11px;padding:0 2px}
   .filter-field>span{font-size:11px}
   .filter-layout .filter-field select,.filter-layout .filter-field input{font-size:13px;padding:8px 7px}
   .filter-layout .filter-date{padding:0 7px}
@@ -1129,6 +1133,15 @@ header > button.primary{display:none !important}
       <button type="button" class="primary filter-export" onclick="exportFilteredRecordsPDF()">📄 Export Filtered PDF</button>
       <button type="button" class="secondary filter-clear" onclick="clearFilters()">Clear filters</button>
     </div>
+  </div>
+  <div class="filter-row filter-row--completion" aria-label="Completion date filters">
+    <label class="filter-field"><span>Completed from</span>
+      <span class="filter-date"><input id="filterCompletedFrom" type="date" onchange="render()" aria-label="Completed from date"></span>
+    </label>
+    <label class="filter-field"><span>Completed to</span>
+      <span class="filter-date"><input id="filterCompletedTo" type="date" onchange="render()" aria-label="Completed to date"></span>
+    </label>
+    <div class="filter-completion-note">Filters by the automatic Completed Date recorded at the top of Remarks.</div>
   </div>
 </div>
 </div>
@@ -3669,6 +3682,9 @@ function render(){
   const status=document.getElementById('filterStatus').value;
   const dateFrom=document.getElementById('filterDateFrom').value;
   const dateTo=document.getElementById('filterDateTo').value;
+  const completionDateFrom=document.getElementById('filterCompletedFrom').value;
+  const completionDateTo=document.getElementById('filterCompletedTo').value;
+  const hasCompletionDateFilter=!!completionDateFrom||!!completionDateTo;
   updateFloorFilterLabel();
   const q=document.getElementById('search').value.toLowerCase();
   const rowEl=document.getElementById('rows');
@@ -3677,11 +3693,17 @@ function render(){
     const recordDate=String(x.date||'');
     const matchesDateFrom=!dateFrom||recordDate>=dateFrom;
     const matchesDateTo=!dateTo||recordDate<=dateTo;
+    const completionDate=getCompletionDateFromRemarks(x.remarks);
+    const isCurrentlyCompleted=String(x.status||'').trim().toLowerCase()==='completed';
+    const matchesCompletionDateFrom=!completionDateFrom||(!!completionDate&&completionDate>=completionDateFrom);
+    const matchesCompletionDateTo=!completionDateTo||(!!completionDate&&completionDate<=completionDateTo);
     return (!site||x.site===site) &&
            (!floorFilterActive||selectedFloors.includes(String(x.floor||''))) &&
            (!attendedByFilter||String(x.attendedBy||'')===attendedByFilter) &&
            (!status||x.status===status) &&
            matchesDateFrom && matchesDateTo &&
+           (!hasCompletionDateFilter||(isCurrentlyCompleted&&completionDate)) &&
+           matchesCompletionDateFrom && matchesCompletionDateTo &&
            (!q||(x.deficiency+' '+(x.floor||'')+' '+x.location+' '+x.id).toLowerCase().includes(q));
   });
 
@@ -4010,6 +4032,29 @@ function stampCompletedDateInRemarks(remarks){
  return existingRemarks
   ? completionLine+'\n'+existingRemarks
   : completionLine;
+}
+
+// V20.3: Read the automatic completion date from Remarks.
+function getCompletionDateFromRemarks(remarks){
+ const text=String(remarks||'');
+ const match=text.match(/^\s*Completed Date\s*:\s*(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})\s*$/im);
+ if(!match)return '';
+
+ const monthNames=[
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December'
+ ];
+ const monthIndex=monthNames.findIndex(name=>name.toLowerCase()===match[2].toLowerCase());
+ if(monthIndex<0)return '';
+
+ const day=Number(match[1]);
+ const year=Number(match[3]);
+ const parsed=new Date(year,monthIndex,day);
+ if(parsed.getFullYear()!==year||parsed.getMonth()!==monthIndex||parsed.getDate()!==day)return '';
+
+ return String(year).padStart(4,'0')+'-'+
+  String(monthIndex+1).padStart(2,'0')+'-'+
+  String(day).padStart(2,'0');
 }
 
 document.getElementById('form').addEventListener('submit',async function(e){
@@ -4400,6 +4445,8 @@ function exportFilteredRecordsExcel(){
  const status=value('filterStatus')||'All Statuses';
  const dateFrom=value('filterDateFrom')||'Any';
  const dateTo=value('filterDateTo')||'Any';
+ const completedFrom=value('filterCompletedFrom')||'Any';
+ const completedTo=value('filterCompletedTo')||'Any';
  const keyword=value('search').trim()||'None';
  const generated=new Date().toLocaleString();
  const statusCounts=[
@@ -4425,7 +4472,7 @@ function exportFilteredRecordsExcel(){
   rowXml(2,['Generated',generated],3),
   rowXml(3,['Exported Records',String(records.length)],3),
   rowXml(4,['Site',site,'Floor',floors,'Attended By',attendedBy],3),
-  rowXml(5,['Status',status,'From Date',dateFrom,'To Date',dateTo],3),
+  rowXml(5,['Status',status,'Reported From',dateFrom,'Reported To',dateTo,'Completed From',completedFrom,'Completed To',completedTo],3),
   rowXml(6,['Search Keyword',keyword],3),
   rowXml(7,['Open',String(statusCounts[0].count),'Ongoing',String(statusCounts[1].count),'On Hold',String(statusCounts[2].count),'Completed',String(statusCounts[3].count)],3),
   rowXml(8,[],3),
@@ -4551,6 +4598,8 @@ async function exportFilteredRecordsPDF(){
  const status=value('filterStatus')||'All Statuses';
  const dateFrom=value('filterDateFrom')||'Any';
  const dateTo=value('filterDateTo')||'Any';
+ const completedFrom=value('filterCompletedFrom')||'Any';
+ const completedTo=value('filterCompletedTo')||'Any';
  const keyword=value('search').trim()||'None';
  const generated=new Date().toLocaleString();
  const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -4665,7 +4714,8 @@ async function exportFilteredRecordsPDF(){
     '<span>Photos retrieved: '+(photoJobs.length-failedPhotos)+' / '+photoJobs.length+'</span></div>'+
    '<section class="filters"><b>Applied Filters</b><br>'+
     'Site: '+safe(site)+' &nbsp; | &nbsp; Floor: '+safe(floors)+' &nbsp; | &nbsp; Attended By: '+safe(attendedByFilter)+'<br>'+
-    'Status: '+safe(status)+' &nbsp; | &nbsp; From: '+safe(dateFrom)+' &nbsp; | &nbsp; To: '+safe(dateTo)+'<br>'+
+    'Status: '+safe(status)+' &nbsp; | &nbsp; Reported From: '+safe(dateFrom)+' &nbsp; | &nbsp; Reported To: '+safe(dateTo)+'<br>'+
+    'Completion From: '+safe(completedFrom)+' &nbsp; | &nbsp; Completion To: '+safe(completedTo)+'<br>'+
     'Search: '+safe(keyword)+'</section>'+
    '<div class="count">Filtered deficiency records ('+records.length+')</div>'+
    '<table><thead><tr><th>Record ID</th><th>Date</th><th>Site</th><th>Floor</th><th>Deficiency</th><th>Location / Area</th>'+
@@ -4706,6 +4756,8 @@ function clearFilters(){
   document.getElementById('filterAttendedBy').value='';
   document.getElementById('filterDateFrom').value='';
   document.getElementById('filterDateTo').value='';
+  document.getElementById('filterCompletedFrom').value='';
+  document.getElementById('filterCompletedTo').value='';
   document.getElementById('search').value='';
   render();
 }
