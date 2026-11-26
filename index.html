@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.31</title>
+<title>Tech Daily Site Deficiency V20.32</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2832,6 +2832,69 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.32: Put each dashboard status label and count on one horizontal line. */
+#stickyArea .grid > .status-summary-card{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  min-width:0 !important;
+  min-height:56px !important;
+  margin:0 !important;
+  padding:9px 12px !important;
+  text-align:left !important;
+  cursor:pointer !important;
+  user-select:none;
+  transition:box-shadow .15s ease,background-color .15s ease,outline-color .15s ease;
+}
+#stickyArea .status-summary-card .status-summary-label{
+  display:inline-flex !important;
+  flex:1 1 auto !important;
+  align-items:center !important;
+  min-width:0 !important;
+  font-size:15px !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+}
+#stickyArea .status-summary-card .stat{
+  display:block !important;
+  flex:0 0 auto !important;
+  margin:0 !important;
+  font-size:21px !important;
+  line-height:1 !important;
+  font-variant-numeric:tabular-nums;
+}
+#stickyArea .status-summary-card:hover{
+  filter:brightness(.985);
+  box-shadow:0 2px 8px #0002;
+}
+#stickyArea .status-summary-card:focus-visible{
+  outline:3px solid #1769aa;
+  outline-offset:2px;
+}
+#stickyArea .status-summary-card.is-active{
+  outline:3px solid #1769aa !important;
+  outline-offset:1px !important;
+  box-shadow:0 2px 8px #1769aa25 !important;
+}
+@media(max-width:700px){
+  #stickyArea .grid > .status-summary-card{
+    min-height:48px !important;
+    padding:8px 9px !important;
+    gap:6px !important;
+  }
+  #stickyArea .status-summary-card .status-summary-label{
+    font-size:clamp(11px,3vw,13px) !important;
+  }
+  #stickyArea .status-summary-card .stat{
+    font-size:clamp(17px,4vw,19px) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2865,7 +2928,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.31</small>
+    <small>Beta • Gamma • CPT2 • V20.32</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -2884,11 +2947,11 @@ header > button.primary{display:none !important}
     <div class="connection-actions"><button class="secondary" type="button" onclick="syncFromExcel()">🔄 Refresh from Excel</button><button class="secondary" type="button" onclick="openSettings()">⚙️ Settings</button></div>
   </div>
 </div>
-<div class="grid">
-<div class="card red">🔴 Open<div class="stat" id="open">75</div></div>
-<div class="card yellow">🟡 Ongoing<div class="stat" id="ongoing">6</div></div>
-<div class="card green">🟢 Completed<div class="stat" id="completed">54</div></div>
-<div class="card black">⚫ On Hold<div class="stat" id="hold">3</div></div>
+<div class="grid" aria-label="Deficiency status filters">
+<div class="card red status-summary-card" data-status="Open" role="button" tabindex="0" aria-pressed="false" aria-label="Filter deficiencies by Open status" onclick="selectDashboardStatus('Open')" onkeydown="handleDashboardStatusKeydown(event,'Open')"><span class="status-summary-label">🔴 Open</span><div class="stat" id="open">75</div></div>
+<div class="card yellow status-summary-card" data-status="Ongoing" role="button" tabindex="0" aria-pressed="false" aria-label="Filter deficiencies by Ongoing status" onclick="selectDashboardStatus('Ongoing')" onkeydown="handleDashboardStatusKeydown(event,'Ongoing')"><span class="status-summary-label">🟡 Ongoing</span><div class="stat" id="ongoing">6</div></div>
+<div class="card green status-summary-card" data-status="Completed" role="button" tabindex="0" aria-pressed="false" aria-label="Filter deficiencies by Completed status" onclick="selectDashboardStatus('Completed')" onkeydown="handleDashboardStatusKeydown(event,'Completed')"><span class="status-summary-label">🟢 Completed</span><div class="stat" id="completed">54</div></div>
+<div class="card black status-summary-card" data-status="On Hold" role="button" tabindex="0" aria-pressed="false" aria-label="Filter deficiencies by On Hold status" onclick="selectDashboardStatus('On Hold')" onkeydown="handleDashboardStatusKeydown(event,'On Hold')"><span class="status-summary-label">⚫ On Hold</span><div class="stat" id="hold">3</div></div>
 </div>
 
 <div class="card filter-card">
@@ -5666,8 +5729,28 @@ function render(){
   document.getElementById('ongoing').textContent=filtered.filter(x=>siteStatusKey(x.status)==='Ongoing').length;
   document.getElementById('completed').textContent=filtered.filter(x=>siteStatusKey(x.status)==='Completed').length;
   document.getElementById('hold').textContent=filtered.filter(x=>siteStatusKey(x.status)==='On Hold').length;
+  document.querySelectorAll('.status-summary-card').forEach(card=>{
+    const selected=card.dataset.status===status;
+    card.classList.toggle('is-active',selected);
+    card.setAttribute('aria-pressed',String(selected));
+  });
   renderSiteStatusStats(filtered);
 }
+
+function selectDashboardStatus(status){
+  const filter=document.getElementById('filterStatus');
+  if(!filter)return;
+  filter.value=filter.value===status?'':status;
+  render();
+}
+function handleDashboardStatusKeydown(event,status){
+  if(!event)return;
+  if(event.key==='Enter'||event.key===' '){
+    event.preventDefault();
+    selectDashboardStatus(status);
+  }
+}
+
 function siteStatusKey(value){
   const key=String(value||'').trim().toLowerCase();
   const keys={'open':'Open','ongoing':'Ongoing','completed':'Completed','on hold':'On Hold'};
