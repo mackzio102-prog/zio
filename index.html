@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.24</title>
+<title>Tech Daily Site Deficiency V20.25</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2647,6 +2647,33 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.25: Slightly smaller status badges, keeping four equal columns and balanced gaps. */
+#siteStatusToggle .site-status-header-item{
+  height:28px !important;
+  min-height:28px !important;
+  padding:3px 6px !important;
+  gap:5px !important;
+  font-size:11px !important;
+}
+#siteStatusToggle .site-status-header-item strong{
+  font-size:13px !important;
+}
+@media(max-width:700px){
+  #siteStatusToggle .site-status-header-item{
+    height:26px !important;
+    min-height:26px !important;
+    padding:3px 2px !important;
+    gap:3px !important;
+    font-size:clamp(8px,2.4vw,9px) !important;
+  }
+  #siteStatusToggle .site-status-header-item strong{
+    font-size:clamp(9px,2.7vw,11px) !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2680,7 +2707,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.24</small>
+    <small>Beta • Gamma • CPT2 • V20.25</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
