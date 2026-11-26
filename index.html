@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.17</title>
+<title>Tech Daily Site Deficiency V20.18</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -2237,6 +2237,104 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.18: Show the live color-coded status summary below the collapsed overview title. */
+.filter-date-groups .site-status-toggle-content{
+  display:flex;
+  flex:1 1 auto;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:5px;
+  min-width:0;
+}
+.filter-date-groups .site-status-toggle-title{
+  display:block;
+  color:#17324d;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.15;
+  text-align:left;
+}
+.filter-date-groups .site-status-header-summary{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:3px 5px;
+  width:100%;
+  min-width:0;
+  line-height:1;
+}
+.filter-date-groups .site-status-header-item{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:3px 5px;
+  border:1px solid transparent;
+  border-radius:5px;
+  font-size:9px;
+  font-weight:800;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.filter-date-groups .site-status-header-item strong{
+  font-size:10px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.filter-date-groups .site-status-header-item.status-open{
+  color:#a61b1b;
+  background:#fff1f1;
+  border-color:#f5cccc;
+}
+.filter-date-groups .site-status-header-item.status-ongoing{
+  color:#8a6500;
+  background:#fff8e6;
+  border-color:#f1dfaa;
+}
+.filter-date-groups .site-status-header-item.status-hold{
+  color:#46515c;
+  background:#f0f2f4;
+  border-color:#d9dfe5;
+}
+.filter-date-groups .site-status-header-item.status-completed{
+  color:#146c43;
+  background:#eaf8ef;
+  border-color:#bfe6cc;
+}
+@media(min-width:701px){
+  .filter-date-groups .dashboard-foldout-toggle{
+    min-height:76px !important;
+    height:76px !important;
+  }
+}
+@media(max-width:700px){
+  .filter-date-groups .dashboard-foldout-toggle{
+    min-height:76px !important;
+    height:76px !important;
+    align-items:center !important;
+  }
+  .filter-date-groups .site-status-toggle-content{
+    gap:4px;
+  }
+  .filter-date-groups .site-status-toggle-title{
+    font-size:10px !important;
+  }
+  .filter-date-groups .site-status-header-summary{
+    gap:3px 4px;
+  }
+  .filter-date-groups .site-status-header-item{
+    padding:2px 4px;
+    font-size:8px;
+  }
+  .filter-date-groups .site-status-header-item strong{
+    font-size:9px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -2270,7 +2368,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.17</small>
+    <small>Beta • Gamma • CPT2 • V20.18</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -2344,7 +2442,15 @@ header > button.primary{display:none !important}
     <!-- All three headers stay in the same top row. Only their content opens below. -->
     <button type="button" class="dashboard-foldout-toggle site-status-toggle" id="siteStatusToggle"
       onclick="toggleSiteStatusPanel()" aria-expanded="false" aria-controls="siteStatusContent">
-      <span>📊 Site Status Overview<small id="siteStatusMeta">Loading filter-aware status totals...</small></span>
+      <span class="site-status-toggle-content">
+        <span class="site-status-toggle-title">📊 Site Status Overview</span>
+        <span class="site-status-header-summary" id="siteStatusHeaderSummary" aria-label="Current filtered status totals">
+          <span class="site-status-header-item status-open"><span>Open</span><strong id="siteStatusHeaderOpen">0</strong></span>
+          <span class="site-status-header-item status-ongoing"><span>Ongoing</span><strong id="siteStatusHeaderOngoing">0</strong></span>
+          <span class="site-status-header-item status-hold"><span>On Hold</span><strong id="siteStatusHeaderHold">0</strong></span>
+          <span class="site-status-header-item status-completed"><span>Completed</span><strong id="siteStatusHeaderCompleted">0</strong></span>
+        </span>
+      </span>
       <span class="site-status-toggle-mark" id="siteStatusToggleMark" aria-hidden="true">⌄</span>
     </button>
 
@@ -2377,7 +2483,7 @@ header > button.primary{display:none !important}
           <span class="site-status-current-view__count" id="siteStatusViewCount">0 matching records</span>
         </div>
         <div class="site-status-meta-actions">
-          <span id="siteStatusMeta">Select any colored status count to view matching records.</span>
+          <span id="siteStatusHelpText">Select any colored status count to view matching records.</span>
           <button type="button" class="site-status-reset" onclick="resetSiteStatusFilters()">Show All Sites / Statuses</button>
         </div>
       </div>
@@ -5068,8 +5174,8 @@ function siteStatusKey(value){
 }
 function renderSiteStatusStats(records){
   const grid=document.getElementById('siteStatusGrid');
-  const meta=document.getElementById('siteStatusMeta');
-  if(!grid||!meta)return;
+  const help=document.getElementById('siteStatusHelpText');
+  if(!grid)return;
   const statuses=[
     {name:'Open',cls:'status-open'},
     {name:'Ongoing',cls:'status-ongoing'},
@@ -5090,7 +5196,20 @@ function renderSiteStatusStats(records){
   const viewCount=document.getElementById('siteStatusViewCount');
   if(viewName)viewName.textContent=siteViewName+' • '+statusViewName;
   if(viewCount)viewCount.textContent=all.length+' matching record'+(all.length===1?'':'s');
-  meta.textContent='Select any colored status count to view its matching records.';
+  const headerCounts={
+    Open:document.getElementById('siteStatusHeaderOpen'),
+    Ongoing:document.getElementById('siteStatusHeaderOngoing'),
+    'On Hold':document.getElementById('siteStatusHeaderHold'),
+    Completed:document.getElementById('siteStatusHeaderCompleted')
+  };
+  if(headerCounts.Open)headerCounts.Open.textContent=totalOpen;
+  if(headerCounts.Ongoing)headerCounts.Ongoing.textContent=totalOngoing;
+  if(headerCounts['On Hold'])headerCounts['On Hold'].textContent=totalHold;
+  if(headerCounts.Completed)headerCounts.Completed.textContent=totalCompleted;
+  const headerSummary=document.getElementById('siteStatusHeaderSummary');
+  if(headerSummary)headerSummary.setAttribute('aria-label',
+    'Open '+totalOpen+', Ongoing '+totalOngoing+', On Hold '+totalHold+', Completed '+totalCompleted);
+  if(help)help.textContent='Select any colored status count to view its matching records.';
   grid.innerHTML=sites.map(site=>{
     const siteRecords=all.filter(x=>String(x.site||'').trim().toLowerCase()===site.toLowerCase());
     const isSelectedSite=!!selectedSite&&selectedSite.toLowerCase()===site.toLowerCase();
