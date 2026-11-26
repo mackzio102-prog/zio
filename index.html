@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.9</title>
+<title>Tech Daily Site Deficiency V20.10</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -1601,6 +1601,37 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.10: Keep the three account controls on one horizontal row on mobile. */
+@media(max-width:700px){
+  header #v17UserBar{
+    display:flex !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:stretch !important;
+    justify-content:space-between !important;
+    width:100% !important;
+    gap:4px !important;
+    margin-left:0 !important;
+  }
+  header #v17UserBar button{
+    min-width:0 !important;
+    max-width:none !important;
+    min-height:36px !important;
+    padding:8px 2px !important;
+    font-size:clamp(8.5px, 2.8vw, 11px) !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+  }
+  header #v17AdminBtn{flex:1.1 1 0 !important}
+  header #v17UsersBtn{flex:1.5 1 0 !important}
+  header #v17LogoutBtn{flex:.8 1 0 !important}
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -1634,7 +1665,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.9</small>
+    <small>Beta • Gamma • CPT2 • V20.10</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
