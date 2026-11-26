@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.49</title>
+<title>Tech Daily Site Deficiency V20.50</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4050,6 +4050,36 @@ header > button.primary{display:none !important}
 }
 </style>
 
+
+<style>
+/* V20.50: Make Site Status Overview result panel reliably open in the web app/mobile browser. */
+#siteStatusContent[hidden]{display:none !important}
+#siteStatusContent:not([hidden]){
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+#siteStatusToggle[aria-expanded="true"]{
+  cursor:pointer !important;
+}
+#siteStatusToggle[aria-expanded="true"] + .dashboard-foldout-content{
+  display:block !important;
+}
+@media(max-width:700px){
+  #siteStatusContent:not([hidden]){
+    grid-column:1 / -1 !important;
+    grid-row:3 !important;
+    width:100% !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    margin:0 !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="v17LoginScreen" style="display: none;">
@@ -4083,7 +4113,7 @@ header > button.primary{display:none !important}
 <header>
   <div class="brand-block">
     <h1>🛠️ Tech Daily Site Deficiency</h1>
-    <small>Beta • Gamma • CPT2 • V20.49</small>
+    <small>Beta • Gamma • CPT2 • V20.50</small>
     <div id="v17UserInfo">Admin Test • Admin</div>
   </div>
   <div id="v17UserBar">
@@ -7017,12 +7047,25 @@ function toggleDashboardFoldout(key){
   };
   const panel=panels[key];
   if(!panel||!panel.content||!panel.toggle)return;
-  const open=panel.content.style.display==='none';
+
+  // Use the button's expanded state, not inline display text, so the panel
+  // opens reliably even when CSS or the mobile webview overrides display.
+  const open=panel.toggle.getAttribute('aria-expanded')!=='true';
   if(open)closeOtherDashboardFoldouts(key);
-  panel.content.style.display=open?(key==='siteStatus'?'block':'grid'):'none';
+
+  const displayValue=open?(key==='siteStatus'?'block':'grid'):'none';
+  panel.content.style.setProperty('display',displayValue,'important');
+  panel.content.hidden=!open;
   panel.toggle.setAttribute('aria-expanded',String(open));
   panel.toggle.classList.toggle('is-open',open);
   if(panel.mark)panel.mark.textContent=open?'⌃':'⌄';
+
+  if(open&&key==='siteStatus'){
+    // Refresh the overview result immediately when it is opened.
+    render();
+    panel.content.style.setProperty('display','block','important');
+    panel.content.hidden=false;
+  }
 }
 
 function handleDateToSelection(which){
