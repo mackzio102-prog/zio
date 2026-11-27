@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.57</title>
+<title>Tech Daily Site Deficiency V20.58</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -6849,6 +6849,51 @@ document.addEventListener('keydown',function(event){
  if(event.key!=='Escape')return;
  const picker=document.getElementById('filterFloorDropdown');
  if(picker&&picker.open)picker.open=false;
+});
+
+// V20.58: Auto-close Site Status and both date panels when clicking outside their
+// header buttons and result/filter content. Clicking within a panel keeps it open.
+document.addEventListener('click',function(event){
+ const panels=[
+  {content:document.getElementById('siteStatusContent'),toggle:document.getElementById('siteStatusToggle')},
+  {content:document.getElementById('reportedDateContent'),toggle:document.getElementById('reportedDateFilter')},
+  {content:document.getElementById('completionDateContent'),toggle:document.getElementById('completionDateFilter')}
+ ];
+ const isInsideAny=panels.some(panel=>
+  (panel.content&&panel.content.contains(event.target))||
+  (panel.toggle&&panel.toggle.contains(event.target))
+ );
+ if(isInsideAny)return;
+ const anyOpen=panels.some(panel=>panel.toggle&&panel.toggle.getAttribute('aria-expanded')==='true');
+ if(!anyOpen)return;
+ closeOtherDashboardFoldouts(null);
+ panels.forEach(panel=>{
+  if(panel.content)panel.content.style.display='none';
+  if(panel.toggle){
+   panel.toggle.setAttribute('aria-expanded','false');
+   panel.toggle.classList.remove('is-open');
+  }
+ });
+ ['siteStatusToggleMark','reportedDateChevron','completionDateChevron'].forEach(id=>{
+  const mark=document.getElementById(id);if(mark)mark.textContent='⌄';
+ });
+});
+document.addEventListener('keydown',function(event){
+ if(event.key!=='Escape')return;
+ const ids=['siteStatusToggle','reportedDateFilter','completionDateFilter'];
+ const anyOpen=ids.some(id=>document.getElementById(id)?.getAttribute('aria-expanded')==='true');
+ if(!anyOpen)return;
+ closeOtherDashboardFoldouts(null);
+ ['siteStatusContent','reportedDateContent','completionDateContent'].forEach(id=>{
+  const panel=document.getElementById(id);if(panel)panel.style.display='none';
+ });
+ ids.forEach(id=>{
+  const toggle=document.getElementById(id);
+  if(toggle){toggle.setAttribute('aria-expanded','false');toggle.classList.remove('is-open');}
+ });
+ ['siteStatusToggleMark','reportedDateChevron','completionDateChevron'].forEach(id=>{
+  const mark=document.getElementById(id);if(mark)mark.textContent='⌄';
+ });
 });
 function formatDateFilterLabel(value){
   if(!value)return '';
