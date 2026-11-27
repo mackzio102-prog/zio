@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.60</title>
+<title>Tech Daily Site Deficiency V20.61</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4172,6 +4172,65 @@ header > button.primary{display:none !important}
 @media(max-width:700px){
   #v17UsersBox .tablewrap{
     max-height:calc(100dvh - 270px) !important;
+  }
+}
+</style>
+
+
+<style>
+/* V20.61: Freeze Admin Monitoring header/actions and table column labels while
+   scrolling activity. Keep horizontal scrolling available on narrow screens. */
+#v17AdminBox{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+  max-height:90vh !important;
+  max-height:90dvh !important;
+  overflow:hidden !important;
+}
+#v17AdminBox > div:first-child{
+  position:sticky !important;
+  top:0 !important;
+  z-index:50 !important;
+  flex:0 0 auto !important;
+  background:#fff !important;
+  padding:4px 0 10px !important;
+  border-bottom:1px solid #edf0f2 !important;
+}
+#v17AdminBox #v17AdminStatus{
+  position:sticky !important;
+  top:0 !important;
+  z-index:45 !important;
+  flex:0 0 auto !important;
+  background:#fff !important;
+  padding:6px 0 !important;
+}
+#v17AdminBox .tablewrap{
+  position:relative !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow:auto !important;
+  overscroll-behavior:contain !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+#v17AdminBox #v17AdminTable{
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+}
+#v17AdminBox #v17AdminTable thead th{
+  position:sticky !important;
+  top:0 !important;
+  z-index:35 !important;
+  background:#dff5e7 !important;
+  box-shadow:0 2px 3px #0002 !important;
+}
+@media(max-width:700px){
+  #v17AdminBox{
+    max-height:calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  }
+  #v17AdminBox .tablewrap{
+    overflow:auto !important;
   }
 }
 </style>
