@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.59</title>
+<title>Tech Daily Site Deficiency V20.60</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4133,6 +4133,46 @@ header > button.primary{display:none !important}
   z-index:auto !important;
   transform:none !important;
   box-shadow:none !important;
+}
+</style>
+
+
+<style>
+/* V20.60: Keep User Management title/actions visible and freeze table column labels
+   while scrolling the user list. Limit scrolling to the table region on tall screens. */
+#v17UsersBox{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+}
+#v17UsersBox > div:first-child{
+  position:sticky !important;
+  top:0 !important;
+  z-index:50 !important;
+  flex:0 0 auto !important;
+  background:#fff !important;
+  padding:4px 0 10px !important;
+  border-bottom:1px solid #edf0f2 !important;
+}
+#v17UsersBox .tablewrap{
+  position:relative !important;
+  flex:0 1 auto !important;
+  max-height:calc(100dvh - 300px) !important;
+  overflow:auto !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#v17UsersBox #v17UsersTable thead th{
+  position:sticky !important;
+  top:0 !important;
+  z-index:30 !important;
+  background:#dff5e7 !important;
+  box-shadow:0 2px 3px #0002 !important;
+}
+@media(max-width:700px){
+  #v17UsersBox .tablewrap{
+    max-height:calc(100dvh - 270px) !important;
+  }
 }
 </style>
 
