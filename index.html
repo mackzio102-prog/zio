@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.56</title>
+<title>Tech Daily Site Deficiency V20.57</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -6837,6 +6837,19 @@ function closeFloorFilterPanel(event){
  const picker=document.getElementById('filterFloorDropdown');
  if(picker)picker.open=false;
 }
+
+// V20.57: Automatically retract the Floor picker when the user clicks outside it.
+document.addEventListener('click',function(event){
+ const picker=document.getElementById('filterFloorDropdown');
+ if(!picker||!picker.open)return;
+ if(picker.contains(event.target))return;
+ picker.open=false;
+});
+document.addEventListener('keydown',function(event){
+ if(event.key!=='Escape')return;
+ const picker=document.getElementById('filterFloorDropdown');
+ if(picker&&picker.open)picker.open=false;
+});
 function formatDateFilterLabel(value){
   if(!value)return '';
   const parts=String(value).split('-');
