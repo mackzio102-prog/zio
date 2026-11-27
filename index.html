@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.61</title>
+<title>Tech Daily Site Deficiency V20.62</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -8140,7 +8140,36 @@ async function exportFilteredRecordsPDF(){
  if(exportButton){exportButton.disabled=true;exportButton.textContent='⏳ Loading photos...';}
  const loadingPage='<!doctype html><html><head><meta charset="utf-8"><title>Preparing report</title>'+
   '<style>body{font-family:Arial,sans-serif;padding:40px;color:#17324d}p{color:#66737f}</style></head>'+
-  '<body><h2>Preparing filtered PDF report...</h2><p id="progress">Retrieving attached photos. Please keep this window open.</p></body></html>';
+  '<body><h2>Preparing filtered PDF report...</h2><p id="progress">Retrieving attached photos. Please keep this window open.</p>
+<script>
+/* V20.62: Close Admin Monitoring and User Management when clicking/tapping
+   the backdrop or anywhere outside each panel. Ignore clicks inside the panel. */
+(function(){
+  const outsideClosePanels=[
+    {modalId:'v17AdminModal',boxId:'v17AdminBox',close:()=>{if(typeof closeAdminMonitor==='function')closeAdminMonitor();}},
+    {modalId:'v17UsersModal',boxId:'v17UsersBox',close:()=>{if(typeof closeUserManagement==='function')closeUserManagement();}}
+  ];
+  function closeOnOutside(event){
+    outsideClosePanels.forEach(item=>{
+      const modal=document.getElementById(item.modalId);
+      const box=document.getElementById(item.boxId);
+      if(!modal||!box||getComputedStyle(modal).display==='none')return;
+      if(box.contains(event.target))return;
+      item.close();
+    });
+  }
+  document.addEventListener('click',closeOnOutside,true);
+  document.addEventListener('touchend',function(event){
+    if(event.changedTouches&&event.changedTouches.length){
+      const touch=event.changedTouches[0];
+      const target=document.elementFromPoint(touch.clientX,touch.clientY)||event.target;
+      closeOnOutside({target});
+    }else closeOnOutside(event);
+  },{capture:true,passive:true});
+})();
+</script>
+
+</body></html>';
  popup.document.open();popup.document.write(loadingPage);popup.document.close();
 
  const value=id=>document.getElementById(id)?.value||'';
