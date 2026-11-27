@@ -13,7 +13,7 @@
 <!-- V20.4: Protect completed original photos for non-admins and pass old Fix Photo metadata for replacement cleanup. -->
 <!-- V18.8: Single responsive web app for desktop and mobile
    V18.14: One active Web session + one active Mobile session per user -->
-<title>Tech Daily Site Deficiency V20.58</title>
+<title>Tech Daily Site Deficiency V20.59</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#17212b}
 header{background:#17324d;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
@@ -4110,6 +4110,29 @@ header > button.primary{display:none !important}
   #siteStatusToggle.site-status-summary-only .site-status-header-item strong{
     font-size:clamp(9px,2.5vw,10px) !important;
   }
+}
+</style>
+
+
+<style>
+/* V20.59: Admin Monitoring and User Management headers must not inherit the
+   main deficiency table's sticky offset. Keep each header at the start of
+   its own table, aligned with its records. */
+#v17UsersBox .tablewrap thead,
+#v17AdminBox .tablewrap thead{
+  position:static !important;
+  display:table-header-group !important;
+}
+#v17UsersBox .tablewrap thead th,
+#v17AdminBox .tablewrap thead th,
+#v17UsersBox #v17UsersTable thead th,
+#v17AdminBox #v17AdminTable thead th{
+  position:static !important;
+  top:auto !important;
+  inset-block-start:auto !important;
+  z-index:auto !important;
+  transform:none !important;
+  box-shadow:none !important;
 }
 </style>
 
